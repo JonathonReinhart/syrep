@@ -1,4 +1,4 @@
-/* $Id: dbutil.c 58 2004-07-19 16:04:48Z lennart $ */
+/* $Id: dbutil.c 68 2004-09-21 22:42:03Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -189,6 +189,11 @@ uint32_t get_version_timestamp(struct syrep_db_context *c, uint32_t v) {
     key.size = sizeof(version);
 
     if ((ret = c->db_version_timestamp->get(c->db_version_timestamp, NULL, &key, &data, 0))) {
+
+        /* If the specific history entry was lost: return the epoch */
+        if (ret == DB_NOTFOUND)
+            return 0;
+        
         c->db_version_timestamp->err(c->db_version_timestamp, ret, "version_timestamp::get");
         return (uint32_t) -1;
     }

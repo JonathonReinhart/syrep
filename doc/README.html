@@ -3,12 +3,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-<title>syrep 0.5</title>
+<title>syrep 0.6</title>
 <link rel="stylesheet" type="text/css" href="style.css" />
 </head>
 
 <body>
-<h1><a name="top">syrep 0.5</a></h1>
+<h1><a name="top">syrep 0.6</a></h1>
 
 <p><i>Copyright 2003,2004 Lennart Poettering &lt;mzflerc (at) 0pointer (dot) de&gt;</i></p>
 
@@ -41,6 +41,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.</p>
 
 <h2><a name="news">News</a></h2>
+
+<div class="news-date">Wed Sep 22 2004: </div> <p class="news-text"><a
+href="http://0pointer.de/lennart/projects/syrep/syrep-0.6.tar.gz">Version 0.6</a> released; Changes
+include: fix an ugly bug which made snapshots where <tt>--forget</tt> was used unusable; add <tt>debian/</tt> directory for easily making Debian packages</p>
 
 <div class="news-date">Mon Jul 19 2004: </div> <p class="news-text"><a
 href="http://0pointer.de/lennart/projects/syrep/syrep-0.5.tar.gz">Version 0.5</a> released; Changes
@@ -85,20 +89,50 @@ hard links. In fact even copies of files are treated as the
 same. Currently, <tt>syrep</tt> doesn't synchronize file attributes like
 access modes or modification times.</p>
 
-<p><tt>Syrep</tt> was written to facilitate the synchronization of two
+<p><tt>syrep</tt> was written to facilitate the synchronization of two
 large digital music repositories without direct network
 connection. Patch files of several gigabytes are common in
 this situation.</p>
 
-<p><tt>Syrep</tt> is able to cope with 64 bit file sizes. (LFS)</p>
+<p><tt>syrep</tt> is able to cope with 64 bit file sizes. (LFS)</p>
 
-<p><tt>Syrep</tt> is optimized for speed. It may make use of a message digest
+<p><tt>syrep</tt> is optimized for speed. It may make use of a message digest
 cache to accelerate the calculation of digests of a whole directory
 hierarchy.</p>
 
+<h3>How does syrep compare with <tt>rsync</tt>, <tt>cvs</tt>, Subversion, <tt>arch</tt>/<tt>tla</tt>, BitKeeper, <tt>xdelta2</tt>, <tt>diff</tt>/<tt>patch</tt>?</h3>
+
+<p><tt>syrep</tt> is kind of a bidirectional <tt>rsync</tt>, but
+stores and makes use of a file hierarchy history. Synchronization with
+<tt>syrep</tt> is based on patch files, and doesn't require a direct
+connection between the synchronizing peers.</p>
+
+<p><tt>syrep</tt> has many things in common with version control
+systems like <tt>CVS</tt> or <tt>SVN</tt>: it stores a history and has operations
+similar to <tt>update</tt> and <tt>commit</tt>. However: the history doesn't contain
+file contents and is not line based, it stores the MD5 digest and some
+meta data only. There is no central server, instead all peers have the
+same role. There is no distinction between repositories and
+checkouts. In fact checkout and repository are identical.</p>
+
+<p><tt>syrep</tt> has even more things in common with <tt>arch</tt>/<tt>tla</tt> and
+BitKeeper. All three are patch based and are "peer-to-peer". However,
+there are certain differences: <tt>syrep</tt> doesn't differentiate
+between repositories and checkouts. <tt>syrep</tt> doesn't keep a file
+contents history of any kind.</p>
+
+<p><tt>syrep</tt> resembles <tt>diff</tt>/<tt>patch</tt> or
+<tt>xdelta2</tt> in some way. While the latter work on file
+contents, <tt>syrep</tt> works on file hierarchies.</p>
+
+<p>In contrast two most of the software mentioned above,
+<tt>syrep</tt> is capable of synchronizing repositories of several
+100GB of size, with only a very small overhead. (i.e. 4 MB of control
+data for half a year history for 100 GB of user data)</p>
+
 <h2><a name="status">Status</a></h2>
 
-<p>Version 0.5 is more or less stable and fulfills its purpose.</p>
+<p>Version 0.6 is more or less stable and fulfills its purpose.</p>
   
 <h2><a name="documentation">Documentation</a></h2>
 
@@ -236,15 +270,15 @@ L. Peter Deutsch. Thanks to him for this.</p>
 
 <p>The newest release is always available from <a href="http://0pointer.de/lennart/projects/syrep/">http://0pointer.de/lennart/projects/syrep/</a></p>
 
-<p>The current release is <a href="http://0pointer.de/lennart/projects/syrep/syrep-0.5.tar.gz">0.5</a></p>
+<p>The current release is <a href="http://0pointer.de/lennart/projects/syrep/syrep-0.6.tar.gz">0.6</a></p>
 
 <p>Get <tt>syrep</tt>'s development sources from the <a href="http://subversion.tigris.org/">Subversion</a> <a href="https://seth.intheinter.net:8081/svn/syrep/">repository</a>. (<a href="http://0pointer.de/cgi-bin/viewcvs.cgi/?root=syrep">viewcvs</a>)</p>
 
 <hr/>
 
-<address class="grey">Lennart Poettering &lt;mzflerc (at) 0pointer (dot) de&gt;, July 2004</address>
+<address class="grey">Lennart Poettering &lt;mzflerc (at) 0pointer (dot) de&gt;, September 2004</address>
 
-<div class="grey"><i>$Id: README.html.in 60 2004-07-19 17:02:34Z lennart $</i></div>
+<div class="grey"><i>$Id: README.html.in 70 2004-09-21 22:52:29Z lennart $</i></div>
 
 </body>
 </html>

@@ -1,4 +1,4 @@
-# $Id: Makefile.am 65 2004-07-29 23:13:56Z lennart $
+# $Id: Makefile.am 70 2004-09-21 22:52:29Z lennart $
 
 # This file is part of syrep.
 #
@@ -30,7 +30,7 @@ README:
 homepage: all dist
 	test -d $$HOME/homepage/private
 	mkdir -p $$HOME/homepage/private/projects/syrep
-	cp *.tar.gz $$HOME/homepage/private/projects/syrep
+	cp syrep-@PACKAGE_VERSION@.tar.gz $$HOME/homepage/private/projects/syrep
 	cp doc/README.html doc/style.css man/syrep.1.xml man/xmltoman.css man/xmltoman.xsl man/xmltoman.dtd $$HOME/homepage/private/projects/syrep
 	cp $$HOME/homepage/private/projects/syrep/README.html $$HOME/homepage/private/projects/syrep/index.html
 
