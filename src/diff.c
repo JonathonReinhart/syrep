@@ -1,4 +1,4 @@
-/* $Id: diff.c 43 2003-11-30 14:27:42Z lennart $ */
+/* $Id: diff.c 57 2004-07-18 18:47:55Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -270,9 +270,10 @@ finish:
     return NULL;
 }
 
-
 struct cb_info {
     struct syrep_db_context *c1, *c2;
+    const char *p1, *p2;
+    off_t sum1, sum2;
 };
 
 static int list_cb(DB *ddb, struct syrep_name *name, struct diff_entry *de, void *p) {
@@ -305,7 +306,9 @@ static int list_cb(DB *ddb, struct syrep_name *name, struct diff_entry *de, void
     switch (de->action) {
         case DIFF_COPY: {
             char d[33];
+            char sizet[100] = " ", *psizet = "";
             char dst;
+            const char *root = NULL;
             int mf;
             
             if ((mf = get_current_nrecno_by_md(de->repository == cb_info->c1 ? cb_info->c2 : cb_info->c1,
@@ -313,16 +316,37 @@ static int list_cb(DB *ddb, struct syrep_name *name, struct diff_entry *de, void
                 return -1;
             
             if (de->repository == cb_info->c1) {
+                root = cb_info->p1;
                 dst = 'B';
                 fhex_md5(md1.digest, d);
             } else {
+                root = cb_info->p2;
                 dst = 'A';
                 fhex_md5(md2.digest, d);
             }
             
             d[32] = 0;
 
-            printf("COPY <%s|%s> TO %c%s\n", d, name->path, dst, mf ? " (LINK POSSIBLE)" : "");
+            if (args.sizes_flag && root && !mf) {
+                off_t fsize;
+                char cpath[PATH_MAX];
+                snprintf(cpath, sizeof(cpath), "%s/%s", root, name->path);
+
+                if ((fsize = filesize2(cpath)) != (off_t) -1) {
+                    strcpy(sizet, " (");
+                    snprint_off(sizet+2, sizeof(sizet)-3, fsize);
+                    strcat(sizet, ")");
+                    psizet = sizet;
+
+
+                    if (de->repository == cb_info->c1)
+                        cb_info->sum1 += fsize;
+                    else
+                        cb_info->sum2 += fsize;
+                }
+            }
+
+            printf("COPY <%s|%s> TO %c%s%s\n", d, name->path, dst, mf ? " (LINK POSSIBLE)" : "", psizet);
             
             break;
         }
@@ -361,12 +385,23 @@ static int list_cb(DB *ddb, struct syrep_name *name, struct diff_entry *de, void
     return 0;
 }
 
-int list_diff(struct syrep_db_context *c1, struct syrep_db_context *c2, DB *ddb) {
+int list_diff(struct syrep_db_context *c1, struct syrep_db_context *c2, DB *ddb, const char *p1, const char *p2) {
     struct cb_info cb_info;
+    char sumt[100];
     cb_info.c1 = c1;
     cb_info.c2 = c2;
+    cb_info.p1 = p1;
+    cb_info.p2 = p2;
+    cb_info.sum1 = cb_info.sum2 = 0;
     
-    return diff_foreach(ddb, list_cb, &cb_info);
+    if (diff_foreach(ddb, list_cb, &cb_info) < 0)
+        return -1;
+
+    if (cb_info.sum1)
+        printf("TOTAL SUM FROM A: %s\n", snprint_off(sumt, sizeof(sumt), cb_info.sum1));
+    if (cb_info.sum2)
+        printf("TOTAL SUM FROM B: %s\n", snprint_off(sumt, sizeof(sumt), cb_info.sum2));
+    return 0;
 }
 
 int diff_foreach(DB *ddb, int (*cb)(DB *ddb, struct syrep_name *name, struct diff_entry *de, void *p), void *p) {

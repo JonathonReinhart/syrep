@@ -1,4 +1,4 @@
-/* $Id: md5util.c 43 2003-11-30 14:27:42Z lennart $ */
+/* $Id: md5util.c 61 2004-07-19 17:09:25Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -36,7 +36,7 @@
 #include "syrep.h"
 
 void fhex(const unsigned char *bin, int len, char *txt) {
-    const static char hex[] = "0123456789abcdef";
+    static const char hex[] = "0123456789abcdef";
     int i;
 
     for (i = 0; i < len; i++) {

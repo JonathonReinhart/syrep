@@ -1,4 +1,4 @@
-/* $Id: history.c 43 2003-11-30 14:27:42Z lennart $ */
+/* $Id: history.c 58 2004-07-19 16:04:48Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -53,7 +53,7 @@ int history(struct syrep_db_context *c) {
 
         assert(version && timestamp);
 
-        fprintf(stderr, "%4u %10u %s", version->v, timestamp->t, ctime((time_t*) (&timestamp->t)));
+        printf("%4u %10u %s", version->v, timestamp->t, ctime((time_t*) (&timestamp->t)));
     }
         
     if (ret != DB_NOTFOUND) {

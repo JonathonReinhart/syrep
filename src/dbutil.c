@@ -1,4 +1,4 @@
-/* $Id: dbutil.c 43 2003-11-30 14:27:42Z lennart $ */
+/* $Id: dbutil.c 58 2004-07-19 16:04:48Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -268,8 +268,6 @@ int get_nrecno_by_name(struct syrep_db_context *c, const struct syrep_name *rnam
         struct syrep_nrecno nrecno;
         struct syrep_name name;
 
-/*         struct syrep_nhash *foo1; */
-/*         struct syrep_nrecno *foo2; */
         int f;
 
         if (ret) {
@@ -289,11 +287,6 @@ int get_nrecno_by_name(struct syrep_db_context *c, const struct syrep_name *rnam
             goto finish;
         }
             
-/*         foo1 = key.data; */
-/*         foo2 = data.data; */
-
-/*         fprintf(stderr, "cursor: %u ?= %u, %u\n", nhash.hash, foo1->hash, foo2->recno); */
-        
         memcpy(&nrecno, data.data, sizeof(nrecno));
 
         if ((f = get_name_by_nrecno(c,  &nrecno, &name)) < 0)

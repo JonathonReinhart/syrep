@@ -1,7 +1,7 @@
 # -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-# $Id: configure.ac 53 2004-03-22 13:26:54Z lennart $
+# $Id: configure.ac 61 2004-07-19 17:09:25Z lennart $
 
 # This file is part of syrep.
 #
@@ -20,7 +20,7 @@
 # Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 
 AC_PREREQ(2.59)
-AC_INIT([syrep],[0.4],[mzflerc (at) 0pointer (dot) de])
+AC_INIT([syrep],[0.5],[mzflerc (at) 0pointer (dot) de])
 AC_CONFIG_SRCDIR([src/syrep.c])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([foreign -Wall])
@@ -33,7 +33,7 @@ AC_SUBST(PACKAGE_URL, [http://0pointer.de/lennart/projects/syrep/])
 
 # If using GCC specifiy some additional parameters
 if test "x$GCC" = "xyes" ; then
-   CFLAGS="$CFLAGS -pipe -Wall"
+   CFLAGS="$CFLAGS -pipe -Wall -W -Wno-unused-parameter"
 fi
 
 if type -p stow > /dev/null && test -d /usr/local/stow ; then
@@ -46,7 +46,7 @@ AC_CHECK_LIB([z], [inflate],, [AC_MSG_ERROR([*** Sorry, you have to install zlib
 AC_CHECK_HEADER([zlib.h],, [AC_MSG_ERROR([*** Sorry, you have to install the zlib headers ***])])
 
 # Check for Berkeley DB (needs to be improved)
-AC_CHECK_HEADER([db.h],, [AC_MSG_ERROR([*** Sorry, you have to install the Berkeley Database Library (libdb) 4.1 or newer ***])])
+AC_CHECK_HEADER([db.h],, [AC_MSG_ERROR([*** Sorry, you have to install the Berkeley Database Library (libdb) 4.2 or newer ***])])
 LIBS="$LIBS -ldb"
 
 # Checking libdb version number
@@ -59,7 +59,7 @@ AC_PREPROC_IFELSE([AC_LANG_SOURCE([[
 #endif
 ]])],
 [AC_MSG_RESULT([yes])],
-[AC_MSG_FAILURE([Berkeley libdb 4.1 required])])
+[AC_MSG_FAILURE([Berkeley libdb 4.2 required])])
 AC_LANG_POP(C)
 
 # Check for Linux sendfile()
@@ -67,6 +67,9 @@ AC_CHECK_HEADER([sys/sendfile.h], sendfile=yes, sendfile=no)
 
 if test "x$sendfile" = xyes ; then
     AC_CHECK_LIB([c], [sendfile], sendfile=yes, sendfile=no)
+fi
+
+if test "x$sendfile" = xyes ; then
     AC_DEFINE([USE_SENDFILE], [1], [Use sendfile()])
 fi
 
@@ -77,6 +80,17 @@ if test "x$ac_cv_c_bigendian" = "xyes"; then
    AC_DEFINE([ARCH_IS_BIG_ENDIAN], [1], [Big Endian machine])
 else
    AC_DEFINE([ARCH_IS_BIG_ENDIAN], [0], [Big Endian machine])
+fi
+
+# Check for XATTR
+AC_CHECK_HEADER([attr/xattr.h], xattr=yes, xattr=no)
+
+if test "x$xattr" = xyes ; then
+   AC_CHECK_LIB([attr], [getxattr], xattr=yes, xattr=no)
+fi
+
+if test "x$xattr" = xyes ; then
+   AC_DEFINE([USE_XATTR], [1], [Use extended attributes])
 fi
 
 # 64 Bit LFS support

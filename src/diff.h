@@ -1,7 +1,7 @@
 #ifndef foodiffhfoo
 #define foodiffhfoo
 
-/* $Id: diff.h 13 2003-08-29 01:21:11Z lennart $ */
+/* $Id: diff.h 57 2004-07-18 18:47:55Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -38,6 +38,6 @@ struct diff_entry {
 
 DB* make_diff(struct syrep_db_context *c1, struct syrep_db_context *c2);
 int diff_foreach(DB *ddb, int (*cb)(DB *db, struct syrep_name *name, struct diff_entry *de, void *p), void *p);
-int list_diff(struct syrep_db_context *c1, struct syrep_db_context *c2, DB *ddb);
+int list_diff(struct syrep_db_context *c1, struct syrep_db_context *c2, DB *ddb, const char *p1, const char *p2);
 
 #endif

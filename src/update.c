@@ -1,4 +1,4 @@
-/* $Id: update.c 43 2003-11-30 14:27:42Z lennart $ */
+/* $Id: update.c 59 2004-07-19 16:28:19Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -29,11 +29,20 @@
 #include <assert.h>
 #include <time.h>
 
+#ifdef USE_XATTR
+#include <sys/types.h>
+#include <attr/xattr.h>
+#endif
+
 #include "update.h"
 #include "dbstruct.h"
 #include "util.h"
 #include "dbutil.h"
 #include "md5util.h"
+
+#ifdef USE_XATTR
+#define XATTR_NAME "user.syrep"
+#endif
 
 static int dbput(DB* db, const void *k, int klen, const void*d, int dlen, int f) {
     DBT key, data;
@@ -59,7 +68,7 @@ static int dbput(DB* db, const void *k, int klen, const void*d, int dlen, int f)
     return 1;
 }
 
-static int write_entry(struct syrep_db_context *c, const struct syrep_name *name, const struct syrep_md *md, const struct syrep_meta *meta) {
+int write_entry(struct syrep_db_context *c, const struct syrep_name *name, const struct syrep_md *md, const struct syrep_meta *meta) {
     struct syrep_id id;
     struct syrep_nrecno nrecno;
     int f;
@@ -95,7 +104,7 @@ static int write_entry(struct syrep_db_context *c, const struct syrep_name *name
     if ((f = dbput(c->db_nrecno_lastmd, &nrecno, sizeof(struct syrep_nrecno), md, sizeof(struct syrep_md), 0)) < 0)
         return -1;
 
-    //fprintf(stderr, "Insert: %s %i\n", name->path, f);
+    /*fprintf(stderr, "Insert: %s %i\n", name->path, f);*/
     
     c->modified = 1;
     return 0;
@@ -143,6 +152,28 @@ static int handle_file(struct syrep_db_context *c, uint32_t version, const char 
     return write_entry(c, &name, md, &meta);
 }
 
+#ifdef USE_XATTR
+
+static int xattr_omit(const char *p) {
+    char t[256];
+    ssize_t l;
+    
+    if ((l = getxattr(p, XATTR_NAME, t, sizeof(t)-1)) < 0)
+        return 0;
+
+    t[l] = 0;
+    if (strcmp(t, "omit") == 0)
+        return 1;
+
+    if (t[0] == 0)
+        return 0;
+
+    fprintf(stderr, "Invalid extended attribute '%s:%s' for file '%s'\n", XATTR_NAME, t, p);
+    return -1;
+}
+
+#endif
+
 static int iterate_dir(struct syrep_db_context *c, struct syrep_md_cache *cache, uint32_t version, const char *root) {
     int r = -1;
     DIR *dir;
@@ -177,6 +208,17 @@ static int iterate_dir(struct syrep_db_context *c, struct syrep_md_cache *cache,
             fprintf(stderr, "stat(%s) failed: %s\n", p, strerror(errno));
             continue;
         }
+
+#ifdef USE_XATTR
+        {
+            int omit;
+            if ((omit = xattr_omit(p)) < 0)
+                goto finish;
+
+            if (omit == 1)
+                continue;
+        }
+#endif
 
         if (S_ISDIR(st.st_mode)) {
             if (iterate_dir(c, cache, version, p) < 0)

@@ -148,6 +148,9 @@
 /* Use sendfile() */
 #undef USE_SENDFILE
 
+/* Use extended attributes */
+#undef USE_XATTR
+
 /* Version number of package */
 #undef VERSION
 

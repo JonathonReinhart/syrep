@@ -25,6 +25,8 @@ syrep [options...\fB] --makepatch\fB \fIDIRECTORY\fB \fISNAPSHOT\fB
 syrep [options...\fB] --extract\fB \fISNAPSHOT\fB ...
 
 syrep [options...\fB] --cleanup\fB \fIDIRECTORY\fB ...
+
+syrep [options...\fB] --forget\fB \fISNAPSHOT\fB ...
 \f1
 .SH DESCRIPTION
 Syrep is a generic file repository synchronization tool. It may be used to synchronize large file hierarchies bidirectionally by exchanging patch files. Syrep is truely peer-to-peer, no central servers are involved. Synchronizations between more than two repositories are supported. The patch files may be transferred via offline media, e.g. removable hard disks or compact discs.
@@ -38,6 +40,8 @@ Syrep is able to cope with 64 bit file sizes. (LFS)
 Syrep is optimized for speed. It may make use of a message digest cache to accelerate the calculation of digests of a whole directory hierarchy.
 
 A syrep repository is a normal UNIX directory tree containing a special directory \fI.syrep\f1 with a file \fIcurrent.syrep\f1 (called snapshot) which holds file system history data. A directory is turned into a syrep repository by running \fB--update\f1 on it. Snapshots are used to perform basic tasks like comparing repositories (command \fB--diff\f1) or creating patches between them (command \fB--make-patch\f1).
+
+Syrep will ignore all files and directories that have the extended attribute \fBuser.syrep\f1 set to \fBomit\f1. Currently, this works on Linux only. Keep in mind, that only newer kernel versions and some file system support extended attributes. See \fBattr(5)\f1 for more information.
 .SH GENERAL OPTIONS
 Exactly one command has to be specified on the command line. On the other hand multiple options are allowed.
 .TP
@@ -113,6 +117,12 @@ Use cache in a read only fashion
 .TP
 \fB--diff\f1 (command)
 Show difference between two repositories or snapshots 
+.TP
+\fB-s\f1 | \fB--sizes\f1 (option)
+Show the sizes of the files to copy. This works only when acting on a local repository and for the local files. 
+.TP
+\fB-H\f1 | \fB--human-readable\f1 (option)
+Only useful when using with \fB-s\f1. When enabled shows file sizes in human readable form, i.e. "3.5 MB" instead of "3670016". 
 .SH MERGING A SNAPSHOT, A PATCH OR A REPOSITORY INTO A REPOSITORY
 .TP
 \fB--merge\f1 (command)
@@ -156,6 +166,13 @@ Remove syrep info from repository
 .TP
 \fB-l\f1\fIINT\f1 | \fB--cleanup-level=\f1\fIINT\f1
 1: just remove temporary data and trash (default); 2: remove message digest cache as well; 3: remove all syrep data 
+.SH FORGETTING OUTDATED SNAPSHOT INFORMATION
+.TP
+\fB--forget\f1 (command)
+Repackage the snapshot file dropping outdated information. Use this if your snapshot files get too large. 
+.TP
+\fB-R\f1 \fIDAYS\f1 | \fB--remember=\f1\fIDAYS\f1 (option)
+Information about how many days in the past should be kept? This defaults to 180 (half a year). 
 .SH REPOSITORIES, SNAPSHOTS AND PATCHES
 A syrep file repository is a POSIX file hierarchy with some additional log data, which is used to track changes. Normally this log data is saved as "snapshot" in the file \fI$(REPOSITORY)/.syrep/current.syrep\f1. You may create and update it by running \fB--update\f1. The more often this log is updated the better modifications may be tracked. Therefore this operation should be called at least once a day via \fBcron(8)\f1
 
@@ -183,6 +200,6 @@ Syrep is available at \fBhttp://0pointer.de/lennart/projects/syrep/\f1
 
 You are encouraged to improve this documentation, feel free to send me patches. This is free software, after all.
 .SH SEE ALSO
-\fBrsync(1)\f1, \fBcron(8)\f1
+\fBrsync(1)\f1, \fBcron(8)\f1, \fBattr(5)\f1
 .SH COMMENTS
 This man page was written using \fBxml2man(1)\f1 by Oliver Kurth.

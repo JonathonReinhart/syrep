@@ -1,4 +1,4 @@
-# $Id: syrep.ggo 51 2004-01-16 16:07:02Z lennart $
+# $Id: syrep.ggo 58 2004-07-19 16:04:48Z lennart $
 
 #  This file is part of syrep.
 #
@@ -43,6 +43,8 @@ option "update" - "Update a repository snapshot" flag off
  option "progress" p "update: Show progress" flag off
 
 option "diff" - "Show difference between two repositories or snapshots" flag off
+ option "sizes" s "diff: show file sizes to copy (works online on repositories)" flag off
+ option "human-readable" H "diff: show sizes human readable" flag off
 
 option "merge" - "Merge a snapshot or a repository into a repository" flag off
  option "question" q "merge: Ask a question before each action" flag off
@@ -60,3 +62,6 @@ option "extract" - "Extract the context of a snapshot or patch" flag off
 
 option "cleanup" - "Remove syrep info from repository" flag off
  option "cleanup-level" l "cleanup: 1 - just remove temporary data and trash (default); 2 - remove MD cache as well; 3 - remove all syrep data" int default="1" no
+
+option "forget" - "Forget old snapshot entries" flag off
+ option "remember" R "forget: information of how many days to remeber" int default="180" no

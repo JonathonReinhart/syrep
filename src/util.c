@@ -1,4 +1,4 @@
-/* $Id: util.c 53 2004-03-22 13:26:54Z lennart $ */
+/* $Id: util.c 61 2004-07-19 17:09:25Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -95,7 +95,7 @@ char* normalize_path(char *s) {
 
 void rotdash(void) {
     static const char dashes[] = /* ".oOo"; */ "|/-\\";
-    const static char *d = dashes;
+    static const char *d = dashes;
 
     if (!args.progress_flag)
         return;
@@ -200,7 +200,7 @@ off_t filesize(int fd) {
     struct stat st;
 
     if (fstat(fd, &st) < 0) {
-        fprintf(stderr, "stat(): %s\n", strerror(errno));
+/*        fprintf(stderr, "stat(): %s\n", strerror(errno));*/
         return (off_t) -1;
     }
 
@@ -328,7 +328,7 @@ int copy_fd(int sfd, int dfd, off_t l) {
             n = loop_read(sfd, dp+(dfo-mdfo), m);
             munmap(dp, dm);
 
-            if (n != m) {
+            if (n != (ssize_t) m) {
 
                 if (n < 0)
                     fprintf(stderr, "read(): %s\n", strerror(errno));
@@ -368,7 +368,7 @@ int copy_fd(int sfd, int dfd, off_t l) {
             n = loop_write(dfd, sp+(sfo-msfo), m);
             munmap(sp, sm);
 
-            if (n != m) {
+            if (n != (ssize_t) m) {
 
                 if (n < 0)
                     fprintf(stderr, "write(): %s\n", strerror(errno));
@@ -764,4 +764,29 @@ ssize_t loop_write(int fd, void *d, size_t l) {
     }
 
     return p-d;
+}
+
+char *snprint_off(char *s, size_t l, off_t off) {
+    assert(s && l);
+    
+    if (args.human_readable_flag && off >= 1024*1024*1024)
+        snprintf(s, l, "%0.1f GB", (double) off/1024/1024/1024);
+    else if (args.human_readable_flag && off >= 1024*1024)
+        snprintf(s, l, "%0.1f MB", (double) off/1024/1024);
+    else if (args.human_readable_flag && off >= 1024)
+        snprintf(s, l, "%0.1f KB", (double) off/1024);
+    else
+        snprintf(s, l, "%llu", (uint64_t) off);
+
+    return s;
+}
+
+off_t filesize2(const char *p) {
+   struct stat st;
+
+    if (stat(p, &st) < 0)
+        return (off_t) -1;
+
+    return st.st_size;
+    
 }

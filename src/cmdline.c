@@ -59,6 +59,8 @@ cmdline_parser_print_help (void)
   printf("              --ro-cache                 update: Use read only cache (default=off)\n");
   printf("   -p         --progress                 update: Show progress (default=off)\n");
   printf("              --diff                     Show difference between two repositories or snapshots (default=off)\n");
+  printf("   -s         --sizes                    diff: show file sizes to copy (works online on repositories) (default=off)\n");
+  printf("   -H         --human-readable           diff: show sizes human readable (default=off)\n");
   printf("              --merge                    Merge a snapshot or a repository into a repository (default=off)\n");
   printf("   -q         --question                 merge: Ask a question before each action (default=off)\n");
   printf("   -P         --prune-empty              merge: Prune empty directories (default=off)\n");
@@ -72,6 +74,8 @@ cmdline_parser_print_help (void)
   printf("   -DSTRING   --output-directory=STRING  extract: Write output to specified directory\n");
   printf("              --cleanup                  Remove syrep info from repository (default=off)\n");
   printf("   -lINT      --cleanup-level=INT        cleanup: 1 - just remove temporary data and trash (default); 2 - remove MD cache as well; 3 - remove all syrep data (default='1')\n");
+  printf("              --forget                   Forget old snapshot entries (default=off)\n");
+  printf("   -RINT      --remember=INT             forget: information of how many days to remeber (default='180')\n");
 }
 
 
@@ -117,6 +121,8 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
   args_info->ro_cache_given = 0 ;
   args_info->progress_given = 0 ;
   args_info->diff_given = 0 ;
+  args_info->sizes_given = 0 ;
+  args_info->human_readable_given = 0 ;
   args_info->merge_given = 0 ;
   args_info->question_given = 0 ;
   args_info->prune_empty_given = 0 ;
@@ -130,6 +136,8 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
   args_info->output_directory_given = 0 ;
   args_info->cleanup_given = 0 ;
   args_info->cleanup_level_given = 0 ;
+  args_info->forget_given = 0 ;
+  args_info->remember_given = 0 ;
 #define clear_args() { \
   args_info->verbose_flag = 0;\
   args_info->local_temp_flag = 0;\
@@ -151,6 +159,8 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
   args_info->ro_cache_flag = 0;\
   args_info->progress_flag = 0;\
   args_info->diff_flag = 0;\
+  args_info->sizes_flag = 0;\
+  args_info->human_readable_flag = 0;\
   args_info->merge_flag = 0;\
   args_info->question_flag = 0;\
   args_info->prune_empty_flag = 0;\
@@ -164,6 +174,8 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
   args_info->output_directory_arg = NULL; \
   args_info->cleanup_flag = 0;\
   args_info->cleanup_level_arg = 1 ;\
+  args_info->forget_flag = 0;\
+  args_info->remember_arg = 180 ;\
 }
 
   clear_args();
@@ -204,6 +216,8 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
         { "ro-cache",	0, NULL, 0 },
         { "progress",	0, NULL, 'p' },
         { "diff",	0, NULL, 0 },
+        { "sizes",	0, NULL, 's' },
+        { "human-readable",	0, NULL, 'H' },
         { "merge",	0, NULL, 0 },
         { "question",	0, NULL, 'q' },
         { "prune-empty",	0, NULL, 'P' },
@@ -217,11 +231,13 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
         { "output-directory",	1, NULL, 'D' },
         { "cleanup",	0, NULL, 0 },
         { "cleanup-level",	1, NULL, 'l' },
+        { "forget",	0, NULL, 0 },
+        { "remember",	1, NULL, 'R' },
         { NULL,	0, NULL, 0 }
       };
 
       stop_char = 0;
-      c = getopt_long (argc, argv, "hVvTzS:C:pqPo:D:l:", long_options, &option_index);
+      c = getopt_long (argc, argv, "hVvTzS:C:psHqPo:D:l:R:", long_options, &option_index);
 
       if (c == -1) break;	/* Exit from `while (1)' loop.  */
 
@@ -313,6 +329,28 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
           args_info->progress_flag = !(args_info->progress_flag);
           break;
 
+        case 's':	/* diff: show file sizes to copy (works online on repositories).  */
+          if (args_info->sizes_given)
+            {
+              fprintf (stderr, "%s: `--sizes' (`-s') option given more than once\n", CMDLINE_PARSER_PACKAGE);
+              clear_args ();
+              exit (EXIT_FAILURE);
+            }
+          args_info->sizes_given = 1;
+          args_info->sizes_flag = !(args_info->sizes_flag);
+          break;
+
+        case 'H':	/* diff: show sizes human readable.  */
+          if (args_info->human_readable_given)
+            {
+              fprintf (stderr, "%s: `--human-readable' (`-H') option given more than once\n", CMDLINE_PARSER_PACKAGE);
+              clear_args ();
+              exit (EXIT_FAILURE);
+            }
+          args_info->human_readable_given = 1;
+          args_info->human_readable_flag = !(args_info->human_readable_flag);
+          break;
+
         case 'q':	/* merge: Ask a question before each action.  */
           if (args_info->question_given)
             {
@@ -366,6 +404,17 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
             }
           args_info->cleanup_level_given = 1;
           args_info->cleanup_level_arg = strtol (optarg,&stop_char,0);
+          break;
+
+        case 'R':	/* forget: information of how many days to remeber.  */
+          if (args_info->remember_given)
+            {
+              fprintf (stderr, "%s: `--remember' (`-R') option given more than once\n", CMDLINE_PARSER_PACKAGE);
+              clear_args ();
+              exit (EXIT_FAILURE);
+            }
+          args_info->remember_given = 1;
+          args_info->remember_arg = strtol (optarg,&stop_char,0);
           break;
 
 
@@ -675,6 +724,20 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
               }
             args_info->cleanup_given = 1;
             args_info->cleanup_flag = !(args_info->cleanup_flag);
+            break;
+          }
+          
+          /* Forget old snapshot entries.  */
+          else if (strcmp (long_options[option_index].name, "forget") == 0)
+          {
+            if (args_info->forget_given)
+              {
+                fprintf (stderr, "%s: `--forget' option given more than once\n", CMDLINE_PARSER_PACKAGE);
+                clear_args ();
+                exit (EXIT_FAILURE);
+              }
+            args_info->forget_given = 1;
+            args_info->forget_flag = !(args_info->forget_flag);
             break;
           }
           

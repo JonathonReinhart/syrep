@@ -1,8 +1,8 @@
-<?xml version="1.0"?> <!-- -*-xae-*- -->
+<?xml version="1.0"?> <!-- -*-nxml-*- -->
 <!DOCTYPE manpage SYSTEM "xmltoman.dtd">
 <?xml-stylesheet type="text/xsl" href="xmltoman.xsl" ?> 
 
-<!-- $Id: syrep.1.xml.in 43 2003-11-30 14:27:42Z lennart $ -->
+<!-- $Id: syrep.1.xml.in 60 2004-07-19 17:02:34Z lennart $ -->
 
 <!-- 
   This file is part of syrep.
@@ -37,6 +37,7 @@
     <cmd>syrep [<opt>options...</opt>] <opt>--makepatch</opt> <arg>DIRECTORY</arg> <arg>SNAPSHOT</arg></cmd>
     <cmd>syrep [<opt>options...</opt>] <opt>--extract</opt> <arg>SNAPSHOT</arg> ...</cmd>
     <cmd>syrep [<opt>options...</opt>] <opt>--cleanup</opt> <arg>DIRECTORY</arg> ...</cmd>
+    <cmd>syrep [<opt>options...</opt>] <opt>--forget</opt> <arg>SNAPSHOT</arg> ...</cmd>
   </synopsis>
   
   <description> 
@@ -69,6 +70,13 @@
     perform basic tasks like comparing repositories (command
     <opt>--diff</opt>) or creating patches between them (command
     <opt>--make-patch</opt>).</p>
+
+    <p>Syrep will ignore all files and directories that have the
+    extended attribute <opt>user.syrep</opt> set to
+    <opt>omit</opt>. Currently, this works on Linux only. Keep in
+    mind, that only newer kernel versions and some file system support
+    extended attributes. See <manref name="attr" section="5"/> for
+    more information.</p>
 
   </description>
   
@@ -200,6 +208,14 @@
      <p><opt>--diff</opt> (command)</p>
      <optdesc>Show difference between two repositories or snapshots</optdesc>
     </option>
+    <option>
+     <p><opt>-s</opt> | <opt>--sizes</opt> (option)</p>
+     <optdesc>Show the sizes of the files to copy. This works only when acting on a local repository and for the local files.</optdesc>
+    </option>
+    <option>
+     <p><opt>-H</opt> | <opt>--human-readable</opt> (option)</p>
+     <optdesc>Only useful when using with <opt>-s</opt>. When enabled shows file sizes in human readable form, i.e. "3.5 MB" instead of "3670016".</optdesc>
+    </option>
    </section>
 
    <section name="Merging a snapshot, a patch or a repository into a repository">
@@ -272,6 +288,18 @@
     </option>
   </section>
 
+  <section name="Forgetting outdated snapshot information">
+    <option>
+    <p><opt>--forget</opt> (command)</p>
+    <optdesc>Repackage the snapshot file dropping outdated information. Use this if your snapshot files get too large.</optdesc>
+    </option>
+    <option>
+      <p><opt>-R</opt> <arg>DAYS</arg> | <opt>--remember=</opt><arg>DAYS</arg> (option)</p>
+      <optdesc>Information about how many days in the past should be kept? This defaults to 180 (half a year).</optdesc>
+    </option>
+  </section>
+
+
   <section name="Repositories, Snapshots and Patches">
 
     <p>A syrep file repository is a POSIX file hierarchy with some
@@ -343,7 +371,7 @@
   </section>
   
   <section name="See also">
-    <p><manref name="rsync" section="1"/>, <manref name="cron" section="8"/></p>
+    <p><manref name="rsync" section="1"/>, <manref name="cron" section="8"/>, <manref name="attr" section="5"/></p>
   </section>
 
   <section name="Comments">

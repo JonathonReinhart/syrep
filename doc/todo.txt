@@ -31,7 +31,7 @@ post-0.1:
 - some more asserts
 - PATH_MAX or PATH_MAX+1?                              DONE
 - add --always-copy                                    DONE
-- add --forget 
+- add --forget                                         DONE
 - valgrind
 
-$Id: todo.txt 43 2003-11-30 14:27:42Z lennart $
+$Id: todo.txt 58 2004-07-19 16:04:48Z lennart $

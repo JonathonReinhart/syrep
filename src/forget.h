@@ -1,7 +1,7 @@
-#ifndef fooupdatehfoo
-#define fooupdatehfoo
+#ifndef fooforgethfoo
+#define fooforgethfoo
 
-/* $Id: update.h 58 2004-07-19 16:04:48Z lennart $ */
+/* $Id: forget.h 58 2004-07-19 16:04:48Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -22,12 +22,7 @@
 ***/
 
 #include "context.h"
-#include "cache.h"
-#include "dbstruct.h"
 
-int update(struct syrep_db_context *c, struct syrep_md_cache *cache);
-
-/* This is exported solely for usage in forget.c */
-int write_entry(struct syrep_db_context *c, const struct syrep_name *name, const struct syrep_md *md, const struct syrep_meta *meta);
+int forget(struct syrep_db_context *c, struct syrep_db_context *target);
 
 #endif

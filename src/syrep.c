@@ -1,4 +1,4 @@
-/* $Id: syrep.c 53 2004-03-22 13:26:54Z lennart $ */
+/* $Id: syrep.c 64 2004-07-19 17:23:14Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -56,6 +56,7 @@
 #include "extract.h"
 #include "makepatch.h"
 #include "cleanup.h"
+#include "forget.h"
 
 #include "svn-revision.h"
 
@@ -100,7 +101,7 @@ static int do_diff(void) {
     if (!(ddb = make_diff(c1, c2)))
         goto finish;
 
-    if (list_diff(c1, c2, ddb) < 0)
+    if (list_diff(c1, c2, ddb, isdirectory(args.inputs[0]) > 0 ? args.inputs[0] : NULL, isdirectory(args.inputs[1]) > 0 ? args.inputs[1] : NULL) < 0)
         goto finish;
 
     r = 0;
@@ -230,7 +231,6 @@ static int do_makepatch(void) {
     if (makepatch(c1, c2, args.inputs[0]) < 0)
         goto finish;
 
-
     if (!args.output_file_given && isatty(fileno(stdout)))
         fprintf(stderr, "Sorry, I am not going to write the patch data to a tty.\n");
     else if (db_context_save(c1, args.output_file_given ? args.output_file_arg : NULL) < 0)
@@ -294,7 +294,6 @@ static int do_foreach(int (*func) (struct syrep_db_context *c), int m) {
             }
         }
     
-
         if (func(c) < 0)
             goto finish;
 
@@ -305,7 +304,6 @@ static int do_foreach(int (*func) (struct syrep_db_context *c), int m) {
             }
         }
 
-        
         if (args.inputs_num > 1 && i < args.inputs_num-1)
             fprintf(stderr, "\n");
         
@@ -453,7 +451,67 @@ static int do_cleanup(void) {
 finish:
 
     return r;
+}
+
+static int do_forget(void) {
+    char *path = NULL;
+    int r = 1, i;
+    struct syrep_db_context *c = NULL, *target = NULL;
+
+    if (args.inputs_num < 1)
+        fprintf(stderr, "WARNING: No repository or snapshot to specified!\n");
     
+    for (i = 0; i < args.inputs_num; i++) {
+        if (args.local_temp_flag && isdirectory(args.inputs[i]) >= 1) {
+            const char *p = get_attached_filename(args.inputs[i], SYREP_TEMPDIR);
+            mkdir(p, 0777);
+            setenv("TMPDIR", p, 1);
+        }
+        
+        if (!(path = strdup(get_snapshot_filename(args.inputs[i], SYREP_SNAPSHOTFILENAME))))
+            goto finish;
+        
+        if (!(c = db_context_open(path, 0)))
+            goto finish;
+
+        if (!(target = db_context_open(NULL, 1)))
+            goto finish;
+        
+        if (args.inputs_num > 1)
+            fprintf(stderr, "*** %s ***\n", path);
+
+        if (forget(c, target) < 0)
+            goto finish;
+
+        if (args.inputs_num > 1 && i < args.inputs_num-1)
+            fprintf(stderr, "\n");
+        
+        db_context_free(c);
+
+        if (db_context_save(target, path) < 0)
+            goto finish;
+        
+        db_context_free(target);
+        c = NULL;
+        target = NULL;
+        
+        free(path);
+        path = NULL;
+    }
+
+    r = 0;
+    
+finish:
+    if (c)
+        db_context_free(c);
+
+    if (target)
+        db_context_free(target);
+
+    if (path)
+        free(path);
+
+    return r;
 }
 
 static void sigint(int s) {
@@ -478,58 +536,66 @@ static int help(const char *argv0) {
             "Usage: %s [options...] <command> [arguments...]\n\n"
 
             "General options:\n"
-            "   -v         --verbose                       Enable verbose operation\n"
-            "   -T         --local-temp                    Use temporary directory inside repository\n"
-            "              --ignore-origin                 Don't warn if snapshot not local in update, merge, makepatch\n"
-            "   -z         --compress                      Compress snapshots or patches\n"
-            "   -p         --progress                      Show progress\n\n"
+            "  -v --verbose                         Enable verbose operation\n"
+            "  -T --local-temp                      Use temporary directory inside repository\n"
+            "  --ignore-origin                      Don't warn if snapshot not local in update, merge, makepatch\n"
+            "  -z --compress                        Compress snapshots or patches\n"
+            "  -p --progress                        Show progress\n\n"
 
             "General commands:\n"
-            "   -h         --help                           Print help and exit\n"
-            "   -V         --version                        Print version and exit\n\n"
+            "  -h --help                            Print help and exit\n"
+            "  -V --version                         Print version and exit\n\n"
 
             "Specific commands:\n"
-            "              --list SNAPSHOT                  List a repository snapshot\n"
-            "                --show-deleted                   Show deleted entries of repository snapshot\n"
-            "                --show-by-md                     Show files by message digests\n"
-            "                --show-times                     Show first and last seen times\n"
-            "                --sort                           Sort chronologically\n\n"
+            "  --list SNAPSHOT                      List a repository snapshot\n"
+            "    --show-deleted                     Show deleted entries of repository snapshot\n"
+            "    --show-by-md                       Show files by message digests\n"
+            "    --show-times                       Show first and last seen times\n"
+            "    --sort                             Sort chronologically\n\n"
 
-            "              --info SNAPSHOT                  Show information about a repository or snapshot\n\n"
+            "  --info SNAPSHOT                      Show information about a repository or snapshot\n\n" 
 
-            "              --history SNAPSHOT               Show history of a repository or snapshot\n\n"
+            "  --history SNAPSHOT                   Show history of a repository or snapshot\n\n"
             
-            "              --dump SNAPSHOT                  Show a structure dump of a repository or snapshot\n\n"
+            "  --dump SNAPSHOT                      Show a structure dump of a repository or snapshot\n\n"
             
-            "              --update DIRECTORY               Update (or create) a repository snapshot\n"
-            "     -SSTRING   --snapshot=STRING                Use the specified snapshot file instead of the one contained in the repository\n"
-            "     -CSTRING   --cache=STRING                   Use the specified cache file instead of the one contained in the repository\n"
-            "                --no-cache                       Don't use a message digest cache\n"
-            "                --no-purge                       Don't purge obsolete entries from cache after update run\n"
-            "                --ro-cache                       Use read only cache\n\n"
+            "  --update DIRECTORY                   Update (or create) a repository snapshot\n"
+            "    -SSTRING --snapshot=STRING         Use a different snapshot file than the one contained\n"
+            "                                       in the repository\n"
+            "    -CSTRING --cache=STRING            Use a different cache file than the one contained in\n"
+            "                                       the repository\n"
+            "    --no-cache                         Don't use a message digest cache\n"
+            "    --no-purge                         Don't purge obsolete entries from cache after update run\n"
+            "    --ro-cache                         Use read only cache\n\n"
             
-            "              --diff SNAPSHOT SNAPSHOT         Show difference between two repositories or snapshots\n\n"
+            "  --diff SNAPSHOT SNAPSHOT             Show difference between two repositories or snapshots\n"
+            "    --sizes -s                         Show sizes for files to copy (works only with repositories)\n"
+            "    --human-readable -H                Show sizes in human readable from\n"
             
-            "              --merge SNAPSHOT DIRECTORY       Merge a snapshot into a repository (perform deletes, renames only)\n"
-            "              --merge PATCH DIRECTORY          Merge a patch into a repository\n"
-            "              --merge DIRECTORY DIRECTORY      Merge a repository into a repository\n"
-            "     -q         --question                       Ask a question before each action\n"
-            "     -P         --prune-empty                    Prune empty directories\n"
-            "                --keep-trash                     Don't empty trash\n"
-            "                --check-md                       Check message digest of files prior to deletion or replacement\n"
-            "                --always-copy                    Always copy instead of hard link\n\n"
+            "  --merge SNAPSHOT DIRECTORY           Merge a snapshot into a repository (perform deletes,\n"
+            "                                       renames only)\n"
+            "  --merge PATCH DIRECTORY              Merge a patch into a repository\n"
+            "  --merge DIRECTORY DIRECTORY          Merge a repository into a repository\n"
+            "    -q --question                      Ask a question before each action\n"
+            "    -P --prune-empty                   Prune empty directories\n"
+            "    --keep-trash                       Don't empty trash\n"
+            "    --check-md                         Check message digest of files prior to deletion or replacement\n"
+            "    --always-copy                      Always copy instead of hard link\n\n"
             
-            "              --makepatch DIRECTORY SNAPSHOT   Make a patch against the specified repository\n"
-            "     -oSTRING   --output-file=STRING             Write output to specified file instead of STDOUT\n"
-            "                --include-all                    Include files in patch which do exist on the other side under a different name\n\n"
+            "  --makepatch DIRECTORY SNAPSHOT       Make a patch against the specified repository\n"
+            "    -oSTRING --output-file=STRING      Write output to specified file instead of STDOUT\n"
+            "    --include-all                      Include files in patch which do exist on the other side under a \n"
+            "                                       different name\n\n"
             
-            "              --extract SNAPSHOT               Extract the contents of a snapshot or patch\n"
-            "     -DSTRING   --output-directory=STRING        Write output to specified directory\n\n"
+            "  --extract SNAPSHOT                   Extract the contents of a snapshot or patch\n"
+            "    -DSTRING --output-directory=STRING Write output to specified directory\n\n"
             
-            "              --cleanup DIRECTORY              Remove syrep info from repository\n"
-            "     -lINT      --cleanup-level=INT              1 - just remove temporary data and trash (default)\n"
-            "                                                 2 - remove MD cache as well\n"
-            "                                                 3 - remove all syrep data\n",
+            "  --cleanup DIRECTORY                  Remove syrep info from repository\n"
+            "    -lINT --cleanup-level=INT          1 - just remove temporary data and trash (default)\n"
+            "                                       2 - remove MD cache as well\n"
+            "                                       3 - remove all syrep data\n\n"
+            "  --forget SNAPSHOT                    Repackage snapshot dropping outdated information\n"
+            "    --remember DAYS                    Information of how many days should be kept? (defaults to 180)\n",
             argv0, argv0);
 
     return 0;
@@ -546,6 +612,11 @@ static int version(const char *argv0) {
             "Compiled with zlib %s, linked to zlib %s.\n"
             "Compiled with libdb %i.%i.%i, linked to libdb %i.%i.%i\n"
             "SVN Revision "SVN_REVISION"\n"
+#ifdef USE_XATTR
+            "Compiled with extended attribute support: yes\n"
+#else
+            "Compiled with extended attribute support: no\n"
+#endif
 #ifdef USE_SENDFILE
             "Using sendfile(): yes\n",
 #else
@@ -600,6 +671,8 @@ int main(int argc, char *argv[]) {
         return do_makepatch();
     else if (args.cleanup_flag)
         return do_cleanup();
+    else if (args.forget_flag)
+        return do_forget();
 
     help(bn);
     

@@ -1,4 +1,4 @@
-/* $Id: package.c 43 2003-11-30 14:27:42Z lennart $ */
+/* $Id: package.c 58 2004-07-19 16:04:48Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -549,8 +549,6 @@ struct package* package_open(const char *fn, int force) {
     }
     
     if (fn) {
-
-
         if (!strcmp(fn, "-"))
             p->read_fd = STDIN_FILENO;
         else if ((p->read_fd = open(fn, O_RDONLY)) < 0) {

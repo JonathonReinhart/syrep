@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: bootstrap.sh 41 2003-11-12 21:42:07Z lennart $
+# $Id: bootstrap.sh 61 2004-07-19 17:09:25Z lennart $
 
 # This file is part of syrep.
 #
@@ -27,7 +27,7 @@ run_versioned() {
 
 if [ "x$1" = "xam" ] ; then
     set -ex
-    run_versioned automake 1.7 -a -c
+    run_versioned automake 1.7 -a -c --foreign
     ./config.status
 else 
     set -ex
@@ -39,7 +39,7 @@ else
     run_versioned automake 1.7 -a -c
     autoconf -Wall
 
-    ./configure --sysconfdir=/etc "$@"
+    CFLAGS="-g -O0" ./configure --sysconfdir=/etc "$@"
 
     make clean
 fi

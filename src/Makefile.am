@@ -1,4 +1,4 @@
-# $Id: Makefile.am 47 2003-11-30 15:13:22Z lennart $
+# $Id: Makefile.am 58 2004-07-19 16:04:48Z lennart $
 
 # This file is part of syrep.
 #
@@ -38,7 +38,8 @@ syrep_SOURCES = cache.c cache.h \
 				cleanup.c cleanup.h \
 				cmdline.c cmdline.h \
 				svn-revision.h \
-				dbstruct.h
+				dbstruct.h \
+				forget.c forget.h 
 
 EXTRA_DIST = syrep.ggo
 MAINTAINERCLEANFILES =

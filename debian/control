@@ -1,0 +1,34 @@
+Source: syrep
+Section: utils
+Priority: optional
+Maintainer: Lennart Poettering <mzflerc@0pointer.de>
+Build-Depends: debhelper (>= 4.0.0), lynx, xmltoman, gengetopt, subversion, zlib1g-dev, libdb4.2-dev, libattr1-dev
+Standards-Version: 3.6.0
+
+Package: syrep
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: A generic file repository synchronization tool
+ syrep is a generic file repository synchronization tool. It may be used to
+ synchronize large file hierarchies bidirectionally by exchanging patch files.
+ Syrep is truely peer-to-peer, no central servers are involved.
+ Synchronizations between more than two repositories are supported. The patch
+ files may be transferred via offline media, e.g. removable hard disks or
+ compact discs.
+ .
+ Files are tracked by their message digests, currently MD5. The following file
+ operations are tracked in the snapshot files: creation, deletion,
+ modification, creation of new hard or symbolic links, renaming. (The latter is
+ nothing more than a new hard link and removal of the old file). syrep doesn't
+ distuinguish between soft and hard links. In fact even copies of files are
+ treated as the same. Currently, syrep doesn't synchronize file attributes like
+ access modes or modification times.
+ .
+ Syrep was written to facilitate the synchronization of two large digital music
+ repositories without direct network connection. Patch files of several
+ gigabytes are common in this situation.
+ .
+ Syrep is able to cope with 64 bit file sizes. (LFS)
+ .
+ Syrep is optimized for speed. It may make use of a message digest cache to
+ accelerate the calculation of digests of a whole directory hierarchy.

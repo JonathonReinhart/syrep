@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Id: Makefile.am 47 2003-11-30 15:13:22Z lennart $
+# $Id: Makefile.am 58 2004-07-19 16:04:48Z lennart $
 
 # This file is part of syrep.
 #
@@ -164,7 +164,8 @@ syrep_SOURCES = cache.c cache.h \
 				cleanup.c cleanup.h \
 				cmdline.c cmdline.h \
 				svn-revision.h \
-				dbstruct.h
+				dbstruct.h \
+				forget.c forget.h 
 
 
 EXTRA_DIST = syrep.ggo
@@ -184,7 +185,8 @@ am_syrep_OBJECTS = cache.$(OBJEXT) update.$(OBJEXT) util.$(OBJEXT) \
 	context.$(OBJEXT) package.$(OBJEXT) dbutil.$(OBJEXT) \
 	info.$(OBJEXT) history.$(OBJEXT) dump.$(OBJEXT) list.$(OBJEXT) \
 	diff.$(OBJEXT) merge.$(OBJEXT) extract.$(OBJEXT) \
-	makepatch.$(OBJEXT) cleanup.$(OBJEXT) cmdline.$(OBJEXT)
+	makepatch.$(OBJEXT) cleanup.$(OBJEXT) cmdline.$(OBJEXT) \
+	forget.$(OBJEXT)
 syrep_OBJECTS = $(am_syrep_OBJECTS)
 syrep_LDADD = $(LDADD)
 syrep_DEPENDENCIES =
@@ -197,12 +199,12 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/cmdline.Po ./$(DEPDIR)/context.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/dbutil.Po ./$(DEPDIR)/diff.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/dump.Po ./$(DEPDIR)/extract.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/history.Po ./$(DEPDIR)/info.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/list.Po ./$(DEPDIR)/makepatch.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/md5.Po ./$(DEPDIR)/md5util.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/merge.Po ./$(DEPDIR)/package.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/syrep.Po ./$(DEPDIR)/update.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/util.Po
+@AMDEP_TRUE@	./$(DEPDIR)/forget.Po ./$(DEPDIR)/history.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/info.Po ./$(DEPDIR)/list.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/makepatch.Po ./$(DEPDIR)/md5.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/md5util.Po ./$(DEPDIR)/merge.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/package.Po ./$(DEPDIR)/syrep.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/update.Po ./$(DEPDIR)/util.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
@@ -263,6 +265,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diff.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dump.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/extract.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/forget.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/history.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/info.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/list.Po@am__quote@

@@ -1,7 +1,7 @@
 #ifndef fooutilhfoo
 #define fooutilhfoo
 
-/* $Id: util.h 30 2003-09-04 22:06:56Z lennart $ */
+/* $Id: util.h 57 2004-07-18 18:47:55Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -59,5 +59,7 @@ ssize_t loop_write(int fd, void *d, size_t l);
 
 int expand_file(int fd, off_t l);
 off_t filesize(int fd);
+off_t filesize2(const char *p);
+char *snprint_off(char *s, size_t l, off_t off);
 
 #endif

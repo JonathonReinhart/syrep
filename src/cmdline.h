@@ -44,6 +44,8 @@ struct gengetopt_args_info
   int ro_cache_flag;	/* update: Use read only cache (default=off).  */
   int progress_flag;	/* update: Show progress (default=off).  */
   int diff_flag;	/* Show difference between two repositories or snapshots (default=off).  */
+  int sizes_flag;	/* diff: show file sizes to copy (works online on repositories) (default=off).  */
+  int human_readable_flag;	/* diff: show sizes human readable (default=off).  */
   int merge_flag;	/* Merge a snapshot or a repository into a repository (default=off).  */
   int question_flag;	/* merge: Ask a question before each action (default=off).  */
   int prune_empty_flag;	/* merge: Prune empty directories (default=off).  */
@@ -57,6 +59,8 @@ struct gengetopt_args_info
   char * output_directory_arg;	/* extract: Write output to specified directory.  */
   int cleanup_flag;	/* Remove syrep info from repository (default=off).  */
   int cleanup_level_arg;	/* cleanup: 1 - just remove temporary data and trash (default); 2 - remove MD cache as well; 3 - remove all syrep data (default='1').  */
+  int forget_flag;	/* Forget old snapshot entries (default=off).  */
+  int remember_arg;	/* forget: information of how many days to remeber (default='180').  */
 
   int help_given ;	/* Whether help was given.  */
   int version_given ;	/* Whether version was given.  */
@@ -80,6 +84,8 @@ struct gengetopt_args_info
   int ro_cache_given ;	/* Whether ro-cache was given.  */
   int progress_given ;	/* Whether progress was given.  */
   int diff_given ;	/* Whether diff was given.  */
+  int sizes_given ;	/* Whether sizes was given.  */
+  int human_readable_given ;	/* Whether human-readable was given.  */
   int merge_given ;	/* Whether merge was given.  */
   int question_given ;	/* Whether question was given.  */
   int prune_empty_given ;	/* Whether prune-empty was given.  */
@@ -93,6 +99,8 @@ struct gengetopt_args_info
   int output_directory_given ;	/* Whether output-directory was given.  */
   int cleanup_given ;	/* Whether cleanup was given.  */
   int cleanup_level_given ;	/* Whether cleanup-level was given.  */
+  int forget_given ;	/* Whether forget was given.  */
+  int remember_given ;	/* Whether remember was given.  */
 
   char **inputs ; /* unamed options */
   unsigned inputs_num ; /* unamed options number */

@@ -1,7 +1,7 @@
 #ifndef foodbstructhfoo
 #define foodbstructhfoo
 
-/* $Id: dbstruct.h 43 2003-11-30 14:27:42Z lennart $ */
+/* $Id: dbstruct.h 58 2004-07-19 16:04:48Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -68,6 +68,7 @@ struct syrep_name {
  * syrep_id :: syrep_meta           => id_meta 
  * syrep_md :: syrep_nrecno         => md_nrecno                           (DUP)
  * syrep_nrecno :: syrep_md         => nrecno_md                           (DUP)
+ * 
  * syrep_nrecno :: syrep_md         => nrecno_lastmd
  * syrep_md :: syrep_nrecno         => md_lastnrecno
  *
