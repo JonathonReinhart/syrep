@@ -1,4 +1,4 @@
-# $Id: syrep.ggo 43 2003-11-30 14:27:42Z lennart $
+# $Id: syrep.ggo 51 2004-01-16 16:07:02Z lennart $
 
 #  This file is part of syrep.
 #
@@ -18,7 +18,6 @@
 
 purpose "Synchronize Repositories"
 package "syrep"
-version "0.1"
 
 option "verbose" v "Enable verbose operation" flag off
 option "local-temp" T "Use temporary directory inside repository" flag off

@@ -1,4 +1,4 @@
-# $Id: Makefile.am 41 2003-11-12 21:42:07Z lennart $
+# $Id: Makefile.am 53 2004-03-22 13:26:54Z lennart $
 
 # This file is part of syrep.
 #
@@ -28,13 +28,13 @@ README:
 	ln -s doc/README README
 
 homepage: all dist
-	test -d $$HOME/homepage/lennart
-	mkdir -p $$HOME/homepage/lennart/projects/syrep
-	cp *.tar.gz $$HOME/homepage/lennart/projects/syrep
-	cp doc/README.html doc/style.css man/syrep.1.xml man/xmltoman.css man/xmltoman.xsl man/xmltoman.dtd $$HOME/homepage/lennart/projects/syrep
-	ln -sf $$HOME/homepage/lennart/projects/syrep/README.html $$HOME/homepage/lennart/projects/syrep/index.html
+	test -d $$HOME/homepage/private
+	mkdir -p $$HOME/homepage/private/projects/syrep
+	cp *.tar.gz $$HOME/homepage/private/projects/syrep
+	cp doc/README.html doc/style.css man/syrep.1.xml man/xmltoman.css man/xmltoman.xsl man/xmltoman.dtd $$HOME/homepage/private/projects/syrep
+	ln -sf $$HOME/homepage/private/projects/syrep/README.html $$HOME/homepage/private/projects/syrep/index.html
 
 distcleancheck:
-        @:
+	@:
 
 .PHONY: homepage distcleancheck

@@ -1,4 +1,4 @@
-/* $Id: util.c 43 2003-11-30 14:27:42Z lennart $ */
+/* $Id: util.c 53 2004-03-22 13:26:54Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -263,18 +263,20 @@ int copy_fd(int sfd, int dfd, off_t l) {
                 return -1;
             }
 
-            msfo = (sfo/psize)*psize;
+            msfo = (off_t) (sfo/psize)*psize;
             sm = m+(sfo-msfo);
-            sp = mmap(NULL, sm, PROT_READ, MAP_SHARED, sfd, msfo);
+            if ((sp = mmap(NULL, sm, PROT_READ, MAP_SHARED, sfd, msfo)) != MAP_FAILED)
+                madvise(sp, sm, MADV_SEQUENTIAL);
         }
         
         if ((dfo = lseek(dfd, 0, SEEK_CUR)) != (off_t) -1) {
             if (expand_file(dfd, dfo+l) < 0)
                 return -1;
 
-            mdfo = (dfo/psize)*psize;
+            mdfo = (off_t) (dfo/psize)*psize;
             dm = m+(dfo-mdfo);
-            dp = mmap(NULL, dm, PROT_READ|PROT_WRITE, MAP_SHARED, dfd, mdfo);
+            if ((dp = mmap(NULL, dm, PROT_READ|PROT_WRITE, MAP_SHARED, dfd, mdfo)) != MAP_FAILED)
+                madvise(dp, dm, MADV_SEQUENTIAL);
         }
         
     }
@@ -346,6 +348,8 @@ int copy_fd(int sfd, int dfd, off_t l) {
                 
                 return 0;
             }
+
+            m = (size_t) (l < MMAPSIZE ? l : MMAPSIZE);
             
             mdfo = (dfo/psize)*psize;
             dm = m+(dfo-mdfo);
@@ -353,6 +357,7 @@ int copy_fd(int sfd, int dfd, off_t l) {
                 fprintf(stderr, "mmap(): %s\n", strerror(errno));
                 return -1;
             }
+            madvise(dp, dm, MADV_SEQUENTIAL);
         }
 
     } else if (dp == MAP_FAILED) { /* copy mmap to fd */
@@ -382,6 +387,8 @@ int copy_fd(int sfd, int dfd, off_t l) {
                 
                 return 0;
             }
+
+            m = (size_t) (l < MMAPSIZE ? l : MMAPSIZE);
             
             msfo = (sfo/psize)*psize;
             sm = m+(sfo-msfo);
@@ -389,9 +396,12 @@ int copy_fd(int sfd, int dfd, off_t l) {
                 fprintf(stderr, "mmap(): %s\n", strerror(errno));
                 return -1;
             }
+            madvise(sp, sm, MADV_SEQUENTIAL);
         }
         
     } else {  /* copy mmap to mmap */
+
+        assert(sp != MAP_FAILED && dp != MAP_FAILED);
 
         for (;;) {
 
@@ -415,20 +425,24 @@ int copy_fd(int sfd, int dfd, off_t l) {
                 return 0;
             }
 
-            msfo = (sfo/psize)*psize;
+            m = (size_t) (l < MMAPSIZE ? l : MMAPSIZE);
+
+            msfo = (off_t) (sfo/psize)*psize;
             sm = m+(sfo-msfo);
             if ((sp = mmap(NULL, sm, PROT_READ, MAP_SHARED, sfd, msfo)) == MAP_FAILED) {
                 fprintf(stderr, "mmap(): %s\n", strerror(errno));
                 return -1;
             }
-
-            mdfo = (dfo/psize)*psize;
+            mdfo = (off_t) (dfo/psize)*psize;
             dm = m+(dfo-mdfo);
             if ((dp = mmap(NULL, dm, PROT_READ|PROT_WRITE, MAP_SHARED, dfd, mdfo)) == MAP_FAILED) {
                 munmap(sp, sm);
                 fprintf(stderr, "mmap(): %s\n", strerror(errno));
                 return -1;
             }
+
+            madvise(sp, sm, MADV_SEQUENTIAL);
+            madvise(dp, dm, MADV_SEQUENTIAL);
         }
     }
 }

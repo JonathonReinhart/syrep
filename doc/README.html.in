@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="iso-8895-15"?> <!-- -*-html-helper-*- -->
+<?xml version="1.0" encoding="iso-8859-15"?> <!-- -*-html-helper-*- -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 
@@ -10,7 +10,7 @@
 <body>
 <h1><a name="top">syrep @PACKAGE_VERSION@</a></h1>
 
-<p><i>Copyright 2003 Lennart Poettering &lt;@PACKAGE_BUGREPORT@&gt;</i></p>
+<p><i>Copyright 2003,2004 Lennart Poettering &lt;@PACKAGE_BUGREPORT@&gt;</i></p>
 
 <ul class="toc">
     <li><a href="#license">License</a></li>
@@ -41,6 +41,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.</p>
 
 <h2><a name="news">News</a></h2>
+
+<div class="news-date">Mon Mar 22 2004: </div> <p class="news-text"><a
+href="@PACKAGE_URL@syrep-0.4.tar.gz">Version 0.4</a> released; Changes
+include: fix annonoying SIGBUS failure when working on files &gt;= 100 MB, update to Berkeley DB 4.2, use <tt>madvise()</tt> to improve file copying throughput on newer kernels, minor other fixes </p>
 
 <div class="news-date">Sun Nov 30 2003: </div> <p class="news-text"><a
 href="@PACKAGE_URL@syrep-0.3.tar.gz">Version 0.3</a> released; Changes
@@ -190,7 +194,7 @@ a "symmetric" way as described above.</p>
 
 <h2><a name="requirements">Requirements</a></h2>
 
-<p><tt>syrep</tt> requires installed development versions of <tt><a href="http://www.gzip.org/zlib/">zlib</a></tt> and <tt><a href="http://www.sleepycat.com/">Berkeley DB</a></tt>.</p>
+<p><tt>syrep</tt> requires installed development versions of <tt><a href="http://www.gzip.org/zlib/">zlib</a></tt> and <tt><a href="http://www.sleepycat.com/">Berkeley DB</a></tt> 4.2.</p>
 
 <p><tt>syrep</tt> was developed and tested on Debian GNU/Linux
 "testing" from September 2003, it should work on most other Linux
@@ -227,9 +231,9 @@ L. Peter Deutsch. Thanks to him for this.</p>
 
 <hr/>
 
-<address>Lennart Poettering &lt;@PACKAGE_BUGREPORT@&gt;, Nov 2003</address>
+<address class="grey">Lennart Poettering &lt;@PACKAGE_BUGREPORT@&gt;, March 2004</address>
 
-<div><i>$Id: README.html.in 43 2003-11-30 14:27:42Z lennart $</i></div>
+<div class="grey"><i>$Id: README.html.in 54 2004-03-22 14:12:36Z lennart $</i></div>
 
 </body>
 </html>

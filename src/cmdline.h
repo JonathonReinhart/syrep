@@ -19,7 +19,7 @@ extern "C" {
 #endif
 
 #ifndef CMDLINE_PARSER_VERSION
-#define CMDLINE_PARSER_VERSION "0.1"
+#define CMDLINE_PARSER_VERSION VERSION
 #endif
 
 struct gengetopt_args_info

@@ -1,4 +1,4 @@
-/* $Id: style.css 32 2003-09-07 23:11:37Z lennart $ */
+/* $Id: style.css 53 2004-03-22 13:26:54Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -29,3 +29,4 @@ h1 { color: #00009F; }
 h2 { color: #00009F; }
 h3 { color: #00004F; margin-left: 0.5cm; }
 pre { margin-left: .5cm; background-color: #f0f0f0; padding: 0.4cm;}
+.grey { color: #afafaf; }

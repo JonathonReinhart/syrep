@@ -1,4 +1,4 @@
-/* $Id: syrep.c 43 2003-11-30 14:27:42Z lennart $ */
+/* $Id: syrep.c 53 2004-03-22 13:26:54Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -197,7 +197,7 @@ static int do_makepatch(void) {
     }
 
     if (isdirectory(args.inputs[0]) <= 0) {
-        fprintf(stderr, "ERROR: %s is not a directory\n", args.inputs[1]);
+        fprintf(stderr, "ERROR: %s is not a directory\n", args.inputs[0]);
         goto finish;
     }
     
@@ -545,12 +545,17 @@ static int version(const char *argv0) {
             "Compiled with %i Bit off_t.\n"
             "Compiled with zlib %s, linked to zlib %s.\n"
             "Compiled with libdb %i.%i.%i, linked to libdb %i.%i.%i\n"
-            "SVN Revision "SVN_REVISION"\n",
+            "SVN Revision "SVN_REVISION"\n"
+#ifdef USE_SENDFILE
+            "Using sendfile(): yes\n",
+#else
+            "Using sendfile(): no\n",
+#endif
             argv0,
             sizeof(off_t)*8,
             ZLIB_VERSION, zlibVersion(),
             DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
-            major, minor, patch);
+            major, minor, patch );
 
     return 0;
 }

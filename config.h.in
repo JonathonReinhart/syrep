@@ -62,6 +62,10 @@
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 #undef HAVE_NDIR_H
 
+/* Define to 1 if your system has a GNU libc compatible `realloc' function,
+   and to 0 otherwise. */
+#undef HAVE_REALLOC
+
 /* Define to 1 if you have the `rmdir' function. */
 #undef HAVE_RMDIR
 
@@ -168,6 +172,9 @@
 
 /* Define to `long' if <sys/types.h> does not define. */
 #undef off_t
+
+/* Define to rpl_realloc if the replacement function should be used. */
+#undef realloc
 
 /* Define to `unsigned' if <sys/types.h> does not define. */
 #undef size_t

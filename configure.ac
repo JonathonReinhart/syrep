@@ -1,7 +1,7 @@
 # -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-# $Id: configure.ac 43 2003-11-30 14:27:42Z lennart $
+# $Id: configure.ac 53 2004-03-22 13:26:54Z lennart $
 
 # This file is part of syrep.
 #
@@ -19,8 +19,8 @@
 # along with syrep; if not, write to the Free Software Foundation,
 # Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 
-AC_PREREQ(2.57)
-AC_INIT([syrep], [0.3], [mzflerc (at) 0pointer (dot) de])
+AC_PREREQ(2.59)
+AC_INIT([syrep],[0.4],[mzflerc (at) 0pointer (dot) de])
 AC_CONFIG_SRCDIR([src/syrep.c])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([foreign -Wall])
@@ -38,7 +38,7 @@ fi
 
 if type -p stow > /dev/null && test -d /usr/local/stow ; then
    AC_MSG_NOTICE([*** Found /usr/local/stow: default install prefix set to /usr/local/stow/${PACKAGE_NAME}-${PACKAGE_VERSION} ***])
-   AC_PREFIX_DEFAULT([/usr/local/stow/${PACKAGE_NAME}-${PACKAGE_VERSION}])
+   ac_default_prefix="/usr/local/stow/${PACKAGE_NAME}-${PACKAGE_VERSION}"
 fi
 
 # Check for zlib
@@ -48,6 +48,19 @@ AC_CHECK_HEADER([zlib.h],, [AC_MSG_ERROR([*** Sorry, you have to install the zli
 # Check for Berkeley DB (needs to be improved)
 AC_CHECK_HEADER([db.h],, [AC_MSG_ERROR([*** Sorry, you have to install the Berkeley Database Library (libdb) 4.1 or newer ***])])
 LIBS="$LIBS -ldb"
+
+# Checking libdb version number
+AC_MSG_CHECKING([for Berkeley libdb 4.2])
+AC_LANG_PUSH(C)
+AC_PREPROC_IFELSE([AC_LANG_SOURCE([[
+#include <db.h>
+#if (DB_VERSION_MAJOR != 4) || (DB_VERSION_MINOR != 2) 
+#error "foo"
+#endif
+]])],
+[AC_MSG_RESULT([yes])],
+[AC_MSG_FAILURE([Berkeley libdb 4.1 required])])
+AC_LANG_POP(C)
 
 # Check for Linux sendfile()
 AC_CHECK_HEADER([sys/sendfile.h], sendfile=yes, sendfile=no)
@@ -86,11 +99,12 @@ AC_FUNC_MALLOC
 AC_FUNC_MEMCMP
 AC_FUNC_MMAP
 AC_FUNC_STAT
+AC_FUNC_REALLOC
 AC_CHECK_FUNCS([atexit ftruncate getcwd gethostname memset mkdir munmap rmdir setenv strchr strdup strerror strrchr strtol])
 
 # LYNX documentation generation
 AC_ARG_ENABLE(lynx,
-        AC_HELP_STRING([--disable-lynx], [Turn off lynx usage for documentation generation]),
+        AS_HELP_STRING(--disable-lynx,Turn off lynx usage for documentation generation),
 [case "${enableval}" in
   yes) lynx=yes ;;
   no)  lynx=no ;;
@@ -109,7 +123,7 @@ AM_CONDITIONAL([USE_LYNX], [test "x$lynx" = xyes])
 
 # XMLTOMAN manpage generation
 AC_ARG_ENABLE(xmltoman,
-        AC_HELP_STRING([--disable-xmltoman], [Disable rebuilding of man pages with xmltoman]),
+        AS_HELP_STRING(--disable-xmltoman,Disable rebuilding of man pages with xmltoman),
 [case "${enableval}" in
   yes) xmltoman=yes ;;
   no)  xmltoman=no ;;
@@ -129,7 +143,7 @@ AM_CONDITIONAL([USE_XMLTOMAN], [test "x$xmltoman" = xyes])
 
 # gengetopt command line parser generation
 AC_ARG_ENABLE(gengetopt,
-        AC_HELP_STRING([--disable-gengetopt], [Disable rebuilding of command line parser with gengetopt]),
+        AS_HELP_STRING(--disable-gengetopt,Disable rebuilding of command line parser with gengetopt),
 [case "${enableval}" in
   yes) gengetopt=yes ;;
   no)  gengetopt=no ;;
@@ -149,7 +163,7 @@ AM_CONDITIONAL([USE_GENGETOPT], [test "x$gengetopt" = xyes])
 
 # subversion release number generation
 AC_ARG_ENABLE(subversion,
-        AC_HELP_STRING([--disable-subversion], [Disable rebuilding of svn-release.h]),
+        AS_HELP_STRING(--disable-subversion,Disable rebuilding of svn-release.h),
 [case "${enableval}" in
   yes) subversion=yes ;;
   no)  subversion=no ;;
