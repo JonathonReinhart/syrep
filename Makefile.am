@@ -1,4 +1,4 @@
-# $Id: Makefile.am 35 2003-09-07 23:21:52Z lennart $
+# $Id: Makefile.am 37 2003-09-09 16:58:49Z lennart $
 
 # This file is part of syrep.
 #

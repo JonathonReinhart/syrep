@@ -1,6 +1,4 @@
-/* $Id: dump.c 12 2003-08-28 22:44:04Z lennart $ */
-
-/* $Id: dump.c 12 2003-08-28 22:44:04Z lennart $ */
+/* $Id: dump.c 38 2003-09-09 17:06:08Z lennart $ */
 
 /***
   This file is part of syrep.

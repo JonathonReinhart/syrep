@@ -1,7 +1,7 @@
 # -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-# $Id: configure.ac 33 2003-09-07 23:15:57Z lennart $
+# $Id: configure.ac 39 2003-09-09 17:09:34Z lennart $
 
 # This file is part of syrep.
 #
@@ -20,7 +20,7 @@
 # Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 
 AC_PREREQ(2.57)
-AC_INIT([syrep], [0.1], [mzflerc (at) 0pointer (dot) de])
+AC_INIT([syrep], [0.2], [mzflerc (at) 0pointer (dot) de])
 AC_CONFIG_SRCDIR([src/syrep.c])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([foreign -Wall])

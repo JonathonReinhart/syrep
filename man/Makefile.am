@@ -1,4 +1,4 @@
-# $Id: Makefile.am 32 2003-09-07 23:11:37Z lennart $
+# $Id: Makefile.am 38 2003-09-09 17:06:08Z lennart $
 
 # This file is part of syrep.
 #
@@ -34,7 +34,7 @@ xmllint: syrep.1.xml
 
 if USE_XMLTOMAN
 
-XMLTOMAN = ~/xmltoman.d/xmltoman
+XMLTOMAN = xmltoman #~/xmltoman.d/xmltoman
 CLEANFILES += $(man_MANS)
 
 syrep.1: syrep.1.xml Makefile

@@ -1,4 +1,4 @@
-/* $Id: diff.c 23 2003-09-04 18:56:27Z lennart $ */
+/* $Id: diff.c 38 2003-09-09 17:06:08Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -301,19 +301,25 @@ static int list_cb(DB *ddb, struct syrep_name *name, struct diff_entry *de, void
     switch (de->action) {
         case DIFF_COPY: {
             char d[33];
-            char src, dst;
+            char dst;
+            int mf;
+            
+            if ((mf = get_current_nrecno_by_md(de->repository == cb_info->c1 ? cb_info->c2 : cb_info->c1,
+                                               de->repository == cb_info->c1 ? &md1 : &md2, NULL)) < 0)
+                return -1;
             
             if (de->repository == cb_info->c1) {
-                src = 'A'; dst = 'B';
+                dst = 'B';
                 fhex_md5(md1.digest, d);
             } else {
-                src = 'B'; dst = 'A';
+                dst = 'A';
                 fhex_md5(md2.digest, d);
             }
             
             d[32] = 0;
+
+            printf("COPY <%s|%s> TO %c%s\n", d, name->path, dst, mf ? " (LINK POSSIBLE)" : "");
             
-            printf("COPY <%s|%s> FROM %c TO %c\n", d, name->path, src, dst);
             break;
         }
             
@@ -333,7 +339,6 @@ static int list_cb(DB *ddb, struct syrep_name *name, struct diff_entry *de, void
             
             printf("DELETE <%s|%s> FROM %c\n", d, name->path, rep);
             break;
-            
         }
             
         case DIFF_CONFLICT: {

@@ -42,6 +42,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.</p>
 
 <h2><a name="news">News</a></h2>
 
+<div class="news-date">Tue Sep 9 2003: </div> <p class="news-text"><a
+href="@PACKAGE_URL@syrep-0.2.tar.gz">Version
+0.2</a> released; Fixes include: documentation update, <tt>--diff</tt> output improved, <tt>--merge</tt> output fixed.</p>
+
 <div class="news-date">Mon Sep 8 2003: </div> <p class="news-text"><a
 href="@PACKAGE_URL@syrep-0.1.tar.gz">Version
 0.1</a> released.</p>
@@ -189,6 +193,11 @@ autoconf for source code configuration.</p>
 
 <p>Some support for for big endian architectures is included, however, it is incomplete. You're welcome to send me patches.</p>
 
+<p>If the <tt>syrep</tt> build system detects Oliver Kurth's <a
+href="http://masqmail.cx/xml2man/"><tt>xmltoman</tt></a> the man page is
+rebuilt. Otherwise the pre-compiled versions shipped with
+<tt>syrep</tt> are used.</p>
+
 <h2><a name="installation">Installation</a></h2>
 
 <p>As this package is made with the GNU autotools you should run
@@ -214,7 +223,7 @@ L. Peter Deutsch. Thanks to him for this.</p>
 
 <address>Lennart Poettering &lt;@PACKAGE_BUGREPORT@&gt;, Sep 2003</address>
 
-<div><i>$Id: README.html.in 34 2003-09-07 23:21:00Z lennart $</i></div>
+<div><i>$Id: README.html.in 40 2003-09-09 17:16:36Z lennart $</i></div>
 
 </body>
 </html>

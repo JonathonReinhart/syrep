@@ -1,4 +1,4 @@
-/* $Id: merge.c 32 2003-09-07 23:11:37Z lennart $ */
+/* $Id: merge.c 38 2003-09-09 17:06:08Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -211,7 +211,9 @@ static int copy_phase(DB *ddb, struct syrep_name *name, struct diff_entry *de, v
     if (f) {
         char path2[PATH_MAX+1];
         snprintf(path2, sizeof(path2), "%s/%s", cb_info->root, name2.path);
-        fprintf(stderr, "COPY: Linking existing file <%s> to <%s>.\n", name2.path, name->path);
+
+        if (args.verbose_flag)
+            fprintf(stderr, "COPY: Linking existing file <%s> to <%s>.\n", name2.path, name->path);
 
         if (makeprefixpath(path, 0777) < 0)
             return -1;
@@ -229,9 +231,8 @@ static int copy_phase(DB *ddb, struct syrep_name *name, struct diff_entry *de, v
             if (!access(path2, R_OK)) {
                 if (copy_or_link_file(path2, path, de->action == DIFF_REPLACE) < 0)
                     return -1;
-            }
-
-            fprintf(stderr, "COPY: Local file <%s> vanished. Snapshot not up to date.\n", name2.path);
+            } else
+                fprintf(stderr, "COPY: Local file <%s> vanished. Snapshot not up to date.\n", name2.path);
         }
         
     } else {
@@ -242,7 +243,8 @@ static int copy_phase(DB *ddb, struct syrep_name *name, struct diff_entry *de, v
             return -1;
 
         if (k) {
-            fprintf(stderr, "COPY: Copying file <%s> from patch.\n", name->path);
+            if (args.verbose_flag)
+                fprintf(stderr, "COPY: Copying file <%s> from patch.\n", name->path);
             
             if (makeprefixpath(path, 0777) < 0)
                 return -1;
@@ -250,7 +252,8 @@ static int copy_phase(DB *ddb, struct syrep_name *name, struct diff_entry *de, v
             if (copy_or_link_file(a, path, de->action == DIFF_REPLACE) < 0)
                 return -1;
         } else
-            fprintf(stderr, "COPY: File <%s> is missing.\n", name->path);
+            if (args.verbose_flag)
+                fprintf(stderr, "COPY: File <%s> is missing.\n", name->path);
     }
 
     return 0;
