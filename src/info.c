@@ -1,4 +1,4 @@
-/* $Id: info.c 19 2003-08-31 20:46:56Z lennart $ */
+/* $Id: info.c 43 2003-11-30 14:27:42Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -18,32 +18,38 @@
   Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ***/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <stdio.h>
 #include <assert.h>
+#include <time.h>
 
 #include "info.h"
 #include "util.h"
 
 int info(struct syrep_db_context *c) {
+    time_t t = (time_t) c->timestamp;
     assert(c);
-    fprintf(stderr, "Origin: %s\n", c->origin);
-    fprintf(stderr, "Timestamp: %u\n", c->timestamp);
-    fprintf(stderr, "Version: %u\n", c->version);
-    fprintf(stderr, "Database nrecno_meta: ");
+    fprintf(stdout, "Origin: %s\n", c->origin);
+    fprintf(stdout, "Timestamp: %u; %s", c->timestamp, asctime(localtime(&t)));
+    fprintf(stdout, "Version: %u\n", c->version);
+    fprintf(stdout, "Database nrecno_meta: ");
     statistics(c->db_id_meta);
-    fprintf(stderr, "Database md_nrecno: ");
+    fprintf(stdout, "Database md_nrecno: ");
     statistics(c->db_md_nrecno);
-    fprintf(stderr, "Database nrecno_md: ");
+    fprintf(stdout, "Database nrecno_md: ");
     statistics(c->db_nrecno_md);
-    fprintf(stderr, "Database nrecno_lastmd: ");
+    fprintf(stdout, "Database nrecno_lastmd: ");
     statistics(c->db_nrecno_lastmd);
-    fprintf(stderr, "Database md_lastnrecno: ");
+    fprintf(stdout, "Database md_lastnrecno: ");
     statistics(c->db_md_lastnrecno);
-    fprintf(stderr, "Database version_timestamp: ");
+    fprintf(stdout, "Database version_timestamp: ");
     statistics(c->db_version_timestamp);
-    fprintf(stderr, "Database nrecno_name: ");
+    fprintf(stdout, "Database nrecno_name: ");
     statistics(c->db_nrecno_name);
-    fprintf(stderr, "Database nhash_nrecno: ");
+    fprintf(stdout, "Database nhash_nrecno: ");
     statistics(c->db_nhash_nrecno);
     return 0;
 }

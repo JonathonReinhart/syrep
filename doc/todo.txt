@@ -26,12 +26,12 @@ pre-0.1:
 post-0.1:
 - continue merge on copy failure
 - url/ssh merges
-- bi-directory merges
-- digest check before delete/replace/link
+- bi-directory merges                                  DONE
+- digest check before delete/replace/link              DONE
 - some more asserts
-- PATH_MAX or PATH_MAX+1?
-- add --always-copy
+- PATH_MAX or PATH_MAX+1?                              DONE
+- add --always-copy                                    DONE
 - add --forget 
 - valgrind
 
-$Id: todo.txt 32 2003-09-07 23:11:37Z lennart $
+$Id: todo.txt 43 2003-11-30 14:27:42Z lennart $

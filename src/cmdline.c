@@ -47,6 +47,7 @@ cmdline_parser_print_help (void)
   printf("              --show-deleted             list: Show deleted entries of repository snapshot (default=off)\n");
   printf("              --show-by-md               list: Show files by message digests (default=off)\n");
   printf("              --show-times               list: Show first and last seen times (default=off)\n");
+  printf("              --sort                     list: sort chronologically (default=off)\n");
   printf("              --info                     Show information about a repository or snapshot (default=off)\n");
   printf("              --history                  Show history of a repository or snapshot (default=off)\n");
   printf("              --dump                     Show a structure dump of a repository or snapshot (default=off)\n");
@@ -60,8 +61,10 @@ cmdline_parser_print_help (void)
   printf("              --diff                     Show difference between two repositories or snapshots (default=off)\n");
   printf("              --merge                    Merge a snapshot or a repository into a repository (default=off)\n");
   printf("   -q         --question                 merge: Ask a question before each action (default=off)\n");
-  printf("              --prune-empty              merge: Prune empty directories (default=off)\n");
+  printf("   -P         --prune-empty              merge: Prune empty directories (default=off)\n");
   printf("              --keep-trash               merge: Don't empty trash (default=off)\n");
+  printf("              --check-md                 merge: Check message digest of file before deleting or replacing (default=off)\n");
+  printf("              --always-copy              merge: Always copy instead of hard linking (default=off)\n");
   printf("              --makepatch                Make a patch against the specified repository (default=off)\n");
   printf("   -oSTRING   --output-file=STRING       makepatch: Write output to specified file instead of STDOUT\n");
   printf("              --include-all              makepatch: Include files in patch which do exist on the other side under a different name (default=off)\n");
@@ -102,6 +105,7 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
   args_info->show_deleted_given = 0 ;
   args_info->show_by_md_given = 0 ;
   args_info->show_times_given = 0 ;
+  args_info->sort_given = 0 ;
   args_info->info_given = 0 ;
   args_info->history_given = 0 ;
   args_info->dump_given = 0 ;
@@ -117,6 +121,8 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
   args_info->question_given = 0 ;
   args_info->prune_empty_given = 0 ;
   args_info->keep_trash_given = 0 ;
+  args_info->check_md_given = 0 ;
+  args_info->always_copy_given = 0 ;
   args_info->makepatch_given = 0 ;
   args_info->output_file_given = 0 ;
   args_info->include_all_given = 0 ;
@@ -133,6 +139,7 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
   args_info->show_deleted_flag = 0;\
   args_info->show_by_md_flag = 0;\
   args_info->show_times_flag = 0;\
+  args_info->sort_flag = 0;\
   args_info->info_flag = 0;\
   args_info->history_flag = 0;\
   args_info->dump_flag = 0;\
@@ -148,6 +155,8 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
   args_info->question_flag = 0;\
   args_info->prune_empty_flag = 0;\
   args_info->keep_trash_flag = 0;\
+  args_info->check_md_flag = 0;\
+  args_info->always_copy_flag = 0;\
   args_info->makepatch_flag = 0;\
   args_info->output_file_arg = NULL; \
   args_info->include_all_flag = 0;\
@@ -183,6 +192,7 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
         { "show-deleted",	0, NULL, 0 },
         { "show-by-md",	0, NULL, 0 },
         { "show-times",	0, NULL, 0 },
+        { "sort",	0, NULL, 0 },
         { "info",	0, NULL, 0 },
         { "history",	0, NULL, 0 },
         { "dump",	0, NULL, 0 },
@@ -196,8 +206,10 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
         { "diff",	0, NULL, 0 },
         { "merge",	0, NULL, 0 },
         { "question",	0, NULL, 'q' },
-        { "prune-empty",	0, NULL, 0 },
+        { "prune-empty",	0, NULL, 'P' },
         { "keep-trash",	0, NULL, 0 },
+        { "check-md",	0, NULL, 0 },
+        { "always-copy",	0, NULL, 0 },
         { "makepatch",	0, NULL, 0 },
         { "output-file",	1, NULL, 'o' },
         { "include-all",	0, NULL, 0 },
@@ -209,7 +221,7 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
       };
 
       stop_char = 0;
-      c = getopt_long (argc, argv, "hVvTzS:C:pqo:D:l:", long_options, &option_index);
+      c = getopt_long (argc, argv, "hVvTzS:C:pqPo:D:l:", long_options, &option_index);
 
       if (c == -1) break;	/* Exit from `while (1)' loop.  */
 
@@ -310,6 +322,17 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
             }
           args_info->question_given = 1;
           args_info->question_flag = !(args_info->question_flag);
+          break;
+
+        case 'P':	/* merge: Prune empty directories.  */
+          if (args_info->prune_empty_given)
+            {
+              fprintf (stderr, "%s: `--prune-empty' (`-P') option given more than once\n", CMDLINE_PARSER_PACKAGE);
+              clear_args ();
+              exit (EXIT_FAILURE);
+            }
+          args_info->prune_empty_given = 1;
+          args_info->prune_empty_flag = !(args_info->prune_empty_flag);
           break;
 
         case 'o':	/* makepatch: Write output to specified file instead of STDOUT.  */
@@ -414,6 +437,20 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
               }
             args_info->show_times_given = 1;
             args_info->show_times_flag = !(args_info->show_times_flag);
+            break;
+          }
+          
+          /* list: sort chronologically.  */
+          else if (strcmp (long_options[option_index].name, "sort") == 0)
+          {
+            if (args_info->sort_given)
+              {
+                fprintf (stderr, "%s: `--sort' option given more than once\n", CMDLINE_PARSER_PACKAGE);
+                clear_args ();
+                exit (EXIT_FAILURE);
+              }
+            args_info->sort_given = 1;
+            args_info->sort_flag = !(args_info->sort_flag);
             break;
           }
           
@@ -543,20 +580,6 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
             break;
           }
           
-          /* merge: Prune empty directories.  */
-          else if (strcmp (long_options[option_index].name, "prune-empty") == 0)
-          {
-            if (args_info->prune_empty_given)
-              {
-                fprintf (stderr, "%s: `--prune-empty' option given more than once\n", CMDLINE_PARSER_PACKAGE);
-                clear_args ();
-                exit (EXIT_FAILURE);
-              }
-            args_info->prune_empty_given = 1;
-            args_info->prune_empty_flag = !(args_info->prune_empty_flag);
-            break;
-          }
-          
           /* merge: Don't empty trash.  */
           else if (strcmp (long_options[option_index].name, "keep-trash") == 0)
           {
@@ -568,6 +591,34 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
               }
             args_info->keep_trash_given = 1;
             args_info->keep_trash_flag = !(args_info->keep_trash_flag);
+            break;
+          }
+          
+          /* merge: Check message digest of file before deleting or replacing.  */
+          else if (strcmp (long_options[option_index].name, "check-md") == 0)
+          {
+            if (args_info->check_md_given)
+              {
+                fprintf (stderr, "%s: `--check-md' option given more than once\n", CMDLINE_PARSER_PACKAGE);
+                clear_args ();
+                exit (EXIT_FAILURE);
+              }
+            args_info->check_md_given = 1;
+            args_info->check_md_flag = !(args_info->check_md_flag);
+            break;
+          }
+          
+          /* merge: Always copy instead of hard linking.  */
+          else if (strcmp (long_options[option_index].name, "always-copy") == 0)
+          {
+            if (args_info->always_copy_given)
+              {
+                fprintf (stderr, "%s: `--always-copy' option given more than once\n", CMDLINE_PARSER_PACKAGE);
+                clear_args ();
+                exit (EXIT_FAILURE);
+              }
+            args_info->always_copy_given = 1;
+            args_info->always_copy_flag = !(args_info->always_copy_flag);
             break;
           }
           

@@ -1,7 +1,7 @@
 #ifndef foomergehfoo
 #define foomergehfoo
 
-/* $Id: merge.h 13 2003-08-29 01:21:11Z lennart $ */
+/* $Id: merge.h 43 2003-11-30 14:27:42Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -23,7 +23,7 @@
 
 #include "context.h"
 
-int merge(struct syrep_db_context *c1, struct syrep_db_context *c2, const char* root);
+int merge(struct syrep_db_context *c1, struct syrep_db_context *c2, const char* root, const char* sroot);
 int empty_trash(const char *trash);
 
 #endif

@@ -1,8 +1,8 @@
 <?xml version="1.0"?> <!-- -*-xae-*- -->
-<!DOCTYPE manpage SYSTEM "man.dtd">
-<?xml-stylesheet type="text/xsl" href="man.xsl" ?> 
+<!DOCTYPE manpage SYSTEM "xmltoman.dtd">
+<?xml-stylesheet type="text/xsl" href="xmltoman.xsl" ?> 
 
-<!-- $Id: syrep.1.xml.in 32 2003-09-07 23:11:37Z lennart $ -->
+<!-- $Id: syrep.1.xml.in 43 2003-11-30 14:27:42Z lennart $ -->
 
 <!-- 
   This file is part of syrep.
@@ -32,9 +32,11 @@
     <cmd>syrep [<opt>options...</opt>] <opt>--update</opt> <arg>DIRECTORY</arg> ...</cmd>
     <cmd>syrep [<opt>options...</opt>] <opt>--diff</opt> <arg>SNAPSHOT</arg> <arg>SNAPSHOT</arg></cmd>
     <cmd>syrep [<opt>options...</opt>] <opt>--merge</opt> <arg>SNAPSHOT</arg> <arg>DIRECTORY</arg></cmd>
+    <cmd>syrep [<opt>options...</opt>] <opt>--merge</opt> <arg>PATCH</arg> <arg>DIRECTORY</arg></cmd>
+    <cmd>syrep [<opt>options...</opt>] <opt>--merge</opt> <arg>DIRECTORY</arg> <arg>DIRECTORY</arg></cmd>
     <cmd>syrep [<opt>options...</opt>] <opt>--makepatch</opt> <arg>DIRECTORY</arg> <arg>SNAPSHOT</arg></cmd>
     <cmd>syrep [<opt>options...</opt>] <opt>--extract</opt> <arg>SNAPSHOT</arg> ...</cmd>
-    <cmd>syrep [<opt>options...</opt>] <opt>--cleanup</opt> <arg>SNAPSHOT</arg> ...</cmd>
+    <cmd>syrep [<opt>options...</opt>] <opt>--cleanup</opt> <arg>DIRECTORY</arg> ...</cmd>
   </synopsis>
   
   <description> 
@@ -55,7 +57,18 @@
 
     <p>Syrep is able to cope with 64 bit file sizes. (LFS)</p>
 
-    <p>Syrep is optimized for speed. It may make use of a message digest cache to accelerate the calculation of digests of a whole directory hierarchy.</p>
+    <p>Syrep is optimized for speed. It may make use of a message
+    digest cache to accelerate the calculation of digests of a whole
+    directory hierarchy.</p>
+
+    <p>A syrep repository is a normal UNIX directory tree containing a
+    special directory <file>.syrep</file> with a file
+    <file>current.syrep</file> (called snapshot) which holds file
+    system history data. A directory is turned into a syrep repository
+    by running <opt>--update</opt> on it. Snapshots are used to
+    perform basic tasks like comparing repositories (command
+    <opt>--diff</opt>) or creating patches between them (command
+    <opt>--make-patch</opt>).</p>
 
   </description>
   
@@ -121,13 +134,18 @@
 
     <option>
        <p><opt>--show-by-md</opt> (option)</p>
-       <optdesc>Show files by message digests</optdesc>
+       <optdesc>Show files by message digests. This option collides with <opt>--sort</opt>.</optdesc>
        </option>
 
     <option>
        <p><opt>--show-times</opt> (option)</p>
        <optdesc>Show first and last seen times</optdesc>
        </option>
+
+    <option>
+       <p><opt>--sort</opt> (option)</p>
+       <optdesc>Sort file listing chronologically. This option collides with <opt>--show-by-md</opt>.</optdesc>
+    </option>
 
   </section>
 
@@ -184,23 +202,36 @@
     </option>
    </section>
 
-   <section name="Merging a snapshot into a directory">
+   <section name="Merging a snapshot, a patch or a repository into a repository">
    <option>
      <p><opt>--merge</opt> (command)</p>
-      <optdesc>Merge a snapshot or a patch into a repository. Afterwards, you should run <opt>--update</opt> on the repository to update the snapshot.</optdesc>
+      <optdesc>Merge a snapshot, a patch or a repository into a repository. Afterwards, you should run <opt>--update</opt> on the repository to update the snapshot.</optdesc>
    </option>
    <option>
       <p><opt>-q</opt> | <opt>--question</opt> (option)</p>
       <optdesc>Ask a question before each action</optdesc>
    </option>
    <option>
-      <p><opt>--prune-empty</opt> (option)</p>
+      <p><opt>-P</opt> | <opt>--prune-empty</opt> (option)</p>
       <optdesc>Prune empty directories</optdesc>
    </option>
    <option>
       <p><opt>--keep-trash</opt> (option)</p>
       <optdesc>Don't empty trash. Deleted files are copied into a trash folder inside the repository directory. If this option is specified this trash is not emptied when the operation is completed.</optdesc>
    </option>
+   <option>
+     <p><opt>--check-md</opt> (option)</p>
+     <optdesc>Check message digests of files before deleting or replacing them. NB: This worsens syrep's performance and is thus not enabled by default.</optdesc>
+   </option>
+   <option>
+     <p><opt>--always-copy</opt> (option)</p>
+     <optdesc>As default syrep tries to hard link files instead of
+     copying them. With this option syrep will always do a copy,
+     regardless if a hard link is possible or not. This is especially
+     useful when doing bi-directory merges. NB: This worsens syrep's performance and is thus not enabled by default.
+     </optdesc>
+   </option>
+
    </section>
 
    <section name="Making a patch for a snapshot against a directory">

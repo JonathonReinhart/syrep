@@ -1,4 +1,4 @@
-/* $Id: syrep.c 32 2003-09-07 23:11:37Z lennart $ */
+/* $Id: syrep.c 43 2003-11-30 14:27:42Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -17,6 +17,10 @@
   along with syrep; if not, write to the Free Software Foundation,
   Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ***/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include <inttypes.h>
 #include <limits.h>
@@ -52,10 +56,6 @@
 #include "extract.h"
 #include "makepatch.h"
 #include "cleanup.h"
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 
 #include "svn-revision.h"
 
@@ -165,7 +165,7 @@ static int do_merge(void) {
     if (db_context_origin_warn(c2))
         goto finish;
     
-    if (merge(c1, c2, args.inputs[1]) < 0)
+    if (merge(c1, c2, args.inputs[1], isdirectory(args.inputs[0]) > 0 ? args.inputs[0] : NULL) < 0)
         goto finish;
 
     r = 0;
@@ -478,53 +478,58 @@ static int help(const char *argv0) {
             "Usage: %s [options...] <command> [arguments...]\n\n"
 
             "General options:\n"
-            "   -v         --verbose                  Enable verbose operation\n"
-            "   -T         --local-temp               Use temporary directory inside repository\n"
-            "              --ignore-origin            Don't warn if snapshot not local in update, merge, makepatch\n"
-            "   -z         --compress                 Compress snapshots or patches\n"
-            "   -p         --progress                 Show progress\n\n"
+            "   -v         --verbose                       Enable verbose operation\n"
+            "   -T         --local-temp                    Use temporary directory inside repository\n"
+            "              --ignore-origin                 Don't warn if snapshot not local in update, merge, makepatch\n"
+            "   -z         --compress                      Compress snapshots or patches\n"
+            "   -p         --progress                      Show progress\n\n"
 
             "General commands:\n"
-            "   -h         --help                     Print help and exit\n"
-            "   -V         --version                  Print version and exit\n\n"
+            "   -h         --help                           Print help and exit\n"
+            "   -V         --version                        Print version and exit\n\n"
 
             "Specific commands:\n"
-            "              --list                     List a repository snapshot\n"
-            "                --show-deleted           Show deleted entries of repository snapshot\n"
-            "                --show-by-md             Show files by message digests\n"
-            "                --show-times             Show first and last seen times\n\n"
+            "              --list SNAPSHOT                  List a repository snapshot\n"
+            "                --show-deleted                   Show deleted entries of repository snapshot\n"
+            "                --show-by-md                     Show files by message digests\n"
+            "                --show-times                     Show first and last seen times\n"
+            "                --sort                           Sort chronologically\n\n"
 
-            "              --info                     Show information about a repository or snapshot\n\n"
+            "              --info SNAPSHOT                  Show information about a repository or snapshot\n\n"
 
-            "              --history                  Show history of a repository or snapshot\n\n"
+            "              --history SNAPSHOT               Show history of a repository or snapshot\n\n"
             
-            "              --dump                     Show a structure dump of a repository or snapshot\n\n"
+            "              --dump SNAPSHOT                  Show a structure dump of a repository or snapshot\n\n"
             
-            "              --update                   Update a repository snapshot\n"
-            "     -SSTRING   --snapshot=STRING          Use the specified snapshot file instead of the one contained in the repository\n"
-            "     -CSTRING   --cache=STRING             Use the specified cache file instead of the one contained in the repository\n"
-            "                --no-cache                 Don't use a message digest cache\n"
-            "                --no-purge                 Don't purge obsolete entries from cache after update run\n"
-            "                --ro-cache                 Use read only cache\n\n"
+            "              --update DIRECTORY               Update (or create) a repository snapshot\n"
+            "     -SSTRING   --snapshot=STRING                Use the specified snapshot file instead of the one contained in the repository\n"
+            "     -CSTRING   --cache=STRING                   Use the specified cache file instead of the one contained in the repository\n"
+            "                --no-cache                       Don't use a message digest cache\n"
+            "                --no-purge                       Don't purge obsolete entries from cache after update run\n"
+            "                --ro-cache                       Use read only cache\n\n"
             
-            "              --diff                     Show difference between two repositories or snapshots\n\n"
+            "              --diff SNAPSHOT SNAPSHOT         Show difference between two repositories or snapshots\n\n"
             
-            "              --merge                    Merge a snapshot or a patch into a repository\n"
-            "     -q         --question                 Ask a question before each action\n"
-            "                --prune-empty              Prune empty directories\n"
-            "                --keep-trash               Don't empty trash\n\n"
+            "              --merge SNAPSHOT DIRECTORY       Merge a snapshot into a repository (perform deletes, renames only)\n"
+            "              --merge PATCH DIRECTORY          Merge a patch into a repository\n"
+            "              --merge DIRECTORY DIRECTORY      Merge a repository into a repository\n"
+            "     -q         --question                       Ask a question before each action\n"
+            "     -P         --prune-empty                    Prune empty directories\n"
+            "                --keep-trash                     Don't empty trash\n"
+            "                --check-md                       Check message digest of files prior to deletion or replacement\n"
+            "                --always-copy                    Always copy instead of hard link\n\n"
             
-            "              --makepatch                Make a patch against the specified repository\n"
-            "     -oSTRING   --output-file=STRING       Write output to specified file instead of STDOUT\n"
-            "                --include-all              Include files in patch which do exist on the other side under a different name\n\n"
+            "              --makepatch DIRECTORY SNAPSHOT   Make a patch against the specified repository\n"
+            "     -oSTRING   --output-file=STRING             Write output to specified file instead of STDOUT\n"
+            "                --include-all                    Include files in patch which do exist on the other side under a different name\n\n"
             
-            "              --extract                  Extract the contents of a snapshot or patch\n"
-            "     -DSTRING   --output-directory=STRING  Write output to specified directory\n\n"
+            "              --extract SNAPSHOT               Extract the contents of a snapshot or patch\n"
+            "     -DSTRING   --output-directory=STRING        Write output to specified directory\n\n"
             
-            "              --cleanup                  Remove syrep info from repository\n"
-            "     -lINT      --cleanup-level=INT        1 - just remove temporary data and trash (default)\n"
-            "                                           2 - remove MD cache as well\n"
-            "                                           3 - remove all syrep data\n",
+            "              --cleanup DIRECTORY              Remove syrep info from repository\n"
+            "     -lINT      --cleanup-level=INT              1 - just remove temporary data and trash (default)\n"
+            "                                                 2 - remove MD cache as well\n"
+            "                                                 3 - remove all syrep data\n",
             argv0, argv0);
 
     return 0;

@@ -1,4 +1,4 @@
-/* $Id: util.c 32 2003-09-07 23:11:37Z lennart $ */
+/* $Id: util.c 43 2003-11-30 14:27:42Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -17,6 +17,10 @@
   along with syrep; if not, write to the Free Software Foundation,
   Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ***/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include <stdio.h>
 #include <assert.h>
@@ -499,11 +503,11 @@ int prune_empty_directories(const char *path, const char *root) {
     char rroot[PATH_MAX],
          rpath[PATH_MAX];
 
-    strncpy(rroot, root, PATH_MAX);
+    strncpy(rroot, root, PATH_MAX-1);
     rroot[PATH_MAX-1] = 0;
     normalize_path(rroot);
 
-    strncpy(rpath, path, PATH_MAX);
+    strncpy(rpath, path, PATH_MAX-1);
     rpath[PATH_MAX-1] = 0;
     normalize_path(rpath);
 
@@ -545,7 +549,7 @@ int mkdir_p(const char *path, mode_t m) {
     char *e, *b;
     int quit = 0;
 
-    strncpy(tmp, path, PATH_MAX);
+    strncpy(tmp, path, PATH_MAX-1);
     tmp[PATH_MAX-1] = 0;
 
     normalize_path(tmp);
@@ -582,7 +586,7 @@ int mkdir_p(const char *path, mode_t m) {
 int makeprefixpath(const char *path, mode_t m) {
     char tmp[PATH_MAX], *e;
 
-    strncpy(tmp, path, PATH_MAX);
+    strncpy(tmp, path, PATH_MAX-1);
     tmp[PATH_MAX-1] = 0;
 
     normalize_path(tmp);

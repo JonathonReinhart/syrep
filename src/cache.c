@@ -1,4 +1,4 @@
-/* $Id: cache.c 13 2003-08-29 01:21:11Z lennart $ */
+/* $Id: cache.c 43 2003-11-30 14:27:42Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -17,6 +17,10 @@
   along with syrep; if not, write to the Free Software Foundation,
   Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ***/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include <db.h>
 #include <stdlib.h>
@@ -157,7 +161,7 @@ int md_cache_get(struct syrep_md_cache *c, const char *path, uint8_t digest[16])
     struct stat st;
     
     if ((fd = open(path, O_RDONLY)) < 0) {
-        fprintf(stderr, "open(%s): %s\n", path, strerror(errno));
+        fprintf(stderr, "open(\"%s\"): %s\n", path, strerror(errno));
         goto finish;
     }
     

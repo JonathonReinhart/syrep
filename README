@@ -1,5 +1,5 @@
 
-                                   syrep 0.2
+                                   syrep 0.3
 
    Copyright 2003 Lennart Poettering <mzflerc (at) 0pointer (dot) de>
      * [1]License
@@ -30,14 +30,20 @@ License
 
 News
 
+   Sun Nov 30 2003:
+
+   [10]Version 0.3 released; Changes include: new options --sort,
+   --check-md, --always-copy; implemented direct bi-directory merges,
+   documentation updates, build system updates, assorted fixes.
+
    Tue Sep 9 2003:
 
-   [10]Version 0.2 released; Fixes include: documentation update, --diff
+   [11]Version 0.2 released; Fixes include: documentation update, --diff
    output improved, --merge output fixed.
 
    Mon Sep 8 2003:
 
-   [11]Version 0.1 released.
+   [12]Version 0.1 released.
 
 Overview
 
@@ -69,11 +75,11 @@ Overview
 
 Status
 
-   Version 0.2 is more or less stable and fulfills its purpose.
+   Version 0.3 is more or less stable and fulfills its purpose.
 
 Documentation
 
-   Have a look on the man page [12]syrep(1). (A XSLT capable browser is
+   Have a look on the man page [13]syrep(1). (A XSLT capable browser is
    required)
 
   Method of operation
@@ -164,8 +170,8 @@ karl$ syrep -zp --update ~/mp3/
 
 Requirements
 
-   syrep requires installed development versions of [13]zlib and
-   [14]Berkeley DB.
+   syrep requires installed development versions of [14]zlib and
+   [15]Berkeley DB.
 
    syrep was developed and tested on Debian GNU/Linux "testing" from
    September 2003, it should work on most other Linux distributions and
@@ -175,7 +181,7 @@ Requirements
    Some support for for big endian architectures is included, however, it
    is incomplete. You're welcome to send me patches.
 
-   If the syrep build system detects Oliver Kurth's [15]xmltoman the man
+   If the syrep build system detects Oliver Kurth's [16]xmltoman the man
    page is rebuilt. Otherwise the pre-compiled versions shipped with
    syrep are used.
 
@@ -194,18 +200,18 @@ Acknowledgements
 Download
 
    The newest release is always available from
-   [16]http://0pointer.de/lennart/projects/syrep/
+   [17]http://0pointer.de/lennart/projects/syrep/
 
-   The current release is [17]0.2
+   The current release is [18]0.3
 
-   Get syrep's development sources from the [18]Subversion
-   [19]repository.
+   Get syrep's development sources from the [19]Subversion
+   [20]repository.
      _________________________________________________________________
 
 
-    Lennart Poettering <mzflerc (at) 0pointer (dot) de>, Sep 2003
+    Lennart Poettering <mzflerc (at) 0pointer (dot) de>, Nov 2003
 
-   $Id: README.html.in 40 2003-09-09 17:16:36Z lennart $
+   $Id: README.html.in 43 2003-11-30 14:27:42Z lennart $
 
 References
 
@@ -218,13 +224,14 @@ References
    7. README#installation
    8. README#acks
    9. README#download
-  10. http://0pointer.de/lennart/projects/syrep/syrep-0.2.tar.gz
-  11. http://0pointer.de/lennart/projects/syrep/syrep-0.1.tar.gz
-  12. http://0pointer.de/lennart/projects/syrep/syrep.1.xml
-  13. http://www.gzip.org/zlib/
-  14. http://www.sleepycat.com/
-  15. http://masqmail.cx/xml2man/
-  16. http://0pointer.de/lennart/projects/syrep/
-  17. http://0pointer.de/lennart/projects/syrep/syrep-0.2.tar.gz
-  18. http://subversion.tigris.org/
-  19. https://seth.intheinter.net:8081/svn/syrep/
+  10. http://0pointer.de/lennart/projects/syrep/syrep-0.3.tar.gz
+  11. http://0pointer.de/lennart/projects/syrep/syrep-0.2.tar.gz
+  12. http://0pointer.de/lennart/projects/syrep/syrep-0.1.tar.gz
+  13. http://0pointer.de/lennart/projects/syrep/syrep.1.xml
+  14. http://www.gzip.org/zlib/
+  15. http://www.sleepycat.com/
+  16. http://masqmail.cx/xml2man/
+  17. http://0pointer.de/lennart/projects/syrep/
+  18. http://0pointer.de/lennart/projects/syrep/syrep-0.3.tar.gz
+  19. http://subversion.tigris.org/
+  20. https://seth.intheinter.net:8081/svn/syrep/

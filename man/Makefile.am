@@ -1,4 +1,4 @@
-# $Id: Makefile.am 38 2003-09-09 17:06:08Z lennart $
+# $Id: Makefile.am 44 2003-11-30 14:29:27Z lennart $
 
 # This file is part of syrep.
 #
@@ -20,7 +20,7 @@ man_MANS = syrep.1
 
 noinst_DATA = syrep.1.xml
 
-EXTRA_DIST = $(man_MANS) syrep.1.xml.in man.css man.xsl
+EXTRA_DIST = $(man_MANS) syrep.1.xml.in xmltoman.css xmltoman.xsl xmltoman.dtd
 
 CLEANFILES = syrep.1.xml
 
@@ -34,7 +34,7 @@ xmllint: syrep.1.xml
 
 if USE_XMLTOMAN
 
-XMLTOMAN = xmltoman #~/xmltoman.d/xmltoman
+XMLTOMAN = xmltoman
 CLEANFILES += $(man_MANS)
 
 syrep.1: syrep.1.xml Makefile

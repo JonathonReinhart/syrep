@@ -32,6 +32,7 @@ struct gengetopt_args_info
   int show_deleted_flag;	/* list: Show deleted entries of repository snapshot (default=off).  */
   int show_by_md_flag;	/* list: Show files by message digests (default=off).  */
   int show_times_flag;	/* list: Show first and last seen times (default=off).  */
+  int sort_flag;	/* list: sort chronologically (default=off).  */
   int info_flag;	/* Show information about a repository or snapshot (default=off).  */
   int history_flag;	/* Show history of a repository or snapshot (default=off).  */
   int dump_flag;	/* Show a structure dump of a repository or snapshot (default=off).  */
@@ -47,6 +48,8 @@ struct gengetopt_args_info
   int question_flag;	/* merge: Ask a question before each action (default=off).  */
   int prune_empty_flag;	/* merge: Prune empty directories (default=off).  */
   int keep_trash_flag;	/* merge: Don't empty trash (default=off).  */
+  int check_md_flag;	/* merge: Check message digest of file before deleting or replacing (default=off).  */
+  int always_copy_flag;	/* merge: Always copy instead of hard linking (default=off).  */
   int makepatch_flag;	/* Make a patch against the specified repository (default=off).  */
   char * output_file_arg;	/* makepatch: Write output to specified file instead of STDOUT.  */
   int include_all_flag;	/* makepatch: Include files in patch which do exist on the other side under a different name (default=off).  */
@@ -65,6 +68,7 @@ struct gengetopt_args_info
   int show_deleted_given ;	/* Whether show-deleted was given.  */
   int show_by_md_given ;	/* Whether show-by-md was given.  */
   int show_times_given ;	/* Whether show-times was given.  */
+  int sort_given ;	/* Whether sort was given.  */
   int info_given ;	/* Whether info was given.  */
   int history_given ;	/* Whether history was given.  */
   int dump_given ;	/* Whether dump was given.  */
@@ -80,6 +84,8 @@ struct gengetopt_args_info
   int question_given ;	/* Whether question was given.  */
   int prune_empty_given ;	/* Whether prune-empty was given.  */
   int keep_trash_given ;	/* Whether keep-trash was given.  */
+  int check_md_given ;	/* Whether check-md was given.  */
+  int always_copy_given ;	/* Whether always-copy was given.  */
   int makepatch_given ;	/* Whether makepatch was given.  */
   int output_file_given ;	/* Whether output-file was given.  */
   int include_all_given ;	/* Whether include-all was given.  */

@@ -1,7 +1,7 @@
 # -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-# $Id: configure.ac 39 2003-09-09 17:09:34Z lennart $
+# $Id: configure.ac 43 2003-11-30 14:27:42Z lennart $
 
 # This file is part of syrep.
 #
@@ -20,7 +20,7 @@
 # Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 
 AC_PREREQ(2.57)
-AC_INIT([syrep], [0.2], [mzflerc (at) 0pointer (dot) de])
+AC_INIT([syrep], [0.3], [mzflerc (at) 0pointer (dot) de])
 AC_CONFIG_SRCDIR([src/syrep.c])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([foreign -Wall])
@@ -31,8 +31,13 @@ AC_PROG_LN_S
 
 AC_SUBST(PACKAGE_URL, [http://0pointer.de/lennart/projects/syrep/])
 
-if test -d /usr/local/stow ; then
-   AC_MSG_NOTICE([*** Found /usr/local/stow: installing to /usr/local/stow/${PACKAGE_NAME}-${PACKAGE_VERSION} ***])
+# If using GCC specifiy some additional parameters
+if test "x$GCC" = "xyes" ; then
+   CFLAGS="$CFLAGS -pipe -Wall"
+fi
+
+if type -p stow > /dev/null && test -d /usr/local/stow ; then
+   AC_MSG_NOTICE([*** Found /usr/local/stow: default install prefix set to /usr/local/stow/${PACKAGE_NAME}-${PACKAGE_VERSION} ***])
    AC_PREFIX_DEFAULT([/usr/local/stow/${PACKAGE_NAME}-${PACKAGE_VERSION}])
 fi
 
@@ -49,26 +54,20 @@ AC_CHECK_HEADER([sys/sendfile.h], sendfile=yes, sendfile=no)
 
 if test "x$sendfile" = xyes ; then
     AC_CHECK_LIB([c], [sendfile], sendfile=yes, sendfile=no)
-    CPPFLAGS="$CPPFLAGS -DUSE_SENDFILE"
+    AC_DEFINE([USE_SENDFILE], [1], [Use sendfile()])
 fi
 
 AM_CONDITIONAL([USE_SENDFILE], [test "x$sendfile" = xyes])
 
-# If using GCC specify some additional parameters
-if test "x$GCC" = "xyes" ; then
-   CFLAGS="$CFLAGS -pipe -Wall"
-fi
-
 AC_C_BIGENDIAN
-
 if test "x$ac_cv_c_bigendian" = "xyes"; then
-   CFLAGS="$CPPFLAGS -DARCH_IS_BIG_ENDIAN=1"
+   AC_DEFINE([ARCH_IS_BIG_ENDIAN], [1], [Big Endian machine])
 else
-   CPPFLAGS="$CPPFLAGS -DARCH_IS_BIG_ENDIAN=0"
+   AC_DEFINE([ARCH_IS_BIG_ENDIAN], [0], [Big Endian machine])
 fi
 
 # 64 Bit LFS support
-CPPFLAGS="$CPPFLAGS -D_FILE_OFFSET_BITS=64"
+AC_SYS_LARGEFILE
 
 AC_HEADER_DIRENT
 AC_HEADER_STDC

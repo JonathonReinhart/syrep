@@ -1,7 +1,7 @@
 #ifndef foodbstructhfoo
 #define foodbstructhfoo
 
-/* $Id: dbstruct.h 30 2003-09-04 22:06:56Z lennart $ */
+/* $Id: dbstruct.h 43 2003-11-30 14:27:42Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -59,7 +59,7 @@ struct syrep_nhash {                     /* name hash */
 };
 
 struct syrep_name {
-    char path[PATH_MAX+1];
+    char path[PATH_MAX];
 };
 
 
@@ -69,11 +69,11 @@ struct syrep_name {
  * syrep_md :: syrep_nrecno         => md_nrecno                           (DUP)
  * syrep_nrecno :: syrep_md         => nrecno_md                           (DUP)
  * syrep_nrecno :: syrep_md         => nrecno_lastmd
- * syrep_md :: syrep_nrecono        => md_lastnrecno
+ * syrep_md :: syrep_nrecno         => md_lastnrecno
  *
  * syrep_version :: syrep_timestamp => version_timestamp
  *
- * nhash :: nrecno                  => nhash_nrecno                          (DUP)
+ * nhash :: nrecno                  => nhash_nrecno                        (DUP)
  * nrecno :: name                   => nrecno_name
  */
 

@@ -2,29 +2,31 @@
 .SH NAME
 syrep \- A file repository synchronization tool
 .SH SYNOPSIS
-\fBsyrep [\fBoptions...\f1\fB] \fB--list\f1\fB \fISNAPSHOT\f1\fB ...
+\fBsyrep [options...\fB] --list\fB \fISNAPSHOT\fB ...
 
-\fBsyrep [\fBoptions...\f1\fB] \fB--info\f1\fB \fISNAPSHOT\f1\fB ...
+syrep [options...\fB] --info\fB \fISNAPSHOT\fB ...
 
-\fBsyrep [\fBoptions...\f1\fB] \fB--history\f1\fB \fISNAPSHOT\f1\fB ...
+syrep [options...\fB] --history\fB \fISNAPSHOT\fB ...
 
-\fBsyrep [\fBoptions...\f1\fB] \fB--dump\f1\fB \fISNAPSHOT\f1\fB ...
+syrep [options...\fB] --dump\fB \fISNAPSHOT\fB ...
 
-\fBsyrep [\fBoptions...\f1\fB] \fB--update\f1\fB \fIDIRECTORY\f1\fB ...
+syrep [options...\fB] --update\fB \fIDIRECTORY\fB ...
 
-\fBsyrep [\fBoptions...\f1\fB] \fB--diff\f1\fB \fISNAPSHOT\f1\fB \fISNAPSHOT\f1\fB
+syrep [options...\fB] --diff\fB \fISNAPSHOT\fB \fISNAPSHOT\fB
 
-\fBsyrep [\fBoptions...\f1\fB] \fB--merge\f1\fB \fISNAPSHOT\f1\fB \fIDIRECTORY\f1\fB
+syrep [options...\fB] --merge\fB \fISNAPSHOT\fB \fIDIRECTORY\fB
 
-\fBsyrep [\fBoptions...\f1\fB] \fB--makepatch\f1\fB \fIDIRECTORY\f1\fB \fISNAPSHOT\f1\fB
+syrep [options...\fB] --merge\fB \fIPATCH\fB \fIDIRECTORY\fB
 
-\fBsyrep [\fBoptions...\f1\fB] \fB--extract\f1\fB \fISNAPSHOT\f1\fB ...
+syrep [options...\fB] --merge\fB \fIDIRECTORY\fB \fIDIRECTORY\fB
 
-\fBsyrep [\fBoptions...\f1\fB] \fB--cleanup\f1\fB \fISNAPSHOT\f1\fB ...
+syrep [options...\fB] --makepatch\fB \fIDIRECTORY\fB \fISNAPSHOT\fB
 
-\fB
+syrep [options...\fB] --extract\fB \fISNAPSHOT\fB ...
+
+syrep [options...\fB] --cleanup\fB \fIDIRECTORY\fB ...
+\f1
 .SH DESCRIPTION
- 
 Syrep is a generic file repository synchronization tool. It may be used to synchronize large file hierarchies bidirectionally by exchanging patch files. Syrep is truely peer-to-peer, no central servers are involved. Synchronizations between more than two repositories are supported. The patch files may be transferred via offline media, e.g. removable hard disks or compact discs.
 
 Files are tracked by their message digests, currently MD5.
@@ -35,167 +37,152 @@ Syrep is able to cope with 64 bit file sizes. (LFS)
 
 Syrep is optimized for speed. It may make use of a message digest cache to accelerate the calculation of digests of a whole directory hierarchy.
 
+A syrep repository is a normal UNIX directory tree containing a special directory \fI.syrep\f1 with a file \fIcurrent.syrep\f1 (called snapshot) which holds file system history data. A directory is turned into a syrep repository by running \fB--update\f1 on it. Snapshots are used to perform basic tasks like comparing repositories (command \fB--diff\f1) or creating patches between them (command \fB--make-patch\f1).
 .SH GENERAL OPTIONS
-
 Exactly one command has to be specified on the command line. On the other hand multiple options are allowed.
 .TP
-
 \fB-v\f1 | \fB--verbose\f1 (option)
-Enable more verbose operation.TP
-
+Enable more verbose operation 
+.TP
 \fB-T\f1 | \fB--local-temp\f1 (option)
-Use temporary directory inside repository. This is very useful when the file repository you apply patches to is on a different partition than /tmp, because files my be hard linked instead of copied. This requires a read-writable file system however..TP
-
+Use temporary directory inside repository. This is very useful when the file repository you apply patches to is on a different partition than /tmp, because files my be hard linked instead of copied. This requires a read-writable file system however. 
+.TP
 \fB--ignore-origin\f1 (option)
-Normally syrep warns you if you update, merge or makepatch a repository with a matching snapshot not generated on the original host, and asks the user if he really wants to proceed. This option may be used to disable this question..TP
-
+Normally syrep warns you if you update, merge or makepatch a repository with a matching snapshot not generated on the original host, and asks the user if he really wants to proceed. This option may be used to disable this question. 
+.TP
 \fB-z\f1 | \fB--compress\f1 (option)
-Compress output snapshots or patches. This may slow down syrep extraordinarily and is more or less useless if the data to compress is already compressed. I suggest using it for --update but not for --makepatch if the file repository contains MP3 or MPEG files only..TP
-
+Compress output snapshots or patches. This may slow down syrep extraordinarily and is more or less useless if the data to compress is already compressed. I suggest using it for --update but not for --makepatch if the file repository contains MP3 or MPEG files only. 
+.TP
 \fB-p\f1 | \fB--progress\f1 (option)
-Show a rotating dash while executing operations
+Show a rotating dash while executing operations 
 .SH GENERAL COMMANDS
 .TP
-
 \fB-h\f1 | \fB--help\f1 (command)
-Print help and exit.TP
-
+Print help and exit 
+.TP
 \fB-V\f1 | \fB--version\f1 (command)
-Print version information and exit
+Print version information and exit 
 .SH LISTING SNAPSHOT CONTENTS
 .TP
-
 \fB--list\f1 (command)
-Command for listing the file log of a repository snapshot.TP
-
+Command for listing the file log of a repository snapshot 
+.TP
 \fB--show-deleted\f1 (option)
-Show deleted entries.TP
-
+Show deleted entries 
+.TP
 \fB--show-by-md\f1 (option)
-Show files by message digests.TP
-
+Show files by message digests. This option collides with \fB--sort\f1. 
+.TP
 \fB--show-times\f1 (option)
-Show first and last seen times
+Show first and last seen times 
+.TP
+\fB--sort\f1 (option)
+Sort file listing chronologically. This option collides with \fB--show-by-md\f1. 
 .SH SHOWING SNAPSHOT INFORMATION
 .TP
-
 \fB--info\f1 (command)
-Show information about a repository or snapshot, such as origin, current timestamp and version, database size.
+Show information about a repository or snapshot, such as origin, current timestamp and version, database size. 
 .SH SHOWING SNAPSHOT HISTORY
 .TP
-
 \fB--history\f1 (command)
-Show the version and timestamp history of a snapshot's updates
+Show the version and timestamp history of a snapshot's updates 
 .SH DUMPING SNAPSHOT CONTENTS
 .TP
-
 \fB--dump\f1 (command)
-Show a structure dump of a repository or snapshot
+Show a structure dump of a repository or snapshot 
 .SH UPDATING A SNAPSHOT
 .TP
-
 \fB--update\f1 (command)
-Update or create a snapshot for a repository directory. That is: iterate through the specified hierarchy and update the snapshot log information accordingly..TP
-
+Update or create a snapshot for a repository directory. That is: iterate through the specified hierarchy and update the snapshot log information accordingly. 
+.TP
 \fB-S\f1\fISTRING\f1 | \fB--snapshot=\f1\fISTRING\f1 (option)
-Use the specified snapshot file instead of the one contained in the repository directory. This may be helpful if your file hierarchy is read only..TP
-
+Use the specified snapshot file instead of the one contained in the repository directory. This may be helpful if your file hierarchy is read only. 
+.TP
 \fB-C\f1\fISTRING\f1 | \fB--cache=\f1\fISTRING\f1 (option)
-Use the specified message digest cache file instead of the one contained in the repository directory. This may be helpful if your file hierarchy is read only or when you plan to maintain a system wide message digest cache. In the latter case you should use \fB--no-purge\f1 as well..TP
-
+Use the specified message digest cache file instead of the one contained in the repository directory. This may be helpful if your file hierarchy is read only or when you plan to maintain a system wide message digest cache. In the latter case you should use \fB--no-purge\f1 as well. 
+.TP
 \fB--no-cache\f1 (option)
-Don't use a message digest cache..TP
-
+Don't use a message digest cache. 
+.TP
 \fB--no-purge\f1 (option)
-Don't purge obsolete entries from cache after update run. The may be useful if you plan to maintain a system wide message digest cache..TP
-
+Don't purge obsolete entries from cache after update run. The may be useful if you plan to maintain a system wide message digest cache. 
+.TP
 \fB--ro-cache\f1 (option)
-Use cache in a read only fashion
+Use cache in a read only fashion 
 .SH SHOWING DIFFERENCES BETWEEN TWO SNAPSHOTS
 .TP
-
 \fB--diff\f1 (command)
-Show difference between two repositories or snapshots
-.SH MERGING A SNAPSHOT INTO A DIRECTORY
+Show difference between two repositories or snapshots 
+.SH MERGING A SNAPSHOT, A PATCH OR A REPOSITORY INTO A REPOSITORY
 .TP
-
 \fB--merge\f1 (command)
-Merge a snapshot or a patch into a repository. Afterwards, you should run \fB--update\f1 on the repository to update the snapshot..TP
-
+Merge a snapshot, a patch or a repository into a repository. Afterwards, you should run \fB--update\f1 on the repository to update the snapshot. 
+.TP
 \fB-q\f1 | \fB--question\f1 (option)
-Ask a question before each action.TP
-
-\fB--prune-empty\f1 (option)
-Prune empty directories.TP
-
+Ask a question before each action 
+.TP
+\fB-P\f1 | \fB--prune-empty\f1 (option)
+Prune empty directories 
+.TP
 \fB--keep-trash\f1 (option)
-Don't empty trash. Deleted files are copied into a trash folder inside the repository directory. If this option is specified this trash is not emptied when the operation is completed.
+Don't empty trash. Deleted files are copied into a trash folder inside the repository directory. If this option is specified this trash is not emptied when the operation is completed. 
+.TP
+\fB--check-md\f1 (option)
+Check message digests of files before deleting or replacing them. NB: This worsens syrep's performance and is thus not enabled by default. 
+.TP
+\fB--always-copy\f1 (option)
+As default syrep tries to hard link files instead of copying them. With this option syrep will always do a copy, regardless if a hard link is possible or not. This is especially useful when doing bi-directory merges. NB: This worsens syrep's performance and is thus not enabled by default. 
 .SH MAKING A PATCH FOR A SNAPSHOT AGAINST A DIRECTORY
 .TP
-
 \fB--makepatch\f1 (command)
-Make a patch against the specified repository. The patch is written to STDOUT unless \fB-o\f1 is specified..TP
-
+Make a patch against the specified repository. The patch is written to STDOUT unless \fB-o\f1 is specified. 
+.TP
 \fB-o\f1\fISTRING\f1 | \fB--output-file=\f1\fISTRING\f1 (option)
-Write output to specified file instead of STDOUT.TP
-
+Write output to specified file instead of STDOUT 
+.TP
 \fB--include-all\f1 (option)
-Include files in patch which do exist on the other side under a different name
+Include files in patch which do exist on the other side under a different name 
 .SH EXTRACTING A SNAPSHOT'S CONTENTS
 .TP
-
 \fB--extract\f1 (command)
-Extract the contents of a snapshot or patch to the local directory unless \fB-D\f1 is specified..TP
-
+Extract the contents of a snapshot or patch to the local directory unless \fB-D\f1 is specified. 
+.TP
 \fB-D\f1\fISTRING\f1 | \fB--output-directory=\f1\fISTRING\f1 (option)
-Write output to specified directory
+Write output to specified directory 
 .SH CLEANING UP A REPOSITORY
 .TP
-
 \fB--cleanup\f1 (command)
-Remove syrep info from repository.TP
-
+Remove syrep info from repository 
+.TP
 \fB-l\f1\fIINT\f1 | \fB--cleanup-level=\f1\fIINT\f1
-1: just remove temporary data and trash (default); 2: remove message digest cache as well; 3: remove all syrep data
+1: just remove temporary data and trash (default); 2: remove message digest cache as well; 3: remove all syrep data 
 .SH REPOSITORIES, SNAPSHOTS AND PATCHES
-
-A syrep file repository is a POSIX file hierarchy with some additional log data, which is used to track changes. Normally this log data is saved as "snapshot" in the file\fI$(REPOSITORY)/.syrep/current.syrep\f1. You may create and update it by running \fB--update\f1. The more often this log is updated the better modifications may be tracked. Therefore this operation should be called at least once a day via \fBcron (8)\f1
+A syrep file repository is a POSIX file hierarchy with some additional log data, which is used to track changes. Normally this log data is saved as "snapshot" in the file \fI$(REPOSITORY)/.syrep/current.syrep\f1. You may create and update it by running \fB--update\f1. The more often this log is updated the better modifications may be tracked. Therefore this operation should be called at least once a day via \fBcron(8)\f1
 
 Two snapshots of two distinct repositories (possibly from different hosts) may be compared with \fB---diff\f1. This will show you which files should be copied or deleted from or to the other repository. \fB--makepatch\f1 will attach the data of the local missing in the remote repository to a snapshot and write it to a patch file. This file should be transferred to the other repository and applied there with \fB--merge\f1.
 
 Keep in mind that patches contain the snapshot data of the originating host. Because of that you may use it as a snapshot, e.g. by running \fB--diff\f1 on it. On the other hand you are also able to merge snapshots without attached patch data to a repository. This will do all required deletions and renames, but naturally won't add any new data to the file tree.
 
-To extract the contents of a patch you may use\fB--extract\f1. This will write all files contained in the patch or snapshot to the local directory, including snapshot log data. Files are named by their message digests.
-
+To extract the contents of a patch you may use \fB--extract\f1. This will write all files contained in the patch or snapshot to the local directory, including snapshot log data. Files are named by their message digests.
 .SH FILES
+\fI$(REPOSITORY)/.syrep/current.syrep\f1 is the current snapshot of the repository. It is created and updated by running \fB--update\f1 on the directory. Use this file to create patches on other repositories against this one. This file may be compressed by specifiying \fB--compress\f1 when running \fB--update\f1.
 
-\fI$(REPOSITORY)/.syrep/current.syrep\f1 is the current snapshot of the repository. It is created and updated by running\fB--update\f1 on the directory. Use this file to create patches on other repositories against this one. This file may be compressed by specifiying \fB--compress\f1 when running \fB--update\f1.
+\fI$(REPOSITORY)/.syrep/md-cache\f1 is the message digest cache which may be used to accelerate the repeated operation of \fB---update\f1. It associates device numbers, inode numbers, file sizes and modification times with the message digest calculated for that file. The file is only valid on the host it was created on since it contains device numbers. 
 
-\fI$(REPOSITORY)/.syrep/md-cache\f1 is the message digest cache which may be used to accelerate the repeated operation of\fB---update\f1. It associates device numbers, inode numbers, file sizes and modification times with the message digest calculated for that file. The file is only valid on the host it was created on since it contains device numbers. 
+\fI$(REPOSITORY)/.syrep/trash/\f1 is the trash directory used by \fB--merge\f1. Files are moved in here on deletion. After successful completion it is emptied unless \fB--keep-trash\f1 is specified.
 
-\fI$(REPOSITORY)/.syrep/trash/\f1 is the trash directory used by \fB--merge\f1. Files are moved in here on deletion. After successful completion it is emptied unless\fB--keep-trash\f1 is specified.
-
-\fI$(REPOSITORY)/.syrep/tmp/\f1 is used as temporary file space for extracting snaphots when option \fB--local-temp\f1is used.
-
+\fI$(REPOSITORY)/.syrep/tmp/\f1 is used as temporary file space for extracting snaphots when option \fB--local-temp\f1 is used.
 .SH RETURN VALUES
-
 \fI0\f1 Success
 
 \fINonzero\f1 Failure
-
 .SH AUTHOR
-
 Syrep was written by Lennart Poettering <mzflerc (at) 0pointer (dot) de>.
 
 Syrep is available at \fBhttp://0pointer.de/lennart/projects/syrep/\f1
 
 You are encouraged to improve this documentation, feel free to send me patches. This is free software, after all.
-
 .SH SEE ALSO
-
-\fBrsync (1)\f1, \fBcron (8)\f1
-
+\fBrsync(1)\f1, \fBcron(8)\f1
 .SH COMMENTS
-
-This man page was written using \fBxml2man (1)\f1 by Oliver Kurth.
-
+This man page was written using \fBxml2man(1)\f1 by Oliver Kurth.

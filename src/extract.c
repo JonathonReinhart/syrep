@@ -1,4 +1,4 @@
-/* $Id: extract.c 30 2003-09-04 22:06:56Z lennart $ */
+/* $Id: extract.c 43 2003-11-30 14:27:42Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -17,6 +17,10 @@
   along with syrep; if not, write to the Free Software Foundation,
   Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ***/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include <stdlib.h>
 #include <fcntl.h>

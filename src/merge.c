@@ -1,4 +1,4 @@
-/* $Id: merge.c 38 2003-09-09 17:06:08Z lennart $ */
+/* $Id: merge.c 43 2003-11-30 14:27:42Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -18,6 +18,10 @@
   Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ***/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
@@ -35,10 +39,11 @@
 #include "util.h"
 
 struct cb_info {
-    struct syrep_db_context *c1;
-    struct syrep_db_context *c2;
-    const char *root;
-    char trash_dir[PATH_MAX+1];
+    struct syrep_db_context *c1; /* remote */
+    struct syrep_db_context *c2; /* local */
+    const char *root;  /* directory wherein to merge files */
+    const char *sroot;  /* An optional source directory for bi-directory merges */
+    char trash_dir[PATH_MAX];
 };
 
 static int conflict_phase(DB *ddb, struct syrep_name *name, struct diff_entry *de, void *p) {
@@ -47,7 +52,7 @@ static int conflict_phase(DB *ddb, struct syrep_name *name, struct diff_entry *d
     struct syrep_nrecno nrecno1, nrecno2;
     int writeback = 0;
     int f1, f2;
-    char path[PATH_MAX+1];
+    char path[PATH_MAX];
 
     assert(ddb && name && de && p);
 
@@ -172,9 +177,12 @@ static int copy_phase(DB *ddb, struct syrep_name *name, struct diff_entry *de, v
     struct syrep_name name2;
     struct syrep_nrecno nrecno, nrecno2;
     struct syrep_md md;
-    char path[PATH_MAX+1];
+    char path[PATH_MAX];
     int f;
     char d[SYREP_DIGESTLENGTH*2+1];
+
+    int (*copy_proc) (const char *, const char*, int c) = args.always_copy_flag ? copy_file : copy_or_link_file;
+        
 
     assert(ddb && name && de && p);
 
@@ -209,7 +217,7 @@ static int copy_phase(DB *ddb, struct syrep_name *name, struct diff_entry *de, v
             return -1;
     
     if (f) {
-        char path2[PATH_MAX+1];
+        char path2[PATH_MAX];
         snprintf(path2, sizeof(path2), "%s/%s", cb_info->root, name2.path);
 
         if (args.verbose_flag)
@@ -219,7 +227,7 @@ static int copy_phase(DB *ddb, struct syrep_name *name, struct diff_entry *de, v
             return -1;
 
         if (!access(path2, R_OK)) {
-            if (copy_or_link_file(path2, path, 0) < 0)
+            if (copy_proc(path2, path, 0) < 0)
                 return -1;
         } else {
             unsigned l;
@@ -229,27 +237,39 @@ static int copy_phase(DB *ddb, struct syrep_name *name, struct diff_entry *de, v
             escape_path(name2.path, path2+l, sizeof(path2)-l);
 
             if (!access(path2, R_OK)) {
-                if (copy_or_link_file(path2, path, de->action == DIFF_REPLACE) < 0)
+                if (copy_proc(path2, path, de->action == DIFF_REPLACE) < 0)
                     return -1;
             } else
                 fprintf(stderr, "COPY: Local file <%s> vanished. Snapshot not up to date.\n", name2.path);
         }
         
     } else {
+        char spath[PATH_MAX];
         const char* a;
+        const char* t;
         int k;
 
         if ((k = package_get_item(cb_info->c1->package, d, 0, &a)) < 0)
             return -1;
 
+        t = "patch";
+        
+        if (!k && cb_info->sroot) {
+            snprintf(spath, sizeof(spath), "%s/%s", cb_info->sroot, name->path);
+            a = spath;
+
+            if ((k = (access(spath, R_OK) == 0)))
+                t = "tree";
+        }
+        
         if (k) {
             if (args.verbose_flag)
-                fprintf(stderr, "COPY: Copying file <%s> from patch.\n", name->path);
+                fprintf(stderr, "COPY: Copying file <%s> from %s.\n", name->path, t);
             
             if (makeprefixpath(path, 0777) < 0)
                 return -1;
             
-            if (copy_or_link_file(a, path, de->action == DIFF_REPLACE) < 0)
+            if (copy_proc(a, path, de->action == DIFF_REPLACE) < 0)
                 return -1;
         } else
             if (args.verbose_flag)
@@ -261,17 +281,43 @@ static int copy_phase(DB *ddb, struct syrep_name *name, struct diff_entry *de, v
 
 static int delete_phase(DB *ddb, struct syrep_name *name, struct diff_entry *de, void *p) {
     struct cb_info *cb_info = p;
-    char path[PATH_MAX+1], target[PATH_MAX+1];
+    char path[PATH_MAX], target[PATH_MAX];
     unsigned l;
 
     assert(ddb && name && de && p);
     
-    if (de->action != DIFF_DELETE)
+    if (de->action != DIFF_DELETE && de->action != DIFF_REPLACE)
         return 0;
 
-    if (de->repository == cb_info->c1)
+    if (de->action == DIFF_DELETE && de->repository == cb_info->c1)
         return 0;
 
+    if (de->action == DIFF_REPLACE && de->repository == cb_info->c2)
+        return 0;
+
+    snprintf(path, sizeof(path), "%s/%s", cb_info->root, name->path);
+
+    if (args.check_md_flag) {
+        uint8_t digest[16];
+        struct syrep_md md;
+        
+        if (fmd5(path, digest) < 0) {
+            fprintf(stderr, "Unable to calculate message digest sum on '%s'\n", name->path);
+            return -1;
+        }
+
+        if (get_current_md_by_name(cb_info->c2,
+                                   name, &md) < 0) {
+            fprintf(stderr, "Failed to get current MD by name of '%s'\n", name->path);
+            return -1;
+        }
+
+        if (memcmp(md.digest, digest, 16) != 0) {
+            fprintf(stderr, "Message digest of file to delete doesn't match snapshot data for '%s'.\n", name->path);
+            return -1;
+        }
+    }
+    
     if (args.question_flag) {
         char text[256];
         int q;
@@ -285,8 +331,6 @@ static int delete_phase(DB *ddb, struct syrep_name *name, struct diff_entry *de,
             return 0;
     }
         
-    snprintf(path, sizeof(path), "%s/%s", cb_info->root, name->path);
-
     snprintf(target, sizeof(target), "%s/", cb_info->trash_dir);
     l = strlen(target);
     escape_path(name->path, target+l, sizeof(target)-l);
@@ -303,8 +347,9 @@ static int delete_phase(DB *ddb, struct syrep_name *name, struct diff_entry *de,
     return 0;
 }
 
-/* Merges c1 into c2 in directory "root" */
-int merge(struct syrep_db_context *c1, struct syrep_db_context *c2, const char* root) {
+/* Merges c1 into c2 in directory "root"
+ * sroot is an optional source directory, only used on bi-directory merges */
+int merge(struct syrep_db_context *c1, struct syrep_db_context *c2, const char* root, const char* sroot) {
     struct cb_info cb_info;
     DB *ddb = NULL;
     int r = -1;
@@ -313,6 +358,7 @@ int merge(struct syrep_db_context *c1, struct syrep_db_context *c2, const char* 
     cb_info.c1 = c1;
     cb_info.c2 = c2;
     cb_info.root = root;
+    cb_info.sroot = sroot;
 
     snprintf(cb_info.trash_dir, sizeof(cb_info.trash_dir), "%s/.syrep/trash", root);
     mkdir_p(cb_info.trash_dir, 0777);

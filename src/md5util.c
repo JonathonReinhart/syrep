@@ -1,4 +1,4 @@
-/* $Id: md5util.c 13 2003-08-29 01:21:11Z lennart $ */
+/* $Id: md5util.c 43 2003-11-30 14:27:42Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -18,6 +18,10 @@
   Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ***/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <unistd.h>
 #include <sys/mman.h>
 #include <stdio.h>
@@ -25,12 +29,13 @@
 #include <string.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 
 #include "md5util.h"
 #include "md5.h"
 #include "syrep.h"
 
-void fhex(const unsigned char *bin,int len, char *txt) {
+void fhex(const unsigned char *bin, int len, char *txt) {
     const static char hex[] = "0123456789abcdef";
     int i;
 
@@ -43,7 +48,7 @@ void fhex(const unsigned char *bin,int len, char *txt) {
 #define MMAPSIZE (100*1024*1024)
 #define BUFSIZE (1024*1024)
 
-int fdmd5(int fd, size_t l, char *md) {
+int fdmd5(int fd, off_t l, char *md) {
     void *d;
     off_t o = 0;
     size_t m;
@@ -59,6 +64,9 @@ int fdmd5(int fd, size_t l, char *md) {
         goto finish;
     }
 
+    if (l == (off_t) -1)
+        l = pre.st_size;
+    
     if (l > BUFSIZE) {
     
         m = l < MMAPSIZE ? l : MMAPSIZE;
@@ -125,5 +133,23 @@ finish:
     if (p)
         free(p);
     
+    return r;
+}
+
+int fmd5(const char *fn, char *md) {
+    int fd = -1, r = -1;
+    
+    if ((fd = open(fn, O_RDONLY)) < 0) {
+        fprintf(stderr, "open(\"%s\"): %s\n", fn, strerror(errno));
+        goto finish;
+    }
+
+    r = fdmd5(fd, (off_t) -1, md);
+
+finish:
+
+    if (fd >= 0)
+        close(fd);
+
     return r;
 }

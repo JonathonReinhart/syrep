@@ -1,4 +1,4 @@
-/* $Id: dbutil.c 20 2003-09-03 23:43:32Z lennart $ */
+/* $Id: dbutil.c 43 2003-11-30 14:27:42Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -17,6 +17,10 @@
   along with syrep; if not, write to the Free Software Foundation,
   Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ***/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include <string.h>
 #include <assert.h>
@@ -152,6 +156,14 @@ int get_current_md_by_nrecno(struct syrep_db_context *c, const struct syrep_nrec
     return 1;
 }
 
+int get_current_md_by_name(struct syrep_db_context *c, const struct syrep_name *name, struct syrep_md *md) {
+    struct syrep_nrecno nrecno;
+
+    if (get_nrecno_by_name(c, name, &nrecno, 0) < 0)
+        return -1;
+
+    return get_current_md_by_nrecno(c, &nrecno, md);
+}
 
 uint32_t get_version_timestamp(struct syrep_db_context *c, uint32_t v) {
     DBT key, data;
@@ -210,7 +222,8 @@ int get_name_by_nrecno(struct syrep_db_context *c, const struct syrep_nrecno *nr
 
     if (name) {
         memset(name, 0, sizeof(struct syrep_name));
-        strncpy(name->path, data.data, MIN(PATH_MAX, data.size));
+        strncpy(name->path, data.data, MIN(PATH_MAX-1, data.size));
+        name->path[PATH_MAX-1] = 0;
     }
 
     return 1;

@@ -1,7 +1,7 @@
 #ifndef foodbutilhfoo
 #define foodbutilhfoo
 
-/* $Id: dbutil.h 19 2003-08-31 20:46:56Z lennart $ */
+/* $Id: dbutil.h 43 2003-11-30 14:27:42Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -27,6 +27,7 @@
 int get_meta_by_nrecno_md(struct syrep_db_context *c, const struct syrep_nrecno*nrecno, const struct syrep_md *md, struct syrep_meta *meta);
 int get_last_md_by_nrecno(struct syrep_db_context *c, const struct syrep_nrecno *nrecno, struct syrep_md *md);
 int get_current_md_by_nrecno(struct syrep_db_context *c, const struct syrep_nrecno *nrecno, struct syrep_md *md);
+int get_current_md_by_name(struct syrep_db_context *c, const struct syrep_name *name, struct syrep_md *md);
 int get_current_nrecno_by_md(struct syrep_db_context *c, const struct syrep_md *md, struct syrep_nrecno *nrecno);
 uint32_t get_version_timestamp(struct syrep_db_context *c, uint32_t v);
 

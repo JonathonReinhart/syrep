@@ -42,6 +42,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.</p>
 
 <h2><a name="news">News</a></h2>
 
+<div class="news-date">Sun Nov 30 2003: </div> <p class="news-text"><a
+href="@PACKAGE_URL@syrep-0.3.tar.gz">Version 0.3</a> released; Changes
+include: new options <tt>--sort</tt>, <tt>--check-md</tt>,
+<tt>--always-copy</tt>; implemented direct bi-directory merges,
+documentation updates, build system updates, assorted fixes.</p>
+
 <div class="news-date">Tue Sep 9 2003: </div> <p class="news-text"><a
 href="@PACKAGE_URL@syrep-0.2.tar.gz">Version
 0.2</a> released; Fixes include: documentation update, <tt>--diff</tt> output improved, <tt>--merge</tt> output fixed.</p>
@@ -221,9 +227,9 @@ L. Peter Deutsch. Thanks to him for this.</p>
 
 <hr/>
 
-<address>Lennart Poettering &lt;@PACKAGE_BUGREPORT@&gt;, Sep 2003</address>
+<address>Lennart Poettering &lt;@PACKAGE_BUGREPORT@&gt;, Nov 2003</address>
 
-<div><i>$Id: README.html.in 40 2003-09-09 17:16:36Z lennart $</i></div>
+<div><i>$Id: README.html.in 43 2003-11-30 14:27:42Z lennart $</i></div>
 
 </body>
 </html>

@@ -1,4 +1,4 @@
-/* $Id: makepatch.c 32 2003-09-07 23:11:37Z lennart $ */
+/* $Id: makepatch.c 43 2003-11-30 14:27:42Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -17,6 +17,10 @@
   along with syrep; if not, write to the Free Software Foundation,
   Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ***/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include <assert.h>
 #include <unistd.h>
@@ -38,7 +42,7 @@ static int cb(DB *ddb, struct syrep_name *name, struct diff_entry *de, void *p) 
     struct cb_info *cb_info = p;
     struct syrep_md md;
     struct syrep_nrecno nrecno;
-    char path[PATH_MAX+1];
+    char path[PATH_MAX];
     char d[SYREP_DIGESTLENGTH*2+1];
     int f, k;
 

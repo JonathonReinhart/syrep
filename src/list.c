@@ -1,4 +1,4 @@
-/* $Id: list.c 19 2003-08-31 20:46:56Z lennart $ */
+/* $Id: list.c 43 2003-11-30 14:27:42Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -18,6 +18,10 @@
   Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ***/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <string.h>
 #include <assert.h>
 #include <stdlib.h>
@@ -30,17 +34,21 @@
 #include "dbutil.h"
 #include "syrep.h"
 
-static int handle_file(struct syrep_db_context *c, const struct syrep_nrecno *nrecno, const struct syrep_md *md, const struct syrep_meta *meta) {
+static int handle_file(struct syrep_db_context *c, const struct syrep_nrecno *nrecno, const struct syrep_md *md, const struct syrep_meta *meta, const struct syrep_name *name) {
     struct syrep_meta local_meta;
-    struct syrep_name name;
-    int f;
+    struct syrep_name local_name;
     
     assert(c && nrecno && md);
 
-    if ((f = get_name_by_nrecno(c, nrecno, &name)) < 0)
-        return -1;
+    if (!name) {
+        int f;
+    
+        if ((f = get_name_by_nrecno(c, nrecno, &local_name)) < 0)
+            return -1;
 
-    assert(f);
+        assert(f);
+        name = &local_name;
+    }
     
     if (!meta) {
         int f;
@@ -60,9 +68,9 @@ static int handle_file(struct syrep_db_context *c, const struct syrep_nrecno *nr
             fhex(md->digest, SYREP_DIGESTLENGTH, d);
             d[SYREP_DIGESTLENGTH*2] = 0;
             
-            printf("%s %s%s", d, name.path, meta->last_seen == c->version ? "\t\t" : "\t(deleted)");
+            printf("%s %s%s", d, name->path, meta->last_seen == c->version ? "\t\t" : "\t(deleted)");
         } else
-            printf("\t%s%s", name.path, meta->last_seen == c->version ? "\t\t" : "\t(deleted)");
+            printf("\t%s%s", name->path, meta->last_seen == c->version ? "\t\t" : "\t(deleted)");
         
         if (args.show_times_flag)
             printf( "\t(first-seen: %u; last-seen: %u)\n", meta->first_seen, meta->last_seen);
@@ -73,16 +81,44 @@ static int handle_file(struct syrep_db_context *c, const struct syrep_nrecno *nr
         fhex(md->digest, SYREP_DIGESTLENGTH, d);
         d[SYREP_DIGESTLENGTH*2] = 0;
         
-        printf("\t%s", name.path);
+        printf("\t%s", name->path);
     }
             
     return 0;
 }
 
+struct sort_entry {
+    struct syrep_nrecno nrecno;
+    struct syrep_md md;
+    struct syrep_meta meta;
+    struct syrep_name name;
+};
+
+static int sort_entry_cmp(const void *_a, const void *_b) {
+    const struct sort_entry *a = _a, *b = _b;
+    assert(a && b);
+
+    if (a->meta.last_seen < b->meta.last_seen)
+        return -1;
+
+    if (a->meta.last_seen > b->meta.last_seen)
+        return 1;
+
+    if (a->meta.first_seen < b->meta.first_seen)
+        return -1;
+
+    if (a->meta.first_seen > b->meta.first_seen)
+        return 1;
+
+    return strncmp(a->name.path, b->name.path, PATH_MAX);
+};
+
 int list(struct syrep_db_context *c) {
     int r = -1, ret;
     DBC *cursor = NULL;
     DBT key, data;
+    struct sort_entry *sort_array = NULL;
+    unsigned n_sort_array = 0, m_sort_array = 0;
 
     if (args.show_by_md_flag) {
         struct syrep_md previous_md;
@@ -112,7 +148,7 @@ int list(struct syrep_db_context *c) {
             if ((ret = get_meta_by_nrecno_md(c, recno, md, &meta)) < 0)
                 goto finish;
 
-            if (handle_file(c, recno, md, &meta) < 0)
+            if (handle_file(c, recno, md, &meta, NULL) < 0)
                 fprintf(stderr, "handle_file() failed\n");
         }
         
@@ -123,7 +159,7 @@ int list(struct syrep_db_context *c) {
     
         r = 0;
     } else {
-
+        
         if ((ret = c->db_id_meta->cursor(c->db_id_meta, NULL, &cursor, 0)) != 0) {
             c->db_id_meta->err(c->db_id_meta, ret, "id_meta");
             goto finish;
@@ -135,9 +171,59 @@ int list(struct syrep_db_context *c) {
         while ((ret = cursor->c_get(cursor, &key, &data, DB_NEXT)) == 0) {
             struct syrep_id *id = (struct syrep_id*) key.data;
             
-            if (handle_file(c, &id->nrecno, &id->md, (struct syrep_meta*) data.data) < 0)
-                fprintf(stderr, "handle_file() failed\n");
-            
+            if (!args.sort_flag) {
+                if (handle_file(c, &id->nrecno, &id->md, (struct syrep_meta*) data.data, NULL) < 0)
+                    fprintf(stderr, "handle_file() failed\n");
+                
+            } else {
+                if (n_sort_array >= m_sort_array) {
+
+                    if (!m_sort_array) {
+                        DB_BTREE_STAT *statp;
+                        int ret;
+                        
+                        if ((ret = c->db_id_meta->stat(c->db_id_meta, &statp, 0)) != 0)
+                            break;
+
+                        m_sort_array = statp->bt_ndata;
+                        free(statp);
+                    } else
+                        m_sort_array *= 2;
+
+                    sort_array = realloc(sort_array, m_sort_array * sizeof(struct sort_entry));
+                }
+
+                assert(n_sort_array < m_sort_array);
+                
+                if (get_name_by_nrecno(c, &id->nrecno, &sort_array[n_sort_array].name) != 1)
+                    goto finish;
+
+                memcpy(&sort_array[n_sort_array].nrecno, &id->nrecno, sizeof(struct syrep_nrecno));
+                memcpy(&sort_array[n_sort_array].md, &id->md, sizeof(struct syrep_md));
+                memcpy(&sort_array[n_sort_array].meta, data.data, sizeof(struct syrep_meta));
+                n_sort_array++;
+            }
+
+            if (interrupted) {
+                fprintf(stderr, "Canceled.\n");
+                goto finish;
+            }
+        }
+
+        if (args.sort_flag && sort_array) {
+            unsigned i;
+            struct sort_entry *se;
+            qsort(sort_array, n_sort_array, sizeof(struct sort_entry), sort_entry_cmp);
+
+            for (i = 0, se = sort_array; i < n_sort_array; i++, se++) {
+                if ((handle_file(c, &se->nrecno, &se->md, &se->meta, &se->name)) < 0)
+                    fprintf(stderr, "handle_file() failed\n");
+
+                if (interrupted) {
+                    fprintf(stderr, "Canceled.\n");
+                    goto finish;
+                }
+            }
         }
         
         if (ret != DB_NOTFOUND) {
@@ -152,6 +238,9 @@ finish:
 
     if (cursor)
         cursor->c_close(cursor);
+
+    if (sort_array)
+        free(sort_array);
 
     return r;
 }

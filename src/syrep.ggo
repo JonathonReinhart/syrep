@@ -1,4 +1,4 @@
-# $Id: syrep.ggo 23 2003-09-04 18:56:27Z lennart $
+# $Id: syrep.ggo 43 2003-11-30 14:27:42Z lennart $
 
 #  This file is part of syrep.
 #
@@ -29,6 +29,7 @@ option "list" - "List a repository snapshot" flag off
  option "show-deleted" - "list: Show deleted entries of repository snapshot" flag off
  option "show-by-md" - "list: Show files by message digests" flag off
  option "show-times" - "list: Show first and last seen times" flag off
+ option "sort" - "list: sort chronologically" flag off
 
 option "info" - "Show information about a repository or snapshot" flag off
 option "history" - "Show history of a repository or snapshot" flag off
@@ -46,8 +47,10 @@ option "diff" - "Show difference between two repositories or snapshots" flag off
 
 option "merge" - "Merge a snapshot or a repository into a repository" flag off
  option "question" q "merge: Ask a question before each action" flag off
- option "prune-empty" - "merge: Prune empty directories" flag off
+ option "prune-empty" P "merge: Prune empty directories" flag off
  option "keep-trash" - "merge: Don't empty trash" flag off
+ option "check-md" - "merge: Check message digest of file before deleting or replacing" flag off
+ option "always-copy" - "merge: Always copy instead of hard linking" flag off
 
 option "makepatch" - "Make a patch against the specified repository" flag off
  option "output-file" o "makepatch: Write output to specified file instead of STDOUT" string no

@@ -1,4 +1,4 @@
-/* $Id: update.c 19 2003-08-31 20:46:56Z lennart $ */
+/* $Id: update.c 43 2003-11-30 14:27:42Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -17,6 +17,10 @@
   along with syrep; if not, write to the Free Software Foundation,
   Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ***/
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include <dirent.h>
 #include <sys/stat.h>
@@ -104,7 +108,8 @@ static int handle_file(struct syrep_db_context *c, uint32_t version, const char 
     struct syrep_nrecno nrecno;
 
     memset(&name, 0, sizeof(name));
-    strncpy(name.path, path, PATH_MAX);
+    strncpy(name.path, path, PATH_MAX-1);
+    name.path[PATH_MAX-1] = 0;
 
     if ((r = get_nrecno_by_name(c, &name, &nrecno, 0)) < 0)
         return -1;
