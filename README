@@ -1,0 +1,219 @@
+
+                                   syrep 0.1
+
+   Copyright 2003 Lennart Poettering <mzflerc (at) 0pointer (dot) de>
+     * [1]License
+     * [2]News
+     * [3]Overview
+     * [4]Status
+     * [5]Documentation
+     * [6]Requirements
+     * [7]Installation
+     * [8]Acknowledgements
+     * [9]Download
+
+License
+
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2 of the License, or (at
+   your option) any later version.
+
+   This program is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+   General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+News
+
+   Mon Sep 8 2003:
+
+   [10]Version 0.1 released.
+
+Overview
+
+   syrep is a generic file repository synchronization tool. It may be
+   used to synchronize large file hierarchies bidirectionally by
+   exchanging patch files. Syrep is truely peer-to-peer, no central
+   servers are involved. Synchronizations between more than two
+   repositories are supported. The patch files may be transferred via
+   offline media, e.g. removable hard disks or compact discs.
+
+   Files are tracked by their message digests, currently MD5. The
+   following file operations are tracked in the snapshot files: creation,
+   deletion, modification, creation of new hard or symbolic links,
+   renaming. (The latter is nothing more than a new hard link and removal
+   of the old file). syrep doesn't distuinguish between soft and hard
+   links. In fact even copies of files are treated as the same.
+   Currently, syrep doesn't synchronize file attributes like access modes
+   or modification times.
+
+   Syrep was written to facilitate the synchronization of two large
+   digital music repositories without direct network connection. Patch
+   files of several gigabytes are common in this situation.
+
+   Syrep is able to cope with 64 bit file sizes. (LFS)
+
+   Syrep is optimized for speed. It may make use of a message digest
+   cache to accelerate the calculation of digests of a whole directory
+   hierarchy.
+
+Status
+
+   Version 0.1 is more or less stable and fulfills its purpose.
+
+Documentation
+
+   Have a look on the man page [11]syrep(1). (A XSLT capable browser is
+   required)
+
+  Method of operation
+
+   Syrep's operation relies on "snapshots" of a file repository. A
+   snapshot contains information about all files existent in the
+   hierarchy combined with a limited history log of file operations.
+   Snapshots may be compared, files missing or deleted on one of both
+   sides may be detected this way. Based on this knowledge patch files
+   containing all missing files may be created and merged.
+
+   To keep the file operation log in a sensible state it is crucial to
+   update the snapshot frequently, probably by adding a new cron job.
+
+  Example usage
+
+   Fred and Karl want to synchronize their digital music libraries by
+   exchanging an USB hard disk with patch files. As first step, both
+   initialize their repositories for usage with syrep:
+fred$ syrep -zp --update ~/mp3/
+...
+karl$ syrep -zp --update ~/mp3/
+
+   Depending on the size of the repositories this takes a lot of time,
+   since a message digest is calculated for every file. Since exact
+   tracking of all file operations on the repository is crucial for
+   effetive synchronization, they both use the time passing to add a new
+   entry to their crontab:
+1 3 * * * syrep -z --update ~/mp3/
+
+   When the snapshot creation finished, they send the newly created patch
+   files ~/mp3/.syrep/curent.syrep to each other. As these snapshots are
+   only about 400K of size for a 80GB repository they do that via email:
+fred$ mutt -a ~/mp3/.syrep/current.syrep -s "The current snapshot of fred" karl
+...
+karl$ mutt -a ~/mp3/.syrep/current.syrep -s "The current snapshot of karl" fred
+
+   When the mails arrive they both detach the snapshot and create a patch
+   on their USB harddisk containing all local files not existing on the
+   other siede:
+fred$ mount /mnt/usb
+fred$ syrep -p -o /mnt/usb/patch-for-karl --makepatch ~/mp3/ ~/karls-current.sy
+rep
+fred$ umount /mnt/usb
+...
+karl$ mount /mnt/usb
+karl$ syrep -p -o /mnt/usb/patch-for-fred --makepatch ~/mp3/ ~/freds-current.sy
+rep
+karl$ umount /mnt/usb
+
+   As next step they exchange their harddisks. Back at home they merge
+   the newly acquired patch into their own repository:
+fred$ mount /mnt/usb
+fred$ syrep -pT --merge /mnt/usb/patch-for-fred ~/mp3/
+fred$ umount /mnt/usb
+...
+karl$ mount /mnt/usb
+karl$ syrep -pT --merge /mnt/usb/patch-for-karl ~/mp3/
+karl$ umount /mnt/usb
+
+   At this moment both have the same file hierarchy. To update the local
+   snapshot log with the newly merged files they both should run --update
+   now. This update run should be much quicker since the message digests
+   of all unchanged files are read from a message cache created and
+   update each time --update runs:
+fred$ syrep -zp --update ~/mp3/
+...
+karl$ syrep -zp --update ~/mp3/
+
+   Some time later Fred got plenty of new music files, while Karl didn't
+   change anything on his repository. Thus, Fred is able to use the old
+   snapshot he recieved from Karl to generate a new patch for him. He
+   does it exactly the same way he did the last time, see above.
+
+   And now, several iterations of the story described above follow.
+
+   That's the end of the story.
+
+   OK, not quite. Sometimes a conflict happens, e.g. at the same time
+   both created a file foo.mp3 with different contents. When this happens
+   the local copy is always copied into the patch and the user may decide
+   during merge which file version he wants to have locally. Because of
+   that merging is an interactive task and cannot be automated
+   completely.
+
+   There is no need that the synchronization operations happen in such a
+   "symmetric" way as described above.
+
+Requirements
+
+   syrep requires installed development versions of [12]zlib and
+   [13]Berkeley DB.
+
+   syrep was developed and tested on Debian GNU/Linux "testing" from
+   September 2003, it should work on most other Linux distributions and
+   may be POSIX implementations since it uses GNU autoconf for source
+   code configuration.
+
+   Some support for for big endian architectures is included, however, it
+   is incomplete. You're welcome to send me patches.
+
+Installation
+
+   As this package is made with the GNU autotools you should run
+   ./configure inside the distribution directory for configuring the
+   source tree. After that you should run make for compilation and make
+   install (as root) for installation of syrep.
+
+Acknowledgements
+
+   This software includes an implementation of the MD5 algorithm by L.
+   Peter Deutsch. Thanks to him for this.
+
+Download
+
+   The newest release is always available from
+   [14]http://0pointer.de/lennart/projects/syrep/
+
+   The current release is [15]0.1
+
+   Get syrep's development sources from the [16]Subversion
+   [17]repository.
+     _________________________________________________________________
+
+
+    Lennart Poettering <mzflerc (at) 0pointer (dot) de>, Sep 2003
+
+   $Id: README.html.in 34 2003-09-07 23:21:00Z lennart $
+
+References
+
+   1. README#license
+   2. README#news
+   3. README#overview
+   4. README#status
+   5. README#documentation
+   6. README#requirements
+   7. README#installation
+   8. README#acks
+   9. README#download
+  10. http://0pointer.de/lennart/projects/syrep/syrep-0.1.tar.gz
+  11. http://0pointer.de/lennart/projects/syrep/syrep.1.xml
+  12. http://www.gzip.org/zlib/
+  13. http://www.sleepycat.com/
+  14. http://0pointer.de/lennart/projects/syrep/
+  15. http://0pointer.de/lennart/projects/syrep/syrep-0.1.tar.gz
+  16. http://subversion.tigris.org/
+  17. https://seth.intheinter.net:8081/svn/syrep/

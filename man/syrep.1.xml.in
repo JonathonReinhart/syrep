@@ -1,0 +1,323 @@
+<?xml version="1.0"?> <!-- -*-xae-*- -->
+<!DOCTYPE manpage SYSTEM "man.dtd">
+<?xml-stylesheet type="text/xsl" href="man.xsl" ?> 
+
+<!-- $Id: syrep.1.xml.in 32 2003-09-07 23:11:37Z lennart $ -->
+
+<!-- 
+  This file is part of syrep.
+
+  syrep is free software; you can redistribute it and/or modify it under
+  the terms of the GNU General Public License as published by the Free
+  Software Foundation; either version 2 of the License, or (at your
+  option) any later version.
+
+  syrep is distributed in the hope that it will be useful, but WITHOUT
+  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+  for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with syrep; if not, write to the Free Software Foundation,
+  Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA. 
+-->
+
+  <manpage name="syrep" section="8" desc="A file repository synchronization tool">
+  
+  <synopsis>
+    <cmd>syrep [<opt>options...</opt>] <opt>--list</opt> <arg>SNAPSHOT</arg> ...</cmd>
+    <cmd>syrep [<opt>options...</opt>] <opt>--info</opt> <arg>SNAPSHOT</arg> ...</cmd>
+    <cmd>syrep [<opt>options...</opt>] <opt>--history</opt> <arg>SNAPSHOT</arg> ...</cmd>
+    <cmd>syrep [<opt>options...</opt>] <opt>--dump</opt> <arg>SNAPSHOT</arg> ...</cmd>
+    <cmd>syrep [<opt>options...</opt>] <opt>--update</opt> <arg>DIRECTORY</arg> ...</cmd>
+    <cmd>syrep [<opt>options...</opt>] <opt>--diff</opt> <arg>SNAPSHOT</arg> <arg>SNAPSHOT</arg></cmd>
+    <cmd>syrep [<opt>options...</opt>] <opt>--merge</opt> <arg>SNAPSHOT</arg> <arg>DIRECTORY</arg></cmd>
+    <cmd>syrep [<opt>options...</opt>] <opt>--makepatch</opt> <arg>DIRECTORY</arg> <arg>SNAPSHOT</arg></cmd>
+    <cmd>syrep [<opt>options...</opt>] <opt>--extract</opt> <arg>SNAPSHOT</arg> ...</cmd>
+    <cmd>syrep [<opt>options...</opt>] <opt>--cleanup</opt> <arg>SNAPSHOT</arg> ...</cmd>
+  </synopsis>
+  
+  <description> 
+
+    <p>Syrep is a generic file repository synchronization tool. It may
+	be used to synchronize large file hierarchies bidirectionally by
+	exchanging patch files. Syrep is truely peer-to-peer, no central
+	servers are involved. Synchronizations between more than two
+	repositories are supported. The patch files may be transferred via
+	offline media, e.g. removable hard disks or compact discs.</p>
+
+    <p>Files are tracked by their message digests, currently MD5.</p>
+
+    <p>Syrep was written to facilitate the synchronization of two
+    large digital music repositories without direct network
+    connection. Patch files of several gigabytes are common in
+    this situation.</p>
+
+    <p>Syrep is able to cope with 64 bit file sizes. (LFS)</p>
+
+    <p>Syrep is optimized for speed. It may make use of a message digest cache to accelerate the calculation of digests of a whole directory hierarchy.</p>
+
+  </description>
+  
+  <section name="General options">
+    
+    <p>Exactly one command has to be specified on the command line. On the other hand multiple options are allowed.</p>
+    
+    <option>
+       <p><opt>-v</opt> | <opt>--verbose</opt> (option)</p>
+
+       <optdesc>Enable more verbose operation</optdesc>
+    </option>
+    
+    <option>
+       <p><opt>-T</opt> | <opt>--local-temp</opt> (option)</p>
+       <optdesc>Use temporary directory inside repository. This is very useful when the file repository you apply patches to is on a different partition than /tmp, because files my be hard linked instead of copied. This requires a read-writable file system however.
+        </optdesc>
+       </option>
+    
+    <option>
+       <p><opt>--ignore-origin</opt> (option)</p>
+       <optdesc>Normally syrep warns you if you update, merge or makepatch a repository with a matching snapshot not generated on the original host, and asks the user if he really wants to proceed. This option may be used to disable this question.
+       </optdesc>
+       </option>
+    
+    <option>
+       <p><opt>-z</opt> | <opt>--compress</opt> (option)</p>
+       <optdesc>Compress output snapshots or patches. This may slow down syrep extraordinarily and is more or less useless if the data to compress is already compressed. I suggest using it for --update but not for --makepatch if the file repository contains MP3 or MPEG files only.
+        </optdesc>
+       </option>
+
+    <option>
+       <p><opt>-p</opt> | <opt>--progress</opt> (option)</p>
+       <optdesc>Show a rotating dash while executing operations</optdesc>
+       </option>
+
+  </section>
+
+  <section name="General commands">
+    <option>
+       <p><opt>-h</opt> | <opt>--help</opt> (command)</p>
+       <optdesc>Print help and exit</optdesc>
+       </option>
+    
+    <option>
+       <p><opt>-V</opt> | <opt>--version</opt> (command)</p>
+       <optdesc>Print version information and exit</optdesc>
+       </option>
+
+  </section>
+
+  <section name="Listing snapshot contents">
+    
+    <option>
+       <p><opt>--list</opt> (command)</p>
+       <optdesc>Command for listing the file log of a repository snapshot</optdesc>
+       </option>
+
+    <option>
+       <p><opt>--show-deleted</opt> (option)</p>
+       <optdesc>Show deleted entries</optdesc>
+       </option>
+
+    <option>
+       <p><opt>--show-by-md</opt> (option)</p>
+       <optdesc>Show files by message digests</optdesc>
+       </option>
+
+    <option>
+       <p><opt>--show-times</opt> (option)</p>
+       <optdesc>Show first and last seen times</optdesc>
+       </option>
+
+  </section>
+
+  <section name="Showing snapshot information">
+   <option>
+    <p><opt>--info</opt> (command)</p>
+    <optdesc>Show information about a repository or snapshot, such as origin, current timestamp and version, database size.</optdesc>
+    </option>
+   </section>
+
+   <section name="Showing snapshot history">
+   <option><p><opt>--history</opt> (command)</p>
+     <optdesc>Show the version and timestamp history of a snapshot's updates</optdesc>
+   </option>
+   </section>
+
+   <section name="Dumping snapshot contents">
+   <option><p><opt>--dump</opt> (command)</p>
+     <optdesc>Show a structure dump of a repository or snapshot</optdesc>
+   </option>
+   </section>
+
+   <section name="Updating a snapshot">
+    <option>
+      <p><opt>--update</opt> (command)</p>
+      <optdesc>Update or create a snapshot for a repository directory. That is: iterate through the specified hierarchy and update the snapshot log information accordingly.</optdesc>
+    </option>
+    <option>
+      <p><opt>-S</opt><arg>STRING</arg> | <opt>--snapshot=</opt><arg>STRING</arg> (option)</p>
+      <optdesc>Use the specified snapshot file instead of the one contained in the repository directory. This may be helpful if your file hierarchy is read only.</optdesc>
+    </option>
+    <option>
+      <p><opt>-C</opt><arg>STRING</arg> | <opt>--cache=</opt><arg>STRING</arg> (option)</p>
+      <optdesc>Use the specified message digest cache file instead of the one contained in the repository directory. This may be helpful if your file hierarchy is read only or when you plan to maintain a system wide message digest cache. In the latter case you should use <opt>--no-purge</opt> as well.</optdesc>
+    </option>
+    <option>
+      <p><opt>--no-cache</opt> (option)</p>
+      <optdesc>Don't use a message digest cache.</optdesc>
+    </option>
+    <option>
+      <p><opt>--no-purge</opt> (option)</p>
+      <optdesc>Don't purge obsolete entries from cache after update run. The may be useful if you plan to maintain a system wide message digest cache.</optdesc>
+    </option>
+    <option>
+      <p><opt>--ro-cache</opt> (option)</p>
+      <optdesc>Use cache in a read only fashion</optdesc>
+    </option>
+
+   </section>
+   <section name="Showing differences between two snapshots">
+    <option>
+     <p><opt>--diff</opt> (command)</p>
+     <optdesc>Show difference between two repositories or snapshots</optdesc>
+    </option>
+   </section>
+
+   <section name="Merging a snapshot into a directory">
+   <option>
+     <p><opt>--merge</opt> (command)</p>
+      <optdesc>Merge a snapshot or a patch into a repository. Afterwards, you should run <opt>--update</opt> on the repository to update the snapshot.</optdesc>
+   </option>
+   <option>
+      <p><opt>-q</opt> | <opt>--question</opt> (option)</p>
+      <optdesc>Ask a question before each action</optdesc>
+   </option>
+   <option>
+      <p><opt>--prune-empty</opt> (option)</p>
+      <optdesc>Prune empty directories</optdesc>
+   </option>
+   <option>
+      <p><opt>--keep-trash</opt> (option)</p>
+      <optdesc>Don't empty trash. Deleted files are copied into a trash folder inside the repository directory. If this option is specified this trash is not emptied when the operation is completed.</optdesc>
+   </option>
+   </section>
+
+   <section name="Making a patch for a snapshot against a directory">
+   <option>
+      <p><opt>--makepatch</opt> (command)</p>
+      <optdesc>Make a patch against the specified repository. The patch is written to STDOUT unless <opt>-o</opt> is specified.</optdesc>
+   </option>
+   <option>
+     <p><opt>-o</opt><arg>STRING</arg> | <opt>--output-file=</opt><arg>STRING</arg> (option)</p>
+     <optdesc>Write output to specified file instead of STDOUT</optdesc>
+   </option>
+   <option>
+     <p><opt>--include-all</opt> (option)</p>
+     <optdesc>Include files in patch which do exist on the other side under a different name</optdesc>
+   </option>
+   </section>
+
+   <section name="Extracting a snapshot's contents">
+   <option>
+     <p><opt>--extract</opt> (command)</p>
+     <optdesc>Extract the contents of a snapshot or patch to the local directory unless <opt>-D</opt> is specified.</optdesc>
+   </option>
+   <option>
+     <p><opt>-D</opt><arg>STRING</arg> | <opt>--output-directory=</opt><arg>STRING</arg> (option)</p>
+     <optdesc>Write output to specified directory</optdesc>
+   </option>
+   </section>
+
+   <section name="Cleaning up a repository">
+    <option>
+    <p><opt>--cleanup</opt> (command)</p>
+    <optdesc>Remove syrep info from repository</optdesc>
+    </option>
+    
+    <option>
+    <p><opt>-l</opt><arg>INT</arg> | <opt>--cleanup-level=</opt><arg>INT</arg></p>
+    <optdesc>1: just remove temporary data and trash (default); 2: remove message digest cache as well; 3: remove all syrep data</optdesc>
+    </option>
+  </section>
+
+  <section name="Repositories, Snapshots and Patches">
+
+    <p>A syrep file repository is a POSIX file hierarchy with some
+    additional log data, which is used to track changes. Normally this
+    log data is saved as "snapshot" in the file
+    <file>$(REPOSITORY)/.syrep/current.syrep</file>. You may create
+    and update it by running <opt>--update</opt>. The more often this
+    log is updated the better modifications may be tracked. Therefore
+    this operation should be called at least once a day via <manref
+    name="cron" section="8"/></p>
+
+    <p>Two snapshots of two distinct repositories (possibly from
+    different hosts) may be compared with <opt>---diff</opt>. This
+    will show you which files should be copied or deleted from or to
+    the other repository. <opt>--makepatch</opt> will attach the data
+    of the local missing in the remote repository to a snapshot and
+    write it to a patch file. This file should be transferred to the
+    other repository and applied there with <opt>--merge</opt>.</p>
+
+    <p>Keep in mind that patches contain the snapshot data of the
+    originating host. Because of that you may use it as a snapshot,
+    e.g. by running <opt>--diff</opt> on it. On the other hand you are
+    also able to merge snapshots without attached patch data to a
+    repository. This will do all required deletions and renames, but
+    naturally won't add any new data to the file tree.</p>
+
+    <p>To extract the contents of a patch you may use
+    <opt>--extract</opt>. This will write all files contained in the
+    patch or snapshot to the local directory, including snapshot log
+    data. Files are named by their message digests.</p>
+
+  </section>
+
+  <section name="Files">
+
+   <p><file>$(REPOSITORY)/.syrep/current.syrep</file> is the current
+   snapshot of the repository. It is created and updated by running
+   <opt>--update</opt> on the directory. Use this file to create
+   patches on other repositories against this one. This file may be compressed by specifiying <opt>--compress</opt> when running <opt>--update</opt>.</p>
+
+   <p><file>$(REPOSITORY)/.syrep/md-cache</file> is the message digest
+   cache which may be used to accelerate the repeated operation of
+   <opt>---update</opt>. It associates device numbers, inode numbers,
+   file sizes and modification times with the message digest
+   calculated for that file. The file is only valid on the host it was
+   created on since it contains device numbers. </p>
+  
+   <p><file>$(REPOSITORY)/.syrep/trash/</file> is the trash directory
+   used by <opt>--merge</opt>. Files are moved in here on
+   deletion. After successful completion it is emptied unless
+   <opt>--keep-trash</opt> is specified.</p>
+
+   <p><file>$(REPOSITORY)/.syrep/tmp/</file> is used as temporary file
+   space for extracting snaphots when option <opt>--local-temp</opt>
+   is used.</p>
+  </section>
+
+  <section name="Return values">
+    <p><arg>0</arg> Success</p>
+    <p><arg>Nonzero</arg> Failure</p>
+  </section>
+  
+  <section name="Author">
+    <p>Syrep was written by Lennart Poettering &lt;@PACKAGE_BUGREPORT@&gt;.</p>
+
+    <p>Syrep is available at <url href="@PACKAGE_URL@"/></p>
+
+    <p>You are encouraged to improve this documentation, feel free to send me patches. This is free software, after all.</p>
+  </section>
+  
+  <section name="See also">
+    <p><manref name="rsync" section="1"/>, <manref name="cron" section="8"/></p>
+  </section>
+
+  <section name="Comments">
+    <p>This man page was written using <manref name="xml2man" section="1"
+        href="http://masqmail.cx/xml2man/"/> by Oliver Kurth.</p>
+  </section>
+  
+  </manpage>

@@ -1,0 +1,29 @@
+Complete:
+
+	diff [DIR|SNAP] [DIR|SNAP]
+
+	update [-S SNAP] DIR
+
+	list [DIR|SNAP]
+
+	info [DIR|SNAP]
+
+	history [DIR|SNAP]
+
+	extract [-o DIR] PATCH 
+
+	merge [-S SNAP] SNAP DIR
+
+	merge [-S SNAP] PATCH DIR
+	merge [-S SNAP] DIR DIR
+
+	makepatch [-S SNAP] -O PATCH SNAP DIR
+	makepatch [-S SNAP] SNAP DIR > PATCH
+
+
+Not yet:
+
+	merge [-S SNAP] URL://DIR DIR
+
+
+$Id: usage-intro.txt 30 2003-09-04 22:06:56Z lennart $

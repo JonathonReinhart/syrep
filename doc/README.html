@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="iso-8895-15"?> <!-- -*-html-helper-*- -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>syrep 0.1</title>
+<link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+
+<body>
+<h1><a name="top">syrep 0.1</a></h1>
+
+<p><i>Copyright 2003 Lennart Poettering &lt;mzflerc (at) 0pointer (dot) de&gt;</i></p>
+
+<ul class="toc">
+    <li><a href="#license">License</a></li>
+    <li><a href="#news">News</a></li>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#status">Status</a></li>
+    <li><a href="#documentation">Documentation</a></li>
+    <li><a href="#requirements">Requirements</a></li>
+    <li><a href="#installation">Installation</a></li>
+    <li><a href="#acks">Acknowledgements</a></li>
+    <li><a href="#download">Download</a></li>
+</ul>
+
+<h2><a name="license">License</a></h2>
+
+<p>This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the
+License, or (at your option) any later version.</p>
+
+<p>This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+General Public License for more details.</p>
+
+<p>You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.</p>
+
+<h2><a name="news">News</a></h2>
+
+<div class="news-date">Mon Sep 8 2003: </div> <p class="news-text"><a
+href="http://0pointer.de/lennart/projects/syrep/syrep-0.1.tar.gz">Version
+0.1</a> released.</p>
+
+<h2><a name="overview">Overview</a></h2>
+
+<p><tt>syrep</tt> is a generic file repository synchronization tool. It may be
+used to synchronize large file hierarchies bidirectionally by
+exchanging patch files. <tt>Syrep</tt> is truely peer-to-peer, no central
+servers are involved. Synchronizations between more than two
+repositories are supported. The patch files may be transferred via
+offline media, e.g. removable hard disks or compact discs.</p>
+
+<p>Files are tracked by their message digests, currently MD5. The
+following file operations are tracked in the snapshot files: creation,
+deletion, modification, creation of new hard or symbolic links,
+renaming. (The latter is nothing more than a new hard link and removal
+of the old file). <tt>syrep</tt> doesn't distuinguish between soft and
+hard links. In fact even copies of files are treated as the
+same. Currently, <tt>syrep</tt> doesn't synchronize file attributes like
+access modes or modification times.</p>
+
+<p><tt>Syrep</tt> was written to facilitate the synchronization of two
+large digital music repositories without direct network
+connection. Patch files of several gigabytes are common in
+this situation.</p>
+
+<p><tt>Syrep</tt> is able to cope with 64 bit file sizes. (LFS)</p>
+
+<p><tt>Syrep</tt> is optimized for speed. It may make use of a message digest
+cache to accelerate the calculation of digests of a whole directory
+hierarchy.</p>
+
+<h2><a name="status">Status</a></h2>
+
+<p>Version 0.1 is more or less stable and fulfills its purpose.</p>
+  
+<h2><a name="documentation">Documentation</a></h2>
+
+<p>Have a look on the man page <a href="http://0pointer.de/lennart/projects/syrep/syrep.1.xml"><tt>syrep(1)</tt></a>. (A XSLT capable browser is required)</p>
+
+<h3>Method of operation</h3>
+
+<p><tt>Syrep</tt>'s operation relies on "snapshots" of a file
+repository. A snapshot contains information about all files existent
+in the hierarchy combined with a limited history log of file
+operations. Snapshots may be compared, files missing or deleted on one
+of both sides may be detected this way. Based on this knowledge patch
+files containing all missing files may be created and merged.</p>
+
+<p>To keep the file operation log in a sensible state it is crucial to
+update the snapshot frequently, probably by adding a new <tt>cron</tt>
+job.</p>
+
+<h3>Example usage</h3>
+
+<p>Fred and Karl want to synchronize their digital music libraries by
+exchanging an USB hard disk with patch files. As first step, both
+initialize their repositories for usage with <tt>syrep</tt>:</p>
+
+<pre>fred$ syrep -zp --update ~/mp3/
+...
+karl$ syrep -zp --update ~/mp3/</pre>
+
+<p>Depending on the size of the repositories this takes a lot of time,
+since a message digest is calculated for every file. Since exact
+tracking of all file operations on the repository is crucial for
+effetive synchronization, they both use the time passing to add a new
+entry to their <tt>crontab</tt>:</p>
+
+<pre>1 3 * * * syrep -z --update ~/mp3/</pre>
+
+<p>When the snapshot creation finished, they send the newly created
+patch files <tt>~/mp3/.syrep/curent.syrep</tt> to each other. As these
+snapshots are only about 400K of size for a 80GB repository they do
+that via email:</p>
+
+<pre>fred$ mutt -a ~/mp3/.syrep/current.syrep -s "The current snapshot of fred" karl
+...
+karl$ mutt -a ~/mp3/.syrep/current.syrep -s "The current snapshot of karl" fred</pre>
+
+<p>When the mails arrive they both detach the snapshot and create a
+patch on their USB harddisk containing all local files not existing on
+the other siede:</p>
+
+<pre>fred$ mount /mnt/usb
+fred$ syrep -p -o /mnt/usb/patch-for-karl --makepatch ~/mp3/ ~/karls-current.syrep
+fred$ umount /mnt/usb
+...
+karl$ mount /mnt/usb
+karl$ syrep -p -o /mnt/usb/patch-for-fred --makepatch ~/mp3/ ~/freds-current.syrep
+karl$ umount /mnt/usb
+</pre>
+
+<p>As next step they exchange their harddisks. Back at home they merge the newly acquired patch into their own repository:</p>
+
+<pre>fred$ mount /mnt/usb
+fred$ syrep -pT --merge /mnt/usb/patch-for-fred ~/mp3/
+fred$ umount /mnt/usb
+...
+karl$ mount /mnt/usb
+karl$ syrep -pT --merge /mnt/usb/patch-for-karl ~/mp3/
+karl$ umount /mnt/usb
+</pre>
+
+<p>At this moment both have the same file hierarchy. To update the
+local snapshot log with the newly merged files they both should run
+<tt>--update</tt> now. This update run should be much quicker since
+the message digests of all unchanged files are read from a message
+cache created and update each time <tt>--update</tt> runs:</p>
+
+<pre>fred$ syrep -zp --update ~/mp3/
+...
+karl$ syrep -zp --update ~/mp3/</pre>
+
+<p>Some time later Fred got plenty of new music files, while Karl
+didn't change anything on his repository. Thus, Fred is able to use
+the old snapshot he recieved from Karl to generate a new patch for
+him. He does it exactly the same way he did the last time, see
+above.</p>
+
+<p>And now, several iterations of the story described above
+follow.</p>
+
+<p>That's the end of the story.</p>
+
+<p>OK, not quite. Sometimes a conflict happens, e.g. at the same time both created a
+file <tt>foo.mp3</tt> with different contents. When
+this happens the local copy is always copied into the patch and the
+user may decide during merge which file version he wants to have
+locally. Because of that merging is an interactive task and cannot be
+automated completely.</p>
+
+<p>There is no need that the synchronization operations happen in such
+a "symmetric" way as described above.</p>
+
+<h2><a name="requirements">Requirements</a></h2>
+
+<p><tt>syrep</tt> requires installed development versions of <tt><a href="http://www.gzip.org/zlib/">zlib</a></tt> and <tt><a href="http://www.sleepycat.com/">Berkeley DB</a></tt>.</p>
+
+<p><tt>syrep</tt> was developed and tested on Debian GNU/Linux
+"testing" from September 2003, it should work on most other Linux
+distributions and may be POSIX implementations since it uses GNU
+autoconf for source code configuration.</p>
+
+<p>Some support for for big endian architectures is included, however, it is incomplete. You're welcome to send me patches.</p>
+
+<h2><a name="installation">Installation</a></h2>
+
+<p>As this package is made with the GNU autotools you should run
+<tt>./configure</tt> inside the distribution directory for configuring
+the source tree. After that you should run <tt>make</tt> for
+compilation and <tt>make install</tt> (as root) for installation of
+<tt>syrep</tt>.</p>
+
+<h2><a name="acks">Acknowledgements</a></h2>
+
+<p>This software includes an implementation of the MD5 algorithm by
+L. Peter Deutsch. Thanks to him for this.</p>
+
+<h2><a name="download">Download</a></h2>
+
+<p>The newest release is always available from <a href="http://0pointer.de/lennart/projects/syrep/">http://0pointer.de/lennart/projects/syrep/</a></p>
+
+<p>The current release is <a href="http://0pointer.de/lennart/projects/syrep/syrep-0.1.tar.gz">0.1</a></p>
+
+<p>Get <tt>syrep</tt>'s development sources from the <a href="http://subversion.tigris.org/">Subversion</a> <a href="https://seth.intheinter.net:8081/svn/syrep/">repository</a>.</p>
+
+<hr/>
+
+<address>Lennart Poettering &lt;mzflerc (at) 0pointer (dot) de&gt;, Sep 2003</address>
+
+<div><i>$Id: README.html.in 34 2003-09-07 23:21:00Z lennart $</i></div>
+
+</body>
+</html>

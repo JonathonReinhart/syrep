@@ -1,0 +1,37 @@
+pre-0.1:
+- merge/makepatch                                      DONE
+- Mode -T                                              DONE
+- Recursive directory creation                         DONE
+- Prune empty directories                              DONE
+- Handle conflicts                                     DONE
+- stat() before and after md5 as consistency check     DONE
+- -q mode                                              DONE
+- check of non-static symbols                          DONE
+- warn if hostname != origin                           DONE
+- signal handling                                      DONE
+- add --cleanup                                        DONE
+- package.c: progressive, sendfile, mmap               DONE
+- 64bit support                                        DONE
+- progress on package packing and unpacking            DONE
+- replace path names by their hashes                   DONE
+- package.c: gzip support                              DONE
+- package.c: atomicity                                 DONE 
+- fix makepatch to not include already existing files  DONE
+- better usage info on --help                          DONE
+- autoconf                                             DONE
+- syrep doesn't fail on on broken snapshot             DONE
+- documentation/man pages                              DONE
+- testing                                              DONE
+
+post-0.1:
+- continue merge on copy failure
+- url/ssh merges
+- bi-directory merges
+- digest check before delete/replace/link
+- some more asserts
+- PATH_MAX or PATH_MAX+1?
+- add --always-copy
+- add --forget 
+- valgrind
+
+$Id: todo.txt 32 2003-09-07 23:11:37Z lennart $

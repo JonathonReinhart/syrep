@@ -1,0 +1,14 @@
+
+
+File format for patches and snapshots:
+
+
+4 bytes: id SREP or CREP
+
+Multiple items of:
+
+         32 bytes: name as asciiz string
+         8 bytes: length of item
+
+
+$Id: package.txt 18 2003-08-31 14:34:47Z lennart $

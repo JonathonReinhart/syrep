@@ -1,0 +1,60 @@
+# $Id: syrep.ggo 23 2003-09-04 18:56:27Z lennart $
+
+#  This file is part of syrep.
+#
+#  syrep is free software; you can redistribute it and/or modify it
+#  under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#  
+#  syrep is distributed in the hope that it will be useful, but WITHOUT
+#  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+#  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+#  License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with syrep; if not, write to the Free Software Foundation,
+#  Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+purpose "Synchronize Repositories"
+package "syrep"
+version "0.1"
+
+option "verbose" v "Enable verbose operation" flag off
+option "local-temp" T "Use temporary directory inside repository" flag off
+option "ignore-origin" - "Don't warn if snapshot not local in update, merge, makepatch" flag off
+option "compress" z "Compress snapshots or patches" flag off
+
+option "list" - "List a repository snapshot" flag off
+ option "show-deleted" - "list: Show deleted entries of repository snapshot" flag off
+ option "show-by-md" - "list: Show files by message digests" flag off
+ option "show-times" - "list: Show first and last seen times" flag off
+
+option "info" - "Show information about a repository or snapshot" flag off
+option "history" - "Show history of a repository or snapshot" flag off
+option "dump" - "Show a structure dump of a repository or snapshot" flag off
+
+option "update" - "Update a repository snapshot" flag off
+ option "snapshot" S "update: Use the specified snapshot file instead of the one contained in the repository" string no
+ option "cache" C "update: Use the specified cache file instead of the one contained in the repository" string no
+ option "no-cache" - "update: Don't use a message digest cache" flag off
+ option "no-purge" - "update: Don't pruge obsolete entries from cache after update run" flag off
+ option "ro-cache" - "update: Use read only cache" flag off
+ option "progress" p "update: Show progress" flag off
+
+option "diff" - "Show difference between two repositories or snapshots" flag off
+
+option "merge" - "Merge a snapshot or a repository into a repository" flag off
+ option "question" q "merge: Ask a question before each action" flag off
+ option "prune-empty" - "merge: Prune empty directories" flag off
+ option "keep-trash" - "merge: Don't empty trash" flag off
+
+option "makepatch" - "Make a patch against the specified repository" flag off
+ option "output-file" o "makepatch: Write output to specified file instead of STDOUT" string no
+ option "include-all" - "makepatch: Include files in patch which do exist on the other side under a different name" flag off
+
+option "extract" - "Extract the context of a snapshot or patch" flag off
+ option "output-directory" D "extract: Write output to specified directory" string no
+
+option "cleanup" - "Remove syrep info from repository" flag off
+ option "cleanup-level" l "cleanup: 1 - just remove temporary data and trash (default); 2 - remove MD cache as well; 3 - remove all syrep data" int default="1" no
