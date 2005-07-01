@@ -43,6 +43,7 @@ struct gengetopt_args_info
   int no_purge_flag;	/* update: Don't pruge obsolete entries from cache after update run (default=off).  */
   int ro_cache_flag;	/* update: Use read only cache (default=off).  */
   int progress_flag;	/* update: Show progress (default=off).  */
+  int check_dev_flag;	/* update: Honour stat() st_dev field (default=off).  */
   int diff_flag;	/* Show difference between two repositories or snapshots (default=off).  */
   int sizes_flag;	/* diff: show file sizes to copy (works online on repositories) (default=off).  */
   int human_readable_flag;	/* diff: show sizes human readable (default=off).  */
@@ -52,6 +53,7 @@ struct gengetopt_args_info
   int keep_trash_flag;	/* merge: Don't empty trash (default=off).  */
   int check_md_flag;	/* merge: Check message digest of file before deleting or replacing (default=off).  */
   int always_copy_flag;	/* merge: Always copy instead of hard linking (default=off).  */
+  int always_replace_flag;	/* merge: Always replace existing files (default=off).  */
   int makepatch_flag;	/* Make a patch against the specified repository (default=off).  */
   char * output_file_arg;	/* makepatch: Write output to specified file instead of STDOUT.  */
   int include_all_flag;	/* makepatch: Include files in patch which do exist on the other side under a different name (default=off).  */
@@ -83,6 +85,7 @@ struct gengetopt_args_info
   int no_purge_given ;	/* Whether no-purge was given.  */
   int ro_cache_given ;	/* Whether ro-cache was given.  */
   int progress_given ;	/* Whether progress was given.  */
+  int check_dev_given ;	/* Whether check-dev was given.  */
   int diff_given ;	/* Whether diff was given.  */
   int sizes_given ;	/* Whether sizes was given.  */
   int human_readable_given ;	/* Whether human-readable was given.  */
@@ -92,6 +95,7 @@ struct gengetopt_args_info
   int keep_trash_given ;	/* Whether keep-trash was given.  */
   int check_md_given ;	/* Whether check-md was given.  */
   int always_copy_given ;	/* Whether always-copy was given.  */
+  int always_replace_given ;	/* Whether always-replace was given.  */
   int makepatch_given ;	/* Whether makepatch was given.  */
   int output_file_given ;	/* Whether output-file was given.  */
   int include_all_given ;	/* Whether include-all was given.  */

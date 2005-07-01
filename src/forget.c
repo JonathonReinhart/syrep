@@ -1,4 +1,4 @@
-/* $Id: forget.c 58 2004-07-19 16:04:48Z lennart $ */
+/* $Id: forget.c 75 2004-12-03 15:41:48Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -156,7 +156,7 @@ finish:
 }
 
 int forget(struct syrep_db_context *c, struct syrep_db_context *target) {
-    uint32_t t;
+    time_t t;
     time_t now, limit;
 
     assert(c && target);
@@ -166,7 +166,7 @@ int forget(struct syrep_db_context *c, struct syrep_db_context *target) {
         return -1;
     }
 
-    t = args.remember_arg*24*60*60;
+    t = (time_t) args.remember_arg*24*60*60;
     time(&now);
     limit = t > now ? 0 : now-t;
 

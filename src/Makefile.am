@@ -1,4 +1,4 @@
-# $Id: Makefile.am 58 2004-07-19 16:04:48Z lennart $
+# $Id: Makefile.am 88 2005-07-01 22:31:34Z lennart $
 
 # This file is part of syrep.
 #
@@ -16,7 +16,11 @@
 # along with syrep; if not, write to the Free Software Foundation,
 # Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 
+AM_CPPFLAGS=-I$(top_srcdir)/lib
+
 bin_PROGRAMS = syrep
+
+noinst_PROGRAMS = rm-rf-test copy-fd-test
 
 syrep_SOURCES = cache.c cache.h \
 				update.c update.h \
@@ -40,8 +44,12 @@ syrep_SOURCES = cache.c cache.h \
 				svn-revision.h \
 				dbstruct.h \
 				forget.c forget.h 
+syrep_LDADD=@LIBOBJS@
 
-EXTRA_DIST = syrep.ggo
+rm_rf_test_SOURCES = util.c rm-rf-test.c util.h cmdline.c cmdline.h
+copy_fd_test_SOURCES = util.c copy-fd-test.c util.h cmdline.c cmdline.h
+
+EXTRA_DIST = syrep.ggo getopt.c getopt1.c mkdtemp.c
 MAINTAINERCLEANFILES =
 BUILT_SOURCES = 
 CLEANFILES = 

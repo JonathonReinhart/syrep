@@ -1,4 +1,4 @@
-/* $Id: syrep.c 64 2004-07-19 17:23:14Z lennart $ */
+/* $Id: syrep.c 84 2005-07-01 21:19:38Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -78,7 +78,7 @@ static int do_diff(void) {
     if (args.local_temp_flag && isdirectory(args.inputs[0]) >= 1) {
         const char *p = get_attached_filename(args.inputs[0], SYREP_TEMPDIR);
         mkdir(p, 0777);
-        setenv("TMPDIR", p, 1);
+        set_tmp_dir(p);
     }
 
     if (!(path1 = strdup(get_snapshot_filename(args.inputs[0], SYREP_SNAPSHOTFILENAME))))
@@ -143,7 +143,7 @@ static int do_merge(void) {
     if (args.local_temp_flag) {
         const char *p = get_attached_filename(args.inputs[1], SYREP_TEMPDIR);
         mkdir(p, 0777);
-        setenv("TMPDIR", p, 1);
+        set_tmp_dir(p);
     }
     
     if (!(path1 = strdup(get_snapshot_filename(args.inputs[0], SYREP_SNAPSHOTFILENAME))))
@@ -205,7 +205,7 @@ static int do_makepatch(void) {
     if (args.local_temp_flag) {
         const char *p = get_attached_filename(args.inputs[0], SYREP_TEMPDIR);
         mkdir(p, 0777);
-        setenv("TMPDIR", p, 1);
+        set_tmp_dir(p);
     }
     
     if (!(path1 = strdup(get_snapshot_filename(args.inputs[0], SYREP_SNAPSHOTFILENAME))))
@@ -256,7 +256,8 @@ finish:
 
 static int do_foreach(int (*func) (struct syrep_db_context *c), int m) {
     char *path = NULL;
-    int r = 1, i;
+    int r = 1;
+    unsigned i;
     struct syrep_db_context *c = NULL;
 
     if (args.inputs_num < 1)
@@ -268,7 +269,7 @@ static int do_foreach(int (*func) (struct syrep_db_context *c), int m) {
         if (args.local_temp_flag && isdirectory(args.inputs[i]) >= 1) {
             const char *p = get_attached_filename(args.inputs[i], SYREP_TEMPDIR);
             mkdir(p, 0777);
-            setenv("TMPDIR", p, 1);
+            set_tmp_dir(p);
         }
         
         if (!(path = strdup(get_snapshot_filename(args.inputs[i], SYREP_SNAPSHOTFILENAME))))
@@ -281,7 +282,7 @@ static int do_foreach(int (*func) (struct syrep_db_context *c), int m) {
             fprintf(stderr, "*** %s ***\n", path);
         
         if (m && args.output_directory_given) {
-            if (getcwd(saved_cwd, sizeof(saved_cwd)) < 0) {
+            if (!getcwd(saved_cwd, sizeof(saved_cwd))) {
                 fprintf(stderr, "getcwd(): %s\n", strerror(errno));
                 return -1;
             }
@@ -328,7 +329,8 @@ finish:
 
 static int do_update(void) {
     char *path = NULL;
-    int r = 1, i;
+    int r = 1;
+    unsigned i;
     struct syrep_db_context *c = NULL;
     struct syrep_md_cache *cache = NULL;
 
@@ -351,7 +353,7 @@ static int do_update(void) {
         if (args.local_temp_flag) {
             const char *p = get_snapshot_filename(args.inputs[i], SYREP_TEMPDIR);
             mkdir(p, 0777);
-            setenv("TMPDIR", p, 1);
+            set_tmp_dir(p);
         }
         
         if (!(path = strdup(get_snapshot_filename(args.inputs[i], SYREP_SNAPSHOTFILENAME))))
@@ -372,7 +374,7 @@ static int do_update(void) {
                 cache = md_cache_open(p, args.ro_cache_flag);
         }
 
-        if (getcwd(saved_cwd, sizeof(saved_cwd)) < 0) {
+        if (!getcwd(saved_cwd, sizeof(saved_cwd))) {
             fprintf(stderr, "getcwd(): %s\n", strerror(errno));
             goto finish;
         }
@@ -424,7 +426,8 @@ finish:
 }
 
 static int do_cleanup(void) {
-    int r = 1, i;
+    int r = 1;
+    unsigned i;
 
     if (args.inputs_num < 1)
         fprintf(stderr, "WARNING: No repository specified!\n");
@@ -455,7 +458,8 @@ finish:
 
 static int do_forget(void) {
     char *path = NULL;
-    int r = 1, i;
+    int r = 1;
+    unsigned i;
     struct syrep_db_context *c = NULL, *target = NULL;
 
     if (args.inputs_num < 1)
@@ -465,7 +469,7 @@ static int do_forget(void) {
         if (args.local_temp_flag && isdirectory(args.inputs[i]) >= 1) {
             const char *p = get_attached_filename(args.inputs[i], SYREP_TEMPDIR);
             mkdir(p, 0777);
-            setenv("TMPDIR", p, 1);
+            set_tmp_dir(p);
         }
         
         if (!(path = strdup(get_snapshot_filename(args.inputs[i], SYREP_SNAPSHOTFILENAME))))
@@ -519,7 +523,7 @@ static void sigint(int s) {
 }
 
 static void free_args(void) {
-    int i;
+    unsigned i;
     
     for (i = 0; i < args.inputs_num; i++)
         free(args.inputs[i]);
@@ -527,18 +531,19 @@ static void free_args(void) {
     free(args.inputs);
 }
 
+static int help(FILE *f, const char *argv0) {
 
-static int help(const char *argv0) {
-
-    fprintf(stderr,
+    fprintf(f,
             "%s -- Synchronize File Repositories\n\n"
 
             "Usage: %s [options...] <command> [arguments...]\n\n"
 
             "General options:\n"
             "  -v --verbose                         Enable verbose operation\n"
-            "  -T --local-temp                      Use temporary directory inside repository\n"
-            "  --ignore-origin                      Don't warn if snapshot not local in update, merge, makepatch\n"
+            "  -T --local-temp                      Use temporary directory inside\n"
+            "                                       repository\n"
+            "  --ignore-origin                      Don't warn if snapshot not local in\n"
+            "                                       update, merge, makepatch\n"
             "  -z --compress                        Compress snapshots or patches\n"
             "  -p --progress                        Show progress\n\n"
 
@@ -548,55 +553,73 @@ static int help(const char *argv0) {
 
             "Specific commands:\n"
             "  --list SNAPSHOT                      List a repository snapshot\n"
-            "    --show-deleted                     Show deleted entries of repository snapshot\n"
+            "    --show-deleted                     Show deleted entries of repository\n"
+            "                                       snapshot\n"
             "    --show-by-md                       Show files by message digests\n"
             "    --show-times                       Show first and last seen times\n"
             "    --sort                             Sort chronologically\n\n"
 
-            "  --info SNAPSHOT                      Show information about a repository or snapshot\n\n" 
+            "  --info SNAPSHOT                      Show information about a repository or\n"
+            "                                       snapshot\n\n" 
 
             "  --history SNAPSHOT                   Show history of a repository or snapshot\n\n"
             
-            "  --dump SNAPSHOT                      Show a structure dump of a repository or snapshot\n\n"
+            "  --dump SNAPSHOT                      Show a structure dump of a repository or\n"
+            "                                       snapshot\n\n"
             
             "  --update DIRECTORY                   Update (or create) a repository snapshot\n"
-            "    -SSTRING --snapshot=STRING         Use a different snapshot file than the one contained\n"
-            "                                       in the repository\n"
-            "    -CSTRING --cache=STRING            Use a different cache file than the one contained in\n"
-            "                                       the repository\n"
+            "    -SSTRING --snapshot=STRING         Use a different snapshot file than the\n"
+            "                                       one contained in the repository\n"
+            "    -CSTRING --cache=STRING            Use a different cache file than the one\n"
+            "                                       contained in the repository\n"
             "    --no-cache                         Don't use a message digest cache\n"
-            "    --no-purge                         Don't purge obsolete entries from cache after update run\n"
-            "    --ro-cache                         Use read only cache\n\n"
+            "    --no-purge                         Don't purge obsolete entries from cache\n"
+            "                                       after update run\n"
+            "    --ro-cache                         Use read only cache\n"
+            "    --check-dev                        Store information about the device where\n"
+            "                                       a file resides in the MD cache\n\n"
             
-            "  --diff SNAPSHOT SNAPSHOT             Show difference between two repositories or snapshots\n"
-            "    --sizes -s                         Show sizes for files to copy (works only with repositories)\n"
+            "  --diff SNAPSHOT SNAPSHOT             Show difference between two repositories\n"
+            "                                       or snapshots\n"
+            "    --sizes -s                         Show sizes for files to copy (works only\n"
+            "                                       with repositories)\n"
             "    --human-readable -H                Show sizes in human readable from\n"
             
-            "  --merge SNAPSHOT DIRECTORY           Merge a snapshot into a repository (perform deletes,\n"
-            "                                       renames only)\n"
+            "  --merge SNAPSHOT DIRECTORY           Merge a snapshot into a repository\n"
+            "                                       (perform deletes, renames only)\n"
             "  --merge PATCH DIRECTORY              Merge a patch into a repository\n"
             "  --merge DIRECTORY DIRECTORY          Merge a repository into a repository\n"
             "    -q --question                      Ask a question before each action\n"
             "    -P --prune-empty                   Prune empty directories\n"
             "    --keep-trash                       Don't empty trash\n"
-            "    --check-md                         Check message digest of files prior to deletion or replacement\n"
-            "    --always-copy                      Always copy instead of hard link\n\n"
-            
-            "  --makepatch DIRECTORY SNAPSHOT       Make a patch against the specified repository\n"
-            "    -oSTRING --output-file=STRING      Write output to specified file instead of STDOUT\n"
-            "    --include-all                      Include files in patch which do exist on the other side under a \n"
+            "    --check-md                         Check message digest of files prior to\n"
+            "                                       deletion or replacement\n"
+            "    --always-copy                      Always copy instead of hard link\n\n",
+            argv0, argv0);
+
+    fprintf(f, 
+            "  --makepatch DIRECTORY SNAPSHOT       Make a patch against the specified\n"
+            "                                       repository\n"
+            "    -oSTRING --output-file=STRING      Write output to specified file instead\n"
+            "                                       of STDOUT\n"
+            "    --include-all                      Include files in patch which do exist on\n"
+            "                                       the other side under a \n"
             "                                       different name\n\n"
             
-            "  --extract SNAPSHOT                   Extract the contents of a snapshot or patch\n"
+            "  --extract SNAPSHOT                   Extract the contents of a snapshot or\n"
+            "                                       patch\n"
             "    -DSTRING --output-directory=STRING Write output to specified directory\n\n"
             
             "  --cleanup DIRECTORY                  Remove syrep info from repository\n"
-            "    -lINT --cleanup-level=INT          1 - just remove temporary data and trash (default)\n"
+            "    -lINT --cleanup-level=INT          1 - just remove temporary data and trash\n"
+            "                                           (default)\n"
             "                                       2 - remove MD cache as well\n"
             "                                       3 - remove all syrep data\n\n"
-            "  --forget SNAPSHOT                    Repackage snapshot dropping outdated information\n"
-            "    --remember DAYS                    Information of how many days should be kept? (defaults to 180)\n",
-            argv0, argv0);
+            "  --forget SNAPSHOT                    Repackage snapshot dropping outdated\n"
+            "                                       information\n"
+            "    --remember DAYS                    Information of how many days should be\n"
+            "                                       kept? (defaults to 180)\n");
+            
 
     return 0;
 }
@@ -648,7 +671,7 @@ int main(int argc, char *argv[]) {
     atexit(free_args);
 
     if (args.help_given)
-        return help(bn);
+        return help(stdout, bn);
     else if (args.version_given)
         return version(bn);
     else if (args.list_flag) 
@@ -674,7 +697,7 @@ int main(int argc, char *argv[]) {
     else if (args.forget_flag)
         return do_forget();
 
-    help(bn);
+    help(stderr, bn);
     
     return 1;
 }

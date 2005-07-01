@@ -10,13 +10,13 @@
 <body>
 <h1><a name="top">syrep @PACKAGE_VERSION@</a></h1>
 
-<p><i>Copyright 2003,2004 Lennart Poettering &lt;@PACKAGE_BUGREPORT@&gt;</i></p>
+<p><i>Copyright 2003-2005 Lennart Poettering &lt;@PACKAGE_BUGREPORT@&gt;</i></p>
 
 <ul class="toc">
     <li><a href="#license">License</a></li>
     <li><a href="#news">News</a></li>
     <li><a href="#overview">Overview</a></li>
-    <li><a href="#status">Status</a></li>
+    <li><a href="#status">Current Status</a></li>
     <li><a href="#documentation">Documentation</a></li>
     <li><a href="#requirements">Requirements</a></li>
     <li><a href="#installation">Installation</a></li>
@@ -41,6 +41,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.</p>
 
 <h2><a name="news">News</a></h2>
+
+<div class="news-date">Mon Jul 1 2005: </div> <p class="news-text"><a
+href="@PACKAGE_URL@syrep-0.7.tar.gz">Version 0.7</a> released; Changes
+include: fix trash cleanup; fix long standing file copying bug; don't
+save device info data in the MD cache any longer, use the new option
+<tt>--check-dev</tt> to reenable this feature; update to Berkeley DB 4.3</p>
 
 <div class="news-date">Wed Sep 22 2004: </div> <p class="news-text"><a
 href="@PACKAGE_URL@syrep-0.6.tar.gz">Version 0.6</a> released; Changes
@@ -237,7 +243,7 @@ a "symmetric" way as described above.</p>
 
 <p><tt>syrep</tt> requires installed development versions of <tt><a
 href="http://www.gzip.org/zlib/">zlib</a></tt> and <tt><a
-href="http://www.sleepycat.com/">Berkeley DB</a></tt> 4.2. If you want
+href="http://www.sleepycat.com/">Berkeley DB</a></tt> 4.3. If you want
 build <tt>syrep</tT> with support for extended attributes (currently
 supported on Linux only) you have to install <tt>libattr</tt> and a kernel that supports it.</p>
 
@@ -272,13 +278,20 @@ L. Peter Deutsch. Thanks to him for this.</p>
 
 <p>The current release is <a href="@PACKAGE_URL@syrep-@PACKAGE_VERSION@.tar.gz">@PACKAGE_VERSION@</a></p>
 
-<p>Get <tt>syrep</tt>'s development sources from the <a href="http://subversion.tigris.org/">Subversion</a> <a href="https://seth.intheinter.net:8081/svn/syrep/">repository</a>. (<a href="http://0pointer.de/cgi-bin/viewcvs.cgi/?root=syrep">viewcvs</a>)</p>
+<p>Get <tt>syrep</tt>'s development sources from the <a href="http://subversion.tigris.org/">Subversion</a> <a href="svn://seth.intheinter.net/syrep">repository</a> (<a href="http://0pointer.de/cgi-bin/viewcvs.cgi/?root=syrep">viewcvs</a>): </p>
+
+<pre>svn checkout svn://seth.intheinter.net/syrep/trunk syrep</pre>
+
+<p>You may find an up-to-date Debian package (i386) of <tt>syrep</tt> in my <a href="http://0pointer.de/debian/">local Debian package repository</a>.</p>
+
+
+<p>If you want to be notified whenever I release a new version of this software use the subscription feature of <a href="http://freshmeat.net/projects/syrep/">Freshmeat</a>.</p>
 
 <hr/>
 
-<address class="grey">Lennart Poettering &lt;@PACKAGE_BUGREPORT@&gt;, September 2004</address>
+<address class="grey">Lennart Poettering &lt;@PACKAGE_BUGREPORT@&gt;, July 2005</address>
 
-<div class="grey"><i>$Id: README.html.in 70 2004-09-21 22:52:29Z lennart $</i></div>
+<div class="grey"><i>$Id: README.html.in 89 2005-07-01 22:40:39Z lennart $</i></div>
 
 </body>
 </html>

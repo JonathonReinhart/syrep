@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Id: Makefile.am 70 2004-09-21 22:52:29Z lennart $
+# $Id: Makefile.am 78 2005-06-05 21:37:21Z lennart $
 
 # This file is part of syrep.
 #
@@ -138,7 +138,7 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 
-EXTRA_DIST = bootstrap.sh README LICENSE debian/changelog debian/compat debian/control debian/copyright debian/dirs debian/docs debian/rules
+EXTRA_DIST = bootstrap.sh README LICENSE debian/changelog debian/compat debian/control debian/copyright debian/dirs debian/docs debian/rules lib/gnugetopt.h
 SUBDIRS = src doc man
 
 MAINTAINERCLEANFILES = README
@@ -158,8 +158,9 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 	installdirs-recursive install-recursive uninstall-recursive \
 	check-recursive installcheck-recursive
 DIST_COMMON = README $(srcdir)/Makefile.in $(srcdir)/configure \
-	Makefile.am aclocal.m4 config.h.in configure configure.ac \
-	depcomp install-sh missing mkinstalldirs
+	Makefile.am acinclude.m4 aclocal.m4 compile config.guess \
+	config.h.in config.sub configure configure.ac depcomp \
+	install-sh missing mkinstalldirs
 DIST_SUBDIRS = $(SUBDIRS)
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
@@ -179,7 +180,7 @@ $(top_builddir)/config.status: $(srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 $(srcdir)/configure:  $(srcdir)/configure.ac $(ACLOCAL_M4) $(CONFIGURE_DEPENDENCIES)
 	cd $(srcdir) && $(AUTOCONF)
 
-$(ACLOCAL_M4):  configure.ac 
+$(ACLOCAL_M4):  configure.ac acinclude.m4
 	cd $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
 
 config.h: stamp-h1
@@ -340,7 +341,7 @@ distcleancheck_listfiles = find . -type f -print
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkinstalldirs) $(distdir)/debian $(distdir)/doc
+	$(mkinstalldirs) $(distdir)/debian $(distdir)/doc $(distdir)/lib
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -548,7 +549,7 @@ homepage: all dist
 	mkdir -p $$HOME/homepage/private/projects/syrep
 	cp syrep-@PACKAGE_VERSION@.tar.gz $$HOME/homepage/private/projects/syrep
 	cp doc/README.html doc/style.css man/syrep.1.xml man/xmltoman.css man/xmltoman.xsl man/xmltoman.dtd $$HOME/homepage/private/projects/syrep
-	cp $$HOME/homepage/private/projects/syrep/README.html $$HOME/homepage/private/projects/syrep/index.html
+	ln -sf README.html $$HOME/homepage/private/projects/syrep/index.html
 
 distcleancheck:
 	@:

@@ -1,4 +1,4 @@
-/* $Id: md5util.c 61 2004-07-19 17:09:25Z lennart $ */
+/* $Id: md5util.c 76 2005-06-05 20:14:45Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -35,9 +35,9 @@
 #include "md5.h"
 #include "syrep.h"
 
-void fhex(const unsigned char *bin, int len, char *txt) {
+void fhex(const uint8_t *bin, size_t len, char *txt) {
     static const char hex[] = "0123456789abcdef";
-    int i;
+    size_t i;
 
     for (i = 0; i < len; i++) {
         txt[i*2] = hex[bin[i]>>4];
@@ -48,7 +48,7 @@ void fhex(const unsigned char *bin, int len, char *txt) {
 #define MMAPSIZE (100*1024*1024)
 #define BUFSIZE (1024*1024)
 
-int fdmd5(int fd, off_t l, char *md) {
+int fdmd5(int fd, off_t l, uint8_t md[]) {
     void *d;
     off_t o = 0;
     size_t m;
@@ -71,7 +71,7 @@ int fdmd5(int fd, off_t l, char *md) {
     
         m = l < MMAPSIZE ? l : MMAPSIZE;
 
-        while (l && ((d = mmap(NULL, m, PROT_READ, MAP_SHARED, fd, o)) != MAP_FAILED)) {
+        while (l > 0 && ((d = mmap(NULL, m, PROT_READ, MAP_SHARED, fd, o)) != MAP_FAILED)) {
             md5_append(&s, d, m);
             munmap(d, m);
 
@@ -136,7 +136,7 @@ finish:
     return r;
 }
 
-int fmd5(const char *fn, char *md) {
+int fmd5(const char *fn, uint8_t md[]) {
     int fd = -1, r = -1;
     
     if ((fd = open(fn, O_RDONLY)) < 0) {

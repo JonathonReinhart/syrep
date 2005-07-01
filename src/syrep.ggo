@@ -1,4 +1,4 @@
-# $Id: syrep.ggo 58 2004-07-19 16:04:48Z lennart $
+# $Id: syrep.ggo 84 2005-07-01 21:19:38Z lennart $
 
 #  This file is part of syrep.
 #
@@ -41,6 +41,7 @@ option "update" - "Update a repository snapshot" flag off
  option "no-purge" - "update: Don't pruge obsolete entries from cache after update run" flag off
  option "ro-cache" - "update: Use read only cache" flag off
  option "progress" p "update: Show progress" flag off
+ option "check-dev" - "update: Honour stat() st_dev field" flag off
 
 option "diff" - "Show difference between two repositories or snapshots" flag off
  option "sizes" s "diff: show file sizes to copy (works online on repositories)" flag off
@@ -52,6 +53,7 @@ option "merge" - "Merge a snapshot or a repository into a repository" flag off
  option "keep-trash" - "merge: Don't empty trash" flag off
  option "check-md" - "merge: Check message digest of file before deleting or replacing" flag off
  option "always-copy" - "merge: Always copy instead of hard linking" flag off
+ option "always-replace" - "merge: Always replace existing files" flag off
 
 option "makepatch" - "Make a patch against the specified repository" flag off
  option "output-file" o "makepatch: Write output to specified file instead of STDOUT" string no

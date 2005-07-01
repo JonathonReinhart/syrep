@@ -1,4 +1,4 @@
-/* $Id: cleanup.c 43 2003-11-30 14:27:42Z lennart $ */
+/* $Id: cleanup.c 76 2005-06-05 20:14:45Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -40,7 +40,7 @@ int cleanup(const char *root) {
         
         snprintf(p, sizeof(p), "%s/.syrep/" SYREP_TRASHDIR, root);
         
-        if (rm_rf(p, 0) < 0)
+        if (rm_rf(p, 1) < 0)
             return -1;
 
         if (args.verbose_flag) 

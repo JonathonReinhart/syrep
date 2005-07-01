@@ -1,4 +1,4 @@
-/* $Id: cache.c 43 2003-11-30 14:27:42Z lennart $ */
+/* $Id: cache.c 84 2005-07-01 21:19:38Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -35,6 +35,8 @@
 
 #include "cache.h"
 #include "md5util.h"
+#include "cmdline.h"
+#include "syrep.h"
 
 struct syrep_cache_key {
     uint64_t dev;
@@ -176,23 +178,37 @@ int md_cache_get(struct syrep_md_cache *c, const char *path, uint8_t digest[16])
     }
 
     memset(&k, 0, sizeof(k));
-    k.dev = (uint64_t) st.st_dev;
     k.inode = (uint64_t) st.st_ino;
     k.date = (uint32_t) st.st_mtime;
     k.size = (uint64_t) st.st_size;
 
-    if (!c)
-        j = 0;
-    else
+    j = 0;
+
+    if (c) {
+        k.dev = args.check_dev_flag ? (uint64_t) st.st_dev : (uint64_t) -1;
+        
         if ((j = get(c, &k, digest)) < 0)
             goto finish;
+
+        if (!j) {
+            /* Perhaps the setting of check_dev_flag was different
+             * when this cache was created? So let's try to make the
+             * best use of that cache */
+            k.dev = args.check_dev_flag ? (uint64_t) -1 : (uint64_t) st.st_dev;
+
+            if ((j = get(c, &k, digest)) < 0)
+                goto finish;
+        }
+    }
     
     if (!j)
         if (fdmd5(fd, st.st_size, digest) < 0)
             goto finish;
 
-    if (c && !c->ro)
+    if (c && !c->ro) {
+        k.dev = args.check_dev_flag ? (uint64_t) st.st_dev : (uint64_t) -1;
         put(c, &k, digest, c->timestamp);
+    }
 
     r = 0;
 

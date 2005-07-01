@@ -1,4 +1,4 @@
-# $Id: Makefile.am 70 2004-09-21 22:52:29Z lennart $
+# $Id: Makefile.am 78 2005-06-05 21:37:21Z lennart $
 
 # This file is part of syrep.
 #
@@ -16,7 +16,7 @@
 # along with syrep; if not, write to the Free Software Foundation,
 # Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 
-EXTRA_DIST=bootstrap.sh README LICENSE debian/changelog debian/compat debian/control debian/copyright debian/dirs debian/docs debian/rules
+EXTRA_DIST=bootstrap.sh README LICENSE debian/changelog debian/compat debian/control debian/copyright debian/dirs debian/docs debian/rules lib/gnugetopt.h
 SUBDIRS=src doc man
 
 MAINTAINERCLEANFILES = README
@@ -32,7 +32,7 @@ homepage: all dist
 	mkdir -p $$HOME/homepage/private/projects/syrep
 	cp syrep-@PACKAGE_VERSION@.tar.gz $$HOME/homepage/private/projects/syrep
 	cp doc/README.html doc/style.css man/syrep.1.xml man/xmltoman.css man/xmltoman.xsl man/xmltoman.dtd $$HOME/homepage/private/projects/syrep
-	cp $$HOME/homepage/private/projects/syrep/README.html $$HOME/homepage/private/projects/syrep/index.html
+	ln -sf README.html $$HOME/homepage/private/projects/syrep/index.html
 
 distcleancheck:
 	@:

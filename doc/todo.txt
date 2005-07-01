@@ -34,4 +34,10 @@ post-0.1:
 - add --forget                                         DONE
 - valgrind
 
-$Id: todo.txt 58 2004-07-19 16:04:48Z lennart $
+0.7:
+
+- fix zeroed file bug
+- fix cleanup trash bug
+- fix file replacement bug
+
+$Id: todo.txt 73 2004-10-30 17:57:08Z lennart $

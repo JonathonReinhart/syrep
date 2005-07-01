@@ -58,6 +58,7 @@ cmdline_parser_print_help (void)
   printf("              --no-purge                 update: Don't pruge obsolete entries from cache after update run (default=off)\n");
   printf("              --ro-cache                 update: Use read only cache (default=off)\n");
   printf("   -p         --progress                 update: Show progress (default=off)\n");
+  printf("              --check-dev                update: Honour stat() st_dev field (default=off)\n");
   printf("              --diff                     Show difference between two repositories or snapshots (default=off)\n");
   printf("   -s         --sizes                    diff: show file sizes to copy (works online on repositories) (default=off)\n");
   printf("   -H         --human-readable           diff: show sizes human readable (default=off)\n");
@@ -67,6 +68,7 @@ cmdline_parser_print_help (void)
   printf("              --keep-trash               merge: Don't empty trash (default=off)\n");
   printf("              --check-md                 merge: Check message digest of file before deleting or replacing (default=off)\n");
   printf("              --always-copy              merge: Always copy instead of hard linking (default=off)\n");
+  printf("              --always-replace           merge: Always replace existing files (default=off)\n");
   printf("              --makepatch                Make a patch against the specified repository (default=off)\n");
   printf("   -oSTRING   --output-file=STRING       makepatch: Write output to specified file instead of STDOUT\n");
   printf("              --include-all              makepatch: Include files in patch which do exist on the other side under a different name (default=off)\n");
@@ -120,6 +122,7 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
   args_info->no_purge_given = 0 ;
   args_info->ro_cache_given = 0 ;
   args_info->progress_given = 0 ;
+  args_info->check_dev_given = 0 ;
   args_info->diff_given = 0 ;
   args_info->sizes_given = 0 ;
   args_info->human_readable_given = 0 ;
@@ -129,6 +132,7 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
   args_info->keep_trash_given = 0 ;
   args_info->check_md_given = 0 ;
   args_info->always_copy_given = 0 ;
+  args_info->always_replace_given = 0 ;
   args_info->makepatch_given = 0 ;
   args_info->output_file_given = 0 ;
   args_info->include_all_given = 0 ;
@@ -158,6 +162,7 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
   args_info->no_purge_flag = 0;\
   args_info->ro_cache_flag = 0;\
   args_info->progress_flag = 0;\
+  args_info->check_dev_flag = 0;\
   args_info->diff_flag = 0;\
   args_info->sizes_flag = 0;\
   args_info->human_readable_flag = 0;\
@@ -167,6 +172,7 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
   args_info->keep_trash_flag = 0;\
   args_info->check_md_flag = 0;\
   args_info->always_copy_flag = 0;\
+  args_info->always_replace_flag = 0;\
   args_info->makepatch_flag = 0;\
   args_info->output_file_arg = NULL; \
   args_info->include_all_flag = 0;\
@@ -215,6 +221,7 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
         { "no-purge",	0, NULL, 0 },
         { "ro-cache",	0, NULL, 0 },
         { "progress",	0, NULL, 'p' },
+        { "check-dev",	0, NULL, 0 },
         { "diff",	0, NULL, 0 },
         { "sizes",	0, NULL, 's' },
         { "human-readable",	0, NULL, 'H' },
@@ -224,6 +231,7 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
         { "keep-trash",	0, NULL, 0 },
         { "check-md",	0, NULL, 0 },
         { "always-copy",	0, NULL, 0 },
+        { "always-replace",	0, NULL, 0 },
         { "makepatch",	0, NULL, 0 },
         { "output-file",	1, NULL, 'o' },
         { "include-all",	0, NULL, 0 },
@@ -601,6 +609,20 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
             break;
           }
           
+          /* update: Honour stat() st_dev field.  */
+          else if (strcmp (long_options[option_index].name, "check-dev") == 0)
+          {
+            if (args_info->check_dev_given)
+              {
+                fprintf (stderr, "%s: `--check-dev' option given more than once\n", CMDLINE_PARSER_PACKAGE);
+                clear_args ();
+                exit (EXIT_FAILURE);
+              }
+            args_info->check_dev_given = 1;
+            args_info->check_dev_flag = !(args_info->check_dev_flag);
+            break;
+          }
+          
           /* Show difference between two repositories or snapshots.  */
           else if (strcmp (long_options[option_index].name, "diff") == 0)
           {
@@ -668,6 +690,20 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
               }
             args_info->always_copy_given = 1;
             args_info->always_copy_flag = !(args_info->always_copy_flag);
+            break;
+          }
+          
+          /* merge: Always replace existing files.  */
+          else if (strcmp (long_options[option_index].name, "always-replace") == 0)
+          {
+            if (args_info->always_replace_given)
+              {
+                fprintf (stderr, "%s: `--always-replace' option given more than once\n", CMDLINE_PARSER_PACKAGE);
+                clear_args ();
+                exit (EXIT_FAILURE);
+              }
+            args_info->always_replace_given = 1;
+            args_info->always_replace_flag = !(args_info->always_replace_flag);
             break;
           }
           

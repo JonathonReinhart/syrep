@@ -1,12 +1,12 @@
 
-                                   syrep 0.6
+                                   syrep 0.7
 
-   Copyright 2003,2004 Lennart Poettering <mzflerc (at) 0pointer (dot)
+   Copyright 2003-2005 Lennart Poettering <mzflerc (at) 0pointer (dot)
    de>
      * [1]License
      * [2]News
      * [3]Overview
-     * [4]Status
+     * [4]Current Status
      * [5]Documentation
      * [6]Requirements
      * [7]Installation
@@ -31,39 +31,46 @@ License
 
 News
 
+   Mon Jul 1 2005:
+
+   [10]Version 0.7 released; Changes include: fix trash cleanup; fix long
+   standing file copying bug; don't save device info data in the MD cache
+   any longer, use the new option --check-dev to reenable this feature;
+   update to Berkeley DB 4.3
+
    Wed Sep 22 2004:
 
-   [10]Version 0.6 released; Changes include: fix an ugly bug which made
+   [11]Version 0.6 released; Changes include: fix an ugly bug which made
    snapshots where --forget was used unusable; add debian/ directory for
    easily making Debian packages
 
    Mon Jul 19 2004:
 
-   [11]Version 0.5 released; Changes include: optionally show sizes of
+   [12]Version 0.5 released; Changes include: optionally show sizes of
    file on --diff, implement new command --forget, check for extended
    attribute user.syrep on --update on file systems that support it.
 
    Mon Mar 22 2004:
 
-   [12]Version 0.4 released; Changes include: fix annonoying SIGBUS
+   [13]Version 0.4 released; Changes include: fix annonoying SIGBUS
    failure when working on files >= 100 MB, update to Berkeley DB 4.2,
    use madvise() to improve file copying throughput on newer kernels,
    minor other fixes
 
    Sun Nov 30 2003:
 
-   [13]Version 0.3 released; Changes include: new options --sort,
+   [14]Version 0.3 released; Changes include: new options --sort,
    --check-md, --always-copy; implemented direct bi-directory merges,
    documentation updates, build system updates, assorted fixes.
 
    Tue Sep 9 2003:
 
-   [14]Version 0.2 released; Fixes include: documentation update, --diff
+   [15]Version 0.2 released; Fixes include: documentation update, --diff
    output improved, --merge output fixed.
 
    Mon Sep 8 2003:
 
-   [15]Version 0.1 released.
+   [16]Version 0.1 released.
 
 Overview
 
@@ -124,11 +131,11 @@ Overview
 
 Status
 
-   Version 0.6 is more or less stable and fulfills its purpose.
+   Version 0.7 is more or less stable and fulfills its purpose.
 
 Documentation
 
-   Have a look on the man page [16]syrep(1). (A XSLT capable browser is
+   Have a look on the man page [17]syrep(1). (A XSLT capable browser is
    required)
 
   Method of operation
@@ -219,8 +226,8 @@ karl$ syrep -zp --update ~/mp3/
 
 Requirements
 
-   syrep requires installed development versions of [17]zlib and
-   [18]Berkeley DB 4.2. If you want build syrep with support for extended
+   syrep requires installed development versions of [18]zlib and
+   [19]Berkeley DB 4.3. If you want build syrep with support for extended
    attributes (currently supported on Linux only) you have to install
    libattr and a kernel that supports it.
 
@@ -232,7 +239,7 @@ Requirements
    Some support for for big endian architectures is included, however, it
    is incomplete. You're welcome to send me patches.
 
-   If the syrep build system detects Oliver Kurth's [19]xmltoman the man
+   If the syrep build system detects Oliver Kurth's [20]xmltoman the man
    page is rebuilt. Otherwise the pre-compiled versions shipped with
    syrep are used.
 
@@ -251,18 +258,25 @@ Acknowledgements
 Download
 
    The newest release is always available from
-   [20]http://0pointer.de/lennart/projects/syrep/
+   [21]http://0pointer.de/lennart/projects/syrep/
 
-   The current release is [21]0.6
+   The current release is [22]0.7
 
-   Get syrep's development sources from the [22]Subversion
-   [23]repository. ([24]viewcvs)
+   Get syrep's development sources from the [23]Subversion [24]repository
+   ([25]viewcvs):
+svn checkout svn://seth.intheinter.net/syrep/trunk syrep
+
+   You may find an up-to-date Debian package (i386) of syrep in my
+   [26]local Debian package repository.
+
+   If you want to be notified whenever I release a new version of this
+   software use the subscription feature of [27]Freshmeat.
      _________________________________________________________________
 
 
-    Lennart Poettering <mzflerc (at) 0pointer (dot) de>, September 2004
+    Lennart Poettering <mzflerc (at) 0pointer (dot) de>, July 2005
 
-   $Id: README.html.in 70 2004-09-21 22:52:29Z lennart $
+   $Id: README.html.in 89 2005-07-01 22:40:39Z lennart $
 
 References
 
@@ -275,18 +289,21 @@ References
    7. README#installation
    8. README#acks
    9. README#download
-  10. http://0pointer.de/lennart/projects/syrep/syrep-0.6.tar.gz
-  11. http://0pointer.de/lennart/projects/syrep/syrep-0.5.tar.gz
-  12. http://0pointer.de/lennart/projects/syrep/syrep-0.4.tar.gz
-  13. http://0pointer.de/lennart/projects/syrep/syrep-0.3.tar.gz
-  14. http://0pointer.de/lennart/projects/syrep/syrep-0.2.tar.gz
-  15. http://0pointer.de/lennart/projects/syrep/syrep-0.1.tar.gz
-  16. http://0pointer.de/lennart/projects/syrep/syrep.1.xml
-  17. http://www.gzip.org/zlib/
-  18. http://www.sleepycat.com/
-  19. http://masqmail.cx/xml2man/
-  20. http://0pointer.de/lennart/projects/syrep/
-  21. http://0pointer.de/lennart/projects/syrep/syrep-0.6.tar.gz
-  22. http://subversion.tigris.org/
-  23. https://seth.intheinter.net:8081/svn/syrep/
-  24. http://0pointer.de/cgi-bin/viewcvs.cgi/?root=syrep
+  10. http://0pointer.de/lennart/projects/syrep/syrep-0.7.tar.gz
+  11. http://0pointer.de/lennart/projects/syrep/syrep-0.6.tar.gz
+  12. http://0pointer.de/lennart/projects/syrep/syrep-0.5.tar.gz
+  13. http://0pointer.de/lennart/projects/syrep/syrep-0.4.tar.gz
+  14. http://0pointer.de/lennart/projects/syrep/syrep-0.3.tar.gz
+  15. http://0pointer.de/lennart/projects/syrep/syrep-0.2.tar.gz
+  16. http://0pointer.de/lennart/projects/syrep/syrep-0.1.tar.gz
+  17. http://0pointer.de/lennart/projects/syrep/syrep.1.xml
+  18. http://www.gzip.org/zlib/
+  19. http://www.sleepycat.com/
+  20. http://masqmail.cx/xml2man/
+  21. http://0pointer.de/lennart/projects/syrep/
+  22. http://0pointer.de/lennart/projects/syrep/syrep-0.7.tar.gz
+  23. http://subversion.tigris.org/
+  24. svn://seth.intheinter.net/syrep
+  25. http://0pointer.de/cgi-bin/viewcvs.cgi/?root=syrep
+  26. http://0pointer.de/debian/
+  27. http://freshmeat.net/projects/syrep/

@@ -11,6 +11,30 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
+dnl Available from the GNU Autoconf Macro Archive at:
+dnl http://www.gnu.org/software/ac-archive/htmldoc/adl_func_getopt_long.html
+dnl
+AC_DEFUN([adl_FUNC_GETOPT_LONG],
+ [AC_PREREQ(2.49)dnl
+  # clean out junk possibly left behind by a previous configuration
+  rm -f lib/getopt.h
+  # Check for getopt_long support
+  AC_CHECK_HEADERS([getopt.h])
+  AC_CHECK_FUNCS([getopt_long],,
+   [# FreeBSD has a gnugetopt library for this
+    AC_CHECK_LIB([gnugetopt],[getopt_long],[AC_DEFINE([HAVE_GETOPT_LONG])],
+     [# use the GNU replacement
+      AC_LIBOBJ(getopt)
+      AC_LIBOBJ(getopt1)
+      AC_CONFIG_LINKS([lib/getopt.h:lib/gnugetopt.h])])])])
+
+
+AC_DEFUN([lp_FUNC_MKDTEMP],
+ [AC_PREREQ(2.49)dnl
+  AC_CHECK_HEADERS([stdlib.h])
+  AC_CHECK_FUNCS([mkdtemp],,
+   [AC_LIBOBJ(mkdtemp)])])
+
 # Do all the work for Automake.                            -*- Autoconf -*-
 
 # This macro actually does too much some checks are only needed if

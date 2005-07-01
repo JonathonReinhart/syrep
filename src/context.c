@@ -1,4 +1,4 @@
-/* $Id: context.c 43 2003-11-30 14:27:42Z lennart $ */
+/* $Id: context.c 76 2005-06-05 20:14:45Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -118,7 +118,7 @@ struct syrep_db_context* db_context_open(const char *filename, int force) {
     assert(k);
     
     if ((f = fopen(path, "r"))) {
-        if (fscanf(f, "%i", &c->timestamp) != 1)
+        if (fscanf(f, "%u", &c->timestamp) != 1)
             c->timestamp = 0;
         fclose(f);
     }

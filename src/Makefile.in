@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Id: Makefile.am 58 2004-07-19 16:04:48Z lennart $
+# $Id: Makefile.am 88 2005-07-01 22:31:34Z lennart $
 
 # This file is part of syrep.
 #
@@ -142,7 +142,11 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 
+AM_CPPFLAGS = -I$(top_srcdir)/lib
+
 bin_PROGRAMS = syrep
+
+noinst_PROGRAMS = rm-rf-test copy-fd-test
 
 syrep_SOURCES = cache.c cache.h \
 				update.c update.h \
@@ -167,8 +171,12 @@ syrep_SOURCES = cache.c cache.h \
 				dbstruct.h \
 				forget.c forget.h 
 
+syrep_LDADD = @LIBOBJS@
 
-EXTRA_DIST = syrep.ggo
+rm_rf_test_SOURCES = util.c rm-rf-test.c util.h cmdline.c cmdline.h
+copy_fd_test_SOURCES = util.c copy-fd-test.c util.h cmdline.c cmdline.h
+
+EXTRA_DIST = syrep.ggo getopt.c getopt1.c mkdtemp.c
 MAINTAINERCLEANFILES = $(am__append_3)
 BUILT_SOURCES = $(am__append_2) $(am__append_4)
 CLEANFILES = $(am__append_1)
@@ -178,8 +186,21 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 bin_PROGRAMS = syrep$(EXEEXT)
-PROGRAMS = $(bin_PROGRAMS)
+noinst_PROGRAMS = rm-rf-test$(EXEEXT) copy-fd-test$(EXEEXT)
+PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
 
+am_copy_fd_test_OBJECTS = util.$(OBJEXT) copy-fd-test.$(OBJEXT) \
+	cmdline.$(OBJEXT)
+copy_fd_test_OBJECTS = $(am_copy_fd_test_OBJECTS)
+copy_fd_test_LDADD = $(LDADD)
+copy_fd_test_DEPENDENCIES =
+copy_fd_test_LDFLAGS =
+am_rm_rf_test_OBJECTS = util.$(OBJEXT) rm-rf-test.$(OBJEXT) \
+	cmdline.$(OBJEXT)
+rm_rf_test_OBJECTS = $(am_rm_rf_test_OBJECTS)
+rm_rf_test_LDADD = $(LDADD)
+rm_rf_test_DEPENDENCIES =
+rm_rf_test_LDFLAGS =
 am_syrep_OBJECTS = cache.$(OBJEXT) update.$(OBJEXT) util.$(OBJEXT) \
 	syrep.$(OBJEXT) md5.$(OBJEXT) md5util.$(OBJEXT) \
 	context.$(OBJEXT) package.$(OBJEXT) dbutil.$(OBJEXT) \
@@ -188,30 +209,34 @@ am_syrep_OBJECTS = cache.$(OBJEXT) update.$(OBJEXT) util.$(OBJEXT) \
 	makepatch.$(OBJEXT) cleanup.$(OBJEXT) cmdline.$(OBJEXT) \
 	forget.$(OBJEXT)
 syrep_OBJECTS = $(am_syrep_OBJECTS)
-syrep_LDADD = $(LDADD)
-syrep_DEPENDENCIES =
+syrep_DEPENDENCIES = @LIBOBJS@
 syrep_LDFLAGS =
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/cache.Po ./$(DEPDIR)/cleanup.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/cmdline.Po ./$(DEPDIR)/context.Po \
+@AMDEP_TRUE@DEP_FILES = $(DEPDIR)/getopt.Po $(DEPDIR)/getopt1.Po \
+@AMDEP_TRUE@	$(DEPDIR)/mkdtemp.Po ./$(DEPDIR)/cache.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/cleanup.Po ./$(DEPDIR)/cmdline.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/context.Po ./$(DEPDIR)/copy-fd-test.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/dbutil.Po ./$(DEPDIR)/diff.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/dump.Po ./$(DEPDIR)/extract.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/forget.Po ./$(DEPDIR)/history.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/info.Po ./$(DEPDIR)/list.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/makepatch.Po ./$(DEPDIR)/md5.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/md5util.Po ./$(DEPDIR)/merge.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/package.Po ./$(DEPDIR)/syrep.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/update.Po ./$(DEPDIR)/util.Po
+@AMDEP_TRUE@	./$(DEPDIR)/package.Po ./$(DEPDIR)/rm-rf-test.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/syrep.Po ./$(DEPDIR)/update.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/util.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES = $(syrep_SOURCES)
-DIST_COMMON = $(srcdir)/Makefile.in Makefile.am
-SOURCES = $(syrep_SOURCES)
+DIST_SOURCES = $(copy_fd_test_SOURCES) $(rm_rf_test_SOURCES) \
+	$(syrep_SOURCES)
+DIST_COMMON = $(srcdir)/Makefile.in Makefile.am getopt.c getopt1.c \
+	mkdtemp.c
+SOURCES = $(copy_fd_test_SOURCES) $(rm_rf_test_SOURCES) $(syrep_SOURCES)
 
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -247,6 +272,15 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+
+clean-noinstPROGRAMS:
+	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
+copy-fd-test$(EXEEXT): $(copy_fd_test_OBJECTS) $(copy_fd_test_DEPENDENCIES) 
+	@rm -f copy-fd-test$(EXEEXT)
+	$(LINK) $(copy_fd_test_LDFLAGS) $(copy_fd_test_OBJECTS) $(copy_fd_test_LDADD) $(LIBS)
+rm-rf-test$(EXEEXT): $(rm_rf_test_OBJECTS) $(rm_rf_test_DEPENDENCIES) 
+	@rm -f rm-rf-test$(EXEEXT)
+	$(LINK) $(rm_rf_test_LDFLAGS) $(rm_rf_test_OBJECTS) $(rm_rf_test_LDADD) $(LIBS)
 syrep$(EXEEXT): $(syrep_OBJECTS) $(syrep_DEPENDENCIES) 
 	@rm -f syrep$(EXEEXT)
 	$(LINK) $(syrep_LDFLAGS) $(syrep_OBJECTS) $(syrep_LDADD) $(LIBS)
@@ -257,10 +291,14 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/getopt.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/getopt1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/mkdtemp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cache.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cleanup.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cmdline.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/context.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/copy-fd-test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbutil.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diff.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dump.Po@am__quote@
@@ -274,6 +312,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/md5util.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/merge.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/package.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rm-rf-test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/syrep.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/update.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/util.Po@am__quote@
@@ -423,10 +462,11 @@ maintainer-clean-generic:
 	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic clean-noinstPROGRAMS \
+	mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf $(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -450,7 +490,7 @@ install-man:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf $(DEPDIR) ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -469,12 +509,12 @@ ps-am:
 uninstall-am: uninstall-binPROGRAMS uninstall-info-am
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
-	clean-generic ctags distclean distclean-compile \
-	distclean-generic distclean-tags distdir dvi dvi-am info \
-	info-am install install-am install-binPROGRAMS install-data \
-	install-data-am install-exec install-exec-am install-info \
-	install-info-am install-man install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+	clean-generic clean-noinstPROGRAMS ctags distclean \
+	distclean-compile distclean-generic distclean-tags distdir dvi \
+	dvi-am info info-am install install-am install-binPROGRAMS \
+	install-data install-data-am install-exec install-exec-am \
+	install-info install-info-am install-man install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
 	uninstall-am uninstall-binPROGRAMS uninstall-info-am

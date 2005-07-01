@@ -1,4 +1,4 @@
 #ifndef foosvnrevisionhfoo
 #define foosvnrevisionhfoo
-#define SVN_REVISION "68"
+#define SVN_REVISION "87"
 #endif

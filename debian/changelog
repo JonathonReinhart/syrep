@@ -1,3 +1,15 @@
+syrep (0.7-1) unstable; urgency=high
+
+  * New upstream
+
+ -- Lennart Poettering <mzflerc@0pointer.de>  Fri, 15 Oct 2004 13:10:57 +0200
+ 
+syrep (0.6-1) unstable; urgency=high
+  
+  * New upstream
+
+ -- Lennart Poettering <mzflerc@0pointer.de>  Thu, 30 Sep 2004 22:26:57 +0200
+
 syrep (0.5-1) unstable; urgency=low
 
   * Initial Release.

@@ -2,7 +2,7 @@ Source: syrep
 Section: utils
 Priority: optional
 Maintainer: Lennart Poettering <mzflerc@0pointer.de>
-Build-Depends: debhelper (>= 4.0.0), lynx, xmltoman, gengetopt, subversion, zlib1g-dev, libdb4.2-dev, libattr1-dev
+Build-Depends: debhelper (>= 4.0.0), lynx, xmltoman, gengetopt, subversion, zlib1g-dev, libdb4.3-dev, libattr1-dev
 Standards-Version: 3.6.0
 
 Package: syrep

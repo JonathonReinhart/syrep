@@ -2,7 +2,7 @@
 <!DOCTYPE manpage SYSTEM "xmltoman.dtd">
 <?xml-stylesheet type="text/xsl" href="xmltoman.xsl" ?> 
 
-<!-- $Id: syrep.1.xml.in 60 2004-07-19 17:02:34Z lennart $ -->
+<!-- $Id: syrep.1.xml.in 84 2005-07-01 21:19:38Z lennart $ -->
 
 <!-- 
   This file is part of syrep.
@@ -202,6 +202,13 @@
       <optdesc>Use cache in a read only fashion</optdesc>
     </option>
 
+    <option>
+      <p><opt>--check-dev</opt> (option)</p>
+      <optdesc>Store information about the device where the file
+      resides when storing an entry about it in the message digest
+      cache. Since nowadays device identifiers cannot be longer
+      considered stable, this options defaults to off.</optdesc>
+    </option>
    </section>
    <section name="Showing differences between two snapshots">
     <option>

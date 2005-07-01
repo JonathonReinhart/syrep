@@ -1,4 +1,4 @@
-/* $Id: extract.c 76 2005-06-05 20:14:45Z lennart $ */
+/* $Id: rm-rf-test.c 76 2005-06-05 20:14:45Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -22,38 +22,19 @@
 #include <config.h>
 #endif
 
-#include <stdlib.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <inttypes.h>
-#include <stdio.h>
+#include <assert.h>
 
-#include "package.h"
-#include "extract.h"
 #include "util.h"
+#include "cmdline.h"
 
-static int cb(struct package *p, const char *name, const char *path, void *u) {
-    int r;
+struct gengetopt_args_info args;
+
+int interrupted;
+
+
+int main(int argc, char *argv[]) {
+
+    assert(argc >= 2);
     
-    if ((r = access(path, R_OK)) < 0) {
-        if (errno == ENOENT)
-            return 0;
-
-        fprintf(stderr, "access(%s) failed: %s\n", path, strerror(errno));
-        return -1;
-    }
-
-    if (r == 0) {
-        fprintf(stderr, "Extracting %s ...\n", name);
-        return copy_or_link_file(path, name, 1);
-    }
-
-    return 0;
-}
-
-int extract(struct syrep_db_context *context) {
-    return package_foreach(context->package, cb, NULL);
+    rm_rf(argv[1], 1);
 }

@@ -1,4 +1,4 @@
-/* $Id: merge.c 43 2003-11-30 14:27:42Z lennart $ */
+/* $Id: merge.c 76 2005-06-05 20:14:45Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -149,27 +149,26 @@ static int conflict_phase(DB *ddb, struct syrep_name *name, struct diff_entry *d
     return 0;
 }
 
-static char *escape_path(const char *path, char *dst, unsigned l) {
-    const char *p;
-    char *d;
+static int do_copy(const char *a, const char *b) {
+    int (*copy_proc) (const char *, const char*, int c) = args.always_copy_flag ? copy_file : copy_or_link_file;
+
+    if (!args.always_replace_flag) {
+        int r, q;
     
-    for (p = path, d = dst; *p && d-dst < l-1; p++) {
-        if (*p == '/') {
-            *(d++) = '%';
-            *(d++) = '2';
-            *(d++) = 'F';
+        if ((r = copy_proc(a, b, 0)) >= 0)
+            return r;
 
-        } else if (*p == '%') {
-            *(d++) = '%';
-            *(d++) = '2';
-            *(d++) = '5';
+        if (errno != EEXIST)
+            return r;
 
-        } else
-            *(d++) = *p;
+        if (!(q = question("Replace existing file?", "ny")))
+            return -1;
+
+        if (q != 'y')
+            return -1;
     }
 
-    *(d++) = 0;
-    return dst;
+    return copy_proc(a, b, 1);
 }
 
 static int copy_phase(DB *ddb, struct syrep_name *name, struct diff_entry *de, void *p) {
@@ -180,9 +179,6 @@ static int copy_phase(DB *ddb, struct syrep_name *name, struct diff_entry *de, v
     char path[PATH_MAX];
     int f;
     char d[SYREP_DIGESTLENGTH*2+1];
-
-    int (*copy_proc) (const char *, const char*, int c) = args.always_copy_flag ? copy_file : copy_or_link_file;
-        
 
     assert(ddb && name && de && p);
 
@@ -226,21 +222,22 @@ static int copy_phase(DB *ddb, struct syrep_name *name, struct diff_entry *de, v
         if (makeprefixpath(path, 0777) < 0)
             return -1;
 
-        if (!access(path2, R_OK)) {
-            if (copy_proc(path2, path, 0) < 0)
+        if (do_copy(path2, path) < 0) {
+            if (errno != ENOENT) {
+                fprintf(stderr, "COPY: Failed to copy file '%s' to '%s': %s\n", path2, path, strerror(errno));
                 return -1;
-        } else {
-            unsigned l;
-
-            snprintf(path2, sizeof(path2), "%s/", cb_info->trash_dir);
-            l = strlen(path2);
-            escape_path(name2.path, path2+l, sizeof(path2)-l);
-
-            if (!access(path2, R_OK)) {
-                if (copy_proc(path2, path, de->action == DIFF_REPLACE) < 0)
+            } else {
+                snprintf(path2, sizeof(path2), "%s/%s", cb_info->trash_dir, name2.path);
+                
+                if (do_copy(path2, path) < 0) {
+                    if (errno == ENOENT)
+                        fprintf(stderr, "COPY: Local file <%s> vanished. Snapshot not up to date\n", name2.path);
+                    else
+                        fprintf(stderr, "COPY: Failed to copy file '%s' to '%s': %s\n", path2, path, strerror(errno));
+                        
                     return -1;
-            } else
-                fprintf(stderr, "COPY: Local file <%s> vanished. Snapshot not up to date.\n", name2.path);
+                }
+            }
         }
         
     } else {
@@ -269,7 +266,7 @@ static int copy_phase(DB *ddb, struct syrep_name *name, struct diff_entry *de, v
             if (makeprefixpath(path, 0777) < 0)
                 return -1;
             
-            if (copy_proc(a, path, de->action == DIFF_REPLACE) < 0)
+            if (do_copy(a, path) < 0)
                 return -1;
         } else
             if (args.verbose_flag)
@@ -282,7 +279,6 @@ static int copy_phase(DB *ddb, struct syrep_name *name, struct diff_entry *de, v
 static int delete_phase(DB *ddb, struct syrep_name *name, struct diff_entry *de, void *p) {
     struct cb_info *cb_info = p;
     char path[PATH_MAX], target[PATH_MAX];
-    unsigned l;
 
     assert(ddb && name && de && p);
     
@@ -331,18 +327,23 @@ static int delete_phase(DB *ddb, struct syrep_name *name, struct diff_entry *de,
             return 0;
     }
         
-    snprintf(target, sizeof(target), "%s/", cb_info->trash_dir);
-    l = strlen(target);
-    escape_path(name->path, target+l, sizeof(target)-l);
+    snprintf(target, sizeof(target), "%s/%s", cb_info->trash_dir, name->path);
     
-    fprintf(stderr, "DELETE: Moving file <%s> into trash (%s)\n", path, target);
+    if (args.verbose_flag)
+        fprintf(stderr, "DELETE: Moving file <%s> to <%s>\n", path, target);
 
-    if (move_file(path, target, 1) < 0)
+    if (makeprefixpath(target, 0777) < 0)
         return -1;
+    
+    if (move_file(path, target, 1) < 0) {
+        if (errno == ENOENT && !access(target, F_OK))
+            fprintf(stderr, "DELETE: File is probably already in trash, continuing\n");
+        else
+            return -1;
+    }
 
     if (args.prune_empty_flag)
-        if (prune_empty_directories(path, cb_info->root) < 0)
-            return -1;
+        prune_empty_directories(path, cb_info->root);
 
     return 0;
 }
@@ -376,7 +377,7 @@ int merge(struct syrep_db_context *c1, struct syrep_db_context *c2, const char* 
         goto finish;
 
     if (!args.keep_trash_flag)
-        if (rm_rf(cb_info.trash_dir, 0) < 0)
+        if (rm_rf(cb_info.trash_dir, 1) < 0)
             goto finish;
     
     r = 0;

@@ -113,6 +113,9 @@ Don't purge obsolete entries from cache after update run. The may be useful if y
 .TP
 \fB--ro-cache\f1 (option)
 Use cache in a read only fashion 
+.TP
+\fB--check-dev\f1 (option)
+Store information about the device where the file resides when storing an entry about it in the message digest cache. Since nowadays device identifiers cannot be longer considered stable, this options defaults to off. 
 .SH SHOWING DIFFERENCES BETWEEN TWO SNAPSHOTS
 .TP
 \fB--diff\f1 (command)

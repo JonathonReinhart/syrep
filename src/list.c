@@ -1,4 +1,4 @@
-/* $Id: list.c 43 2003-11-30 14:27:42Z lennart $ */
+/* $Id: list.c 82 2005-06-16 19:57:25Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -111,7 +111,7 @@ static int sort_entry_cmp(const void *_a, const void *_b) {
         return 1;
 
     return strncmp(a->name.path, b->name.path, PATH_MAX);
-};
+}
 
 int list(struct syrep_db_context *c) {
     int r = -1, ret;
@@ -182,7 +182,7 @@ int list(struct syrep_db_context *c) {
                         DB_BTREE_STAT *statp;
                         int ret;
                         
-                        if ((ret = c->db_id_meta->stat(c->db_id_meta, &statp, 0)) != 0)
+                        if ((ret = c->db_id_meta->stat(c->db_id_meta, NULL, &statp, 0)) != 0)
                             break;
 
                         m_sort_array = statp->bt_ndata;

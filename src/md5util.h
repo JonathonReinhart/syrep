@@ -1,7 +1,7 @@
 #ifndef foomd5utilhfoo
 #define foomd5utilhfoo
 
-/* $Id: md5util.h 43 2003-11-30 14:27:42Z lennart $ */
+/* $Id: md5util.h 76 2005-06-05 20:14:45Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -22,12 +22,13 @@
 ***/
 
 #include <sys/types.h>
+#include <inttypes.h>
 
-void fhex(const unsigned char *bin, int len, char *txt);
+void fhex(const uint8_t *bin, size_t len, char *txt);
 #define fhex_md5(bin,txt) fhex((bin),16,(txt))
 
-int fdmd5(int fd, off_t l, char *md);
+int fdmd5(int fd, off_t l, uint8_t md[]);
 
-int fmd5(const char *fn, char *md);
+int fmd5(const char *fn, uint8_t md[]);
 
 #endif

@@ -1,4 +1,4 @@
-/* $Id: update.c 59 2004-07-19 16:28:19Z lennart $ */
+/* $Id: update.c 76 2005-06-05 20:14:45Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -204,7 +204,7 @@ static int iterate_dir(struct syrep_db_context *c, struct syrep_md_cache *cache,
 
         normalize_path(p);
 
-        if (stat(p, &st) < 0) {
+        if (lstat(p, &st) < 0) {
             fprintf(stderr, "stat(%s) failed: %s\n", p, strerror(errno));
             continue;
         }

@@ -1,7 +1,7 @@
 # -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-# $Id: configure.ac 68 2004-09-21 22:42:03Z lennart $
+# $Id: configure.ac 88 2005-07-01 22:31:34Z lennart $
 
 # This file is part of syrep.
 #
@@ -20,7 +20,7 @@
 # Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 
 AC_PREREQ(2.59)
-AC_INIT([syrep],[0.6],[mzflerc (at) 0pointer (dot) de])
+AC_INIT([syrep],[0.7],[mzflerc (at) 0pointer (dot) de])
 AC_CONFIG_SRCDIR([src/syrep.c])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([foreign -Wall])
@@ -28,12 +28,17 @@ AM_INIT_AUTOMAKE([foreign -Wall])
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_LN_S
+AC_GNU_SOURCE
 
 AC_SUBST(PACKAGE_URL, [http://0pointer.de/lennart/projects/syrep/])
 
 # If using GCC specifiy some additional parameters
 if test "x$GCC" = "xyes" ; then
-   CFLAGS="$CFLAGS -pipe -Wall -W -Wno-unused-parameter"
+   CFLAGS="$CFLAGS -pipe -W -Wall -pedantic"
+
+   AC_LANG_CONFTEST([int main() {}])
+   $CC -c conftest.c -std=c99 -Wno-unused-parameter $CFLAGS > /dev/null 2> /dev/null && CFLAGS="$CFLAGS -std=c99 -Wno-unused-parameter"
+   rm -f conftest.o
 fi
 
 if type -p stow > /dev/null && test -d /usr/local/stow ; then
@@ -46,20 +51,21 @@ AC_CHECK_LIB([z], [inflate],, [AC_MSG_ERROR([*** Sorry, you have to install zlib
 AC_CHECK_HEADER([zlib.h],, [AC_MSG_ERROR([*** Sorry, you have to install the zlib headers ***])])
 
 # Check for Berkeley DB (needs to be improved)
-AC_CHECK_HEADER([db.h],, [AC_MSG_ERROR([*** Sorry, you have to install the Berkeley Database Library (libdb) 4.2 or newer ***])])
+AC_CHECK_HEADER([db.h],, [AC_MSG_ERROR([*** Sorry, you have to install the Berkeley Database Library (libdb) 4.3 or newer ***])])
+AC_CHECK_LIB([db], [__db_db_create_4003],, [AC_MSG_ERROR([*** Sorry, you have to install the Berkeley Database Library (libdb) 4.3 or newer ***])])
 LIBS="$LIBS -ldb"
 
 # Checking libdb version number
-AC_MSG_CHECKING([for Berkeley libdb 4.2])
+AC_MSG_CHECKING([for Berkeley libdb 4.3])
 AC_LANG_PUSH(C)
 AC_PREPROC_IFELSE([AC_LANG_SOURCE([[
 #include <db.h>
-#if (DB_VERSION_MAJOR != 4) || (DB_VERSION_MINOR != 2) 
+#if (DB_VERSION_MAJOR != 4) || (DB_VERSION_MINOR != 3) 
 #error "foo"
 #endif
 ]])],
 [AC_MSG_RESULT([yes])],
-[AC_MSG_FAILURE([Berkeley libdb 4.2 required])])
+[AC_MSG_FAILURE([Berkeley libdb 4.3 required])])
 AC_LANG_POP(C)
 
 # Check for Linux sendfile()
@@ -98,7 +104,7 @@ AC_SYS_LARGEFILE
 
 AC_HEADER_DIRENT
 AC_HEADER_STDC
-AC_CHECK_HEADERS([fcntl.h inttypes.h limits.h malloc.h stdlib.h string.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h inttypes.h limits.h malloc.h stdlib.h string.h unistd.h libintl.h sys/time.h])
 
 # Checks for header files.
 AC_C_CONST
@@ -109,12 +115,17 @@ AC_C_VOLATILE
 
 # Checks for library functions.
 AC_FUNC_CLOSEDIR_VOID
-AC_FUNC_MALLOC
-AC_FUNC_MEMCMP
 AC_FUNC_MMAP
-AC_FUNC_STAT
-AC_FUNC_REALLOC
-AC_CHECK_FUNCS([atexit ftruncate getcwd gethostname memset mkdir munmap rmdir setenv strchr strdup strerror strrchr strtol])
+AC_CHECK_FUNCS([atexit ftruncate getcwd gethostname memset mkdir munmap rmdir setenv strchr strdup strerror strrchr strtol putenv])
+#AC_FUNC_LSTAT
+#AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
+#AC_FUNC_MALLOC
+#AC_FUNC_MEMCMP
+#AC_FUNC_REALLOC
+#AC_FUNC_STAT
+
+adl_FUNC_GETOPT_LONG
+lp_FUNC_MKDTEMP
 
 # LYNX documentation generation
 AC_ARG_ENABLE(lynx,

@@ -1,4 +1,4 @@
-/* $Id: package.c 58 2004-07-19 16:04:48Z lennart $ */
+/* $Id: package.c 76 2005-06-05 20:14:45Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -40,6 +40,9 @@
 #include "util.h"
 #include "syrep.h"
 
+/* Import mkdtemp */
+char *mkdtemp(char *template);
+
 struct package_item;
 
 struct package_item {
@@ -56,7 +59,7 @@ struct package {
     int count;
     int read_fd, write_fd;
     z_stream read_z, write_z;
-    void *read_zbuf, *write_zbuf;
+    uint8_t *read_zbuf, *write_zbuf;
     int x_endianess;
     int compressed;
     struct package_item *items;
@@ -113,7 +116,7 @@ static ssize_t package_read(struct package *p, void *d, size_t l) {
             }
 
             if (!n) {
-                r = (void*) p->read_z.next_out - d;
+                r = (uint8_t*) p->read_z.next_out - (uint8_t*) d;
                 goto finish;
             }
 
@@ -124,7 +127,7 @@ static ssize_t package_read(struct package *p, void *d, size_t l) {
         if ((z = inflate(&p->read_z, 0)) != Z_OK) {
 
             if (z == Z_STREAM_END) {
-                r = (void*) p->read_z.next_out - d;
+                r = (uint8_t*) p->read_z.next_out - (uint8_t*) d;
                 goto finish;
             }
                 
@@ -171,7 +174,7 @@ static ssize_t package_write(struct package *p, void *d, size_t l) {
             goto finish;
         }
 
-        t = (void*) p->write_z.next_out - p->write_zbuf;
+        t = (uint8_t*) p->write_z.next_out - p->write_zbuf;
 
         if (t) {
             ssize_t n;
@@ -181,8 +184,8 @@ static ssize_t package_write(struct package *p, void *d, size_t l) {
                 goto finish;
             }
 
-            if (n != t) {
-                if ((r = (void*) p->write_z.next_in - d) > 0)
+            if ((size_t) n != t) {
+                if ((r = (uint8_t*) p->write_z.next_in - (uint8_t*) d) > 0)
                     r --;
 
                 goto finish;
@@ -212,7 +215,7 @@ static int copy_deflate(struct package *p, int sfd, off_t l) {
         size_t t = MIN(l, CBUFSIZE);
         ssize_t n;
         
-        if ((n = loop_read(sfd, buf, t)) != t) {
+        if ((n = loop_read(sfd, buf, t)) != (ssize_t) t) {
             fprintf(stderr, "read() : %s\n", n < 0 ? strerror(errno) : "EOF");
             goto finish;
         }
@@ -242,18 +245,18 @@ static int copy_inflate(struct package *p, int dfd, off_t l) {
     }
     
     while (l > 0) {
-        size_t t = MIN(l, CBUFSIZE);
+        size_t t = (size_t) (MIN(l, CBUFSIZE));
         ssize_t n;
 
-        if (package_read(p, buf, t) != t)
+        if (package_read(p, buf, t) != (ssize_t) t)
             goto finish;
         
-        if ((n = loop_write(dfd, buf, t)) != t) {
+        if ((n = loop_write(dfd, buf, t)) != (ssize_t) t) {
             fprintf(stderr, "write() : %s\n", n < 0 ? strerror(errno) : "EOF");
             goto finish;
         }
 
-        l -= n;
+        l -= t;
     }
 
     r = 0;
@@ -358,9 +361,9 @@ static int close_write_fd(struct package *p) {
 
                 z = deflate(&p->write_z, Z_FINISH);
 
-                t = (void*) p->write_z.next_out - p->write_zbuf;
+                t = (uint8_t*) p->write_z.next_out - p->write_zbuf;
                 if (t) {
-                    if ((n = loop_write(p->write_fd, p->write_zbuf, t)) != t) {
+                    if ((n = loop_write(p->write_fd, p->write_zbuf, t)) != (ssize_t) t) {
                         fprintf(stderr, "loop_write(): %s\n", n < 0 ? strerror(errno) : "EOF");
                         r = -1;
                         break;
@@ -496,7 +499,6 @@ static int write_item(struct package *p, struct package_item *i) {
         goto fail;
     }
 
-
     if ((r = package_write(p, &l, 8)) != 8) {
         if (r >= 0)
             fprintf(stderr, "Short write\n");
@@ -593,8 +595,6 @@ struct package* package_open(const char *fn, int force) {
             fprintf(stderr, "zlib initialisation failure\n");
             goto finish;
         }
-
-        
     }
     
 

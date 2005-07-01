@@ -1,4 +1,4 @@
-/* $Id: diff.c 57 2004-07-18 18:47:55Z lennart $ */
+/* $Id: diff.c 81 2005-06-06 13:59:32Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -208,6 +208,8 @@ static int enumerate(DB *ddb, struct syrep_db_context *c1, struct syrep_db_conte
         
         if (meta->last_seen != c1->version)
             continue;
+
+        memset(&name, 0, sizeof(name));
 
         if ((f = get_name_by_nrecno(c1, &id->nrecno, &name)) < 0)
             return -1;

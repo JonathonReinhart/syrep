@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: bootstrap.sh 61 2004-07-19 17:09:25Z lennart $
+# $Id: bootstrap.sh 76 2005-06-05 20:14:45Z lennart $
 
 # This file is part of syrep.
 #
@@ -39,7 +39,7 @@ else
     run_versioned automake 1.7 -a -c
     autoconf -Wall
 
-    CFLAGS="-g -O0" ./configure --sysconfdir=/etc "$@"
+    CFLAGS="-g -O1" ./configure --sysconfdir=/etc "$@"
 
     make clean
 fi
