@@ -1,4 +1,4 @@
-/* $Id: util.c 83 2005-06-20 21:08:13Z lennart $ */
+/* $Id: util.c 103 2006-04-22 10:57:59Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -296,7 +296,7 @@ int copy_fd(int sfd, int dfd, off_t l) {
 
         while (l > 0) {
             off_t n;
-            size_t m = MIN(l, BUFSIZE);
+            m = MIN(l, BUFSIZE);
             
             if ((n = loop_read(sfd, buf, m)) != m) {
                 
@@ -489,11 +489,16 @@ finish:
 
 int copy_or_link_file(const char *src, const char *dst, int c) {
 
-    if (c)
-        unlink(dst);
     
     if (link(src, dst) < 0) {
 
+        if (errno == EEXIST && c) {
+            unlink(dst);
+            
+            if (link(src, dst) == 0)
+                return 0;
+        }
+        
         if (errno == EXDEV || errno == EPERM)
             return copy_file(src, dst, c);
 
@@ -756,13 +761,13 @@ ssize_t loop_write(int fd, const void *d, size_t l) {
         ssize_t r;
         
         if ((r = write(fd, p, l)) <= 0)
-            return p-(uint8_t*)d > 0 ? p-(uint8_t*) d : r;
+            return p-(const uint8_t*)d > 0 ? p-(const uint8_t*) d : r;
 
         p += r;
         l -= r;
     }
 
-    return p-(uint8_t*) d;
+    return p-(const uint8_t*) d;
 }
 
 char *snprint_off(char *s, size_t l, off_t off) {

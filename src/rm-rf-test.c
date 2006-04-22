@@ -1,4 +1,4 @@
-/* $Id: rm-rf-test.c 76 2005-06-05 20:14:45Z lennart $ */
+/* $Id: rm-rf-test.c 104 2006-04-22 11:00:59Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -37,4 +37,5 @@ int main(int argc, char *argv[]) {
     assert(argc >= 2);
     
     rm_rf(argv[1], 1);
+    return 0;
 }

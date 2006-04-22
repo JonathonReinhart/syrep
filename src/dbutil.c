@@ -1,4 +1,4 @@
-/* $Id: dbutil.c 76 2005-06-05 20:14:45Z lennart $ */
+/* $Id: dbutil.c 103 2006-04-22 10:57:59Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -240,7 +240,7 @@ static uint32_t csum_name(const struct syrep_name *name) {
     assert(name);
     
     a = adler32(0, NULL, 0); 
-    a = adler32(a, (uint8_t*) name->path, strlen(name->path)); 
+    a = adler32(a, (const uint8_t*) name->path, strlen(name->path)); 
     
     /*fprintf(stderr, "csum: %s -> %u\n", name->path, a);*/
     

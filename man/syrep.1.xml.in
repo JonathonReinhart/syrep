@@ -2,7 +2,7 @@
 <!DOCTYPE manpage SYSTEM "xmltoman.dtd">
 <?xml-stylesheet type="text/xsl" href="xmltoman.xsl" ?> 
 
-<!-- $Id: syrep.1.xml.in 84 2005-07-01 21:19:38Z lennart $ -->
+<!-- $Id: syrep.1.xml.in 93 2006-02-12 11:11:31Z lennart $ -->
 
 <!-- 
   This file is part of syrep.
@@ -22,7 +22,7 @@
   Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA. 
 -->
 
-  <manpage name="syrep" section="8" desc="A file repository synchronization tool">
+  <manpage name="syrep" section="1" desc="A file repository synchronization tool">
   
   <synopsis>
     <cmd>syrep [<opt>options...</opt>] <opt>--list</opt> <arg>SNAPSHOT</arg> ...</cmd>

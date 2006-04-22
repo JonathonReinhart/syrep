@@ -1,7 +1,7 @@
 #ifndef foopackagehfoo
 #define foopackagehfoo
 
-/* $Id: package.h 32 2003-09-07 23:11:37Z lennart $ */
+/* $Id: package.h 103 2006-04-22 10:57:59Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -23,8 +23,8 @@
 
 #include <inttypes.h>
 
-#define PACKAGE_FILEID (*((uint32_t*) "SREP"))
-#define PACKAGE_FILEIDCOMPRESSED (*((uint32_t*) "CREP"))
+#define PACKAGE_FILEID (*((const uint32_t*) "SREP"))
+#define PACKAGE_FILEIDCOMPRESSED (*((const uint32_t*) "CREP"))
 
 #define PACKAGE_ITEMNAMELEN 32
 

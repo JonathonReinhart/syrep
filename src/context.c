@@ -1,4 +1,4 @@
-/* $Id: context.c 76 2005-06-05 20:14:45Z lennart $ */
+/* $Id: context.c 103 2006-04-22 10:57:59Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -75,7 +75,7 @@ int db_context_free(struct syrep_db_context* c) {
 }
 
 
-static DB* open_db(const char*path, int dup, int recno) {
+static DB* open_db(const char*path, int dupsort, int recno) {
     int ret;
     DB* db;
 
@@ -84,7 +84,7 @@ static DB* open_db(const char*path, int dup, int recno) {
         return NULL;
     }
 
-    if (dup && !recno)
+    if (dupsort && !recno)
         db->set_flags(db, DB_DUPSORT);
 
     //db->set_pagesize(db, 4096*8);
@@ -160,8 +160,10 @@ struct syrep_db_context* db_context_open(const char *filename, int force) {
 
     if (!c->origin) {
         char hn[256];
-        if (gethostname(hn, sizeof(hn)) < 0)
+        if (gethostname(hn, sizeof(hn)) < 0) {
+            fprintf(stderr, "gethostname() failed: %s\n", strerror(errno));
             goto fail;
+        }
 
         c->origin = strdup(hn);
     }
@@ -319,13 +321,32 @@ int db_context_save(struct syrep_db_context *c, const char *filename) {
     return package_save(c->package, filename);
 }
 
+int db_context_fix_origin(struct syrep_db_context*c) {
+    char hn[256];
+    assert(c);
+
+    if (gethostname(hn, sizeof(hn)) < 0) {
+        fprintf(stderr, "gethostname() failed: %s\n", strerror(errno));
+        return -1;
+    }
+
+    free(c->origin);
+    c->origin = strdup(hn);
+
+    return 0;
+}
+
 int db_context_origin_warn(struct syrep_db_context *c) {
     char hn[256];
 
     assert(c);
 
-    if (gethostname(hn, sizeof(hn)) < 0)
+    if (gethostname(hn, sizeof(hn)) < 0) {
+        fprintf(stderr, "gethostname() failed: %s\n", strerror(errno));
         return -1;
+    }
+
+    hn[sizeof(hn)-1] = 0;
 
     if (strcmp(hn, c->origin)) {
         int q;

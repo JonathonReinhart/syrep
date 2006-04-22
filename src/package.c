@@ -1,4 +1,4 @@
-/* $Id: package.c 76 2005-06-05 20:14:45Z lennart $ */
+/* $Id: package.c 103 2006-04-22 10:57:59Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -39,9 +39,6 @@
 #include "package.h"
 #include "util.h"
 #include "syrep.h"
-
-/* Import mkdtemp */
-char *mkdtemp(char *template);
 
 struct package_item;
 
@@ -269,7 +266,7 @@ finish:
 }
 
 static char *tmp(char *fn, int l) {
-    char *t;
+    const char *t;
 
     if (!(t = getenv("TMPDIR")))
         if (!(t = getenv("TEMP")))
@@ -652,6 +649,8 @@ int package_save(struct package *p, const char *fn) {
             fprintf(stderr, "gethostname(): %s\n", strerror(errno));
             goto finish;
         }
+
+        hn[sizeof(hn)-1] = 0;
 
         snprintf(path, sizeof(path), "%s.%s.%u", fn, hn, getpid());
 

@@ -1,7 +1,7 @@
 # -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-# $Id: configure.ac 88 2005-07-01 22:31:34Z lennart $
+# $Id: configure.ac 103 2006-04-22 10:57:59Z lennart $
 
 # This file is part of syrep.
 #
@@ -20,10 +20,10 @@
 # Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 
 AC_PREREQ(2.59)
-AC_INIT([syrep],[0.7],[mzflerc (at) 0pointer (dot) de])
+AC_INIT([syrep],[0.8],[mzflerc (at) 0pointer (dot) de])
 AC_CONFIG_SRCDIR([src/syrep.c])
 AC_CONFIG_HEADERS([config.h])
-AM_INIT_AUTOMAKE([foreign -Wall])
+AM_INIT_AUTOMAKE([foreign 1.9 -Wall])
 
 # Checks for programs.
 AC_PROG_CC
@@ -32,13 +32,32 @@ AC_GNU_SOURCE
 
 AC_SUBST(PACKAGE_URL, [http://0pointer.de/lennart/projects/syrep/])
 
-# If using GCC specifiy some additional parameters
-if test "x$GCC" = "xyes" ; then
-   CFLAGS="$CFLAGS -pipe -W -Wall -pedantic"
+# GCC flags
 
-   AC_LANG_CONFTEST([int main() {}])
-   $CC -c conftest.c -std=c99 -Wno-unused-parameter $CFLAGS > /dev/null 2> /dev/null && CFLAGS="$CFLAGS -std=c99 -Wno-unused-parameter"
-   rm -f conftest.o
+test_gcc_flag() {
+    AC_LANG_CONFTEST([int main() {}])
+    $CC -c conftest.c $CFLAGS $@ > /dev/null 2> /dev/null
+    ret=$?
+    rm -f conftest.o
+    return $ret
+}
+
+# If using GCC specify some additional parameters
+if test "x$GCC" = "xyes" ; then
+
+    # We use gnu99 instead of c99 because many have interpreted the standard
+    # in a way that int64_t isn't defined on non-64 bit platforms.
+    DESIRED_FLAGS="-std=gnu99 -Wall -W -Wextra -pedantic -pipe -Wformat -Wold-style-definition -Wdeclaration-after-statement -Wfloat-equal -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wredundant-decls -Wmissing-noreturn -Wshadow -Wendif-labels -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wwrite-strings -Winline -Wno-unused-parameter"
+
+    for flag in $DESIRED_FLAGS ; do
+        AC_MSG_CHECKING([whether $CC accepts $flag])
+        if test_gcc_flag $flag ; then 
+           CFLAGS="$CFLAGS $flag"
+           AC_MSG_RESULT([yes])
+        else
+           AC_MSG_RESULT([no])
+        fi
+    done 
 fi
 
 if type -p stow > /dev/null && test -d /usr/local/stow ; then
@@ -97,6 +116,7 @@ fi
 
 if test "x$xattr" = xyes ; then
    AC_DEFINE([USE_XATTR], [1], [Use extended attributes])
+   LIBS="-lattr $LIBS"
 fi
 
 # 64 Bit LFS support

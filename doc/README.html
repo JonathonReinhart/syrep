@@ -3,14 +3,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-<title>syrep 0.7</title>
+<title>syrep 0.8</title>
 <link rel="stylesheet" type="text/css" href="style.css" />
 </head>
 
 <body>
-<h1><a name="top">syrep 0.7</a></h1>
+<h1><a name="top">syrep 0.8</a></h1>
 
-<p><i>Copyright 2003-2005 Lennart Poettering &lt;mzflerc (at) 0pointer (dot) de&gt;</i></p>
+<p><i>Copyright 2003-2006 Lennart Poettering &lt;mzflerc (at) 0pointer (dot) de&gt;</i></p>
 
 <ul class="toc">
     <li><a href="#license">License</a></li>
@@ -41,6 +41,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.</p>
 
 <h2><a name="news">News</a></h2>
+
+<div class="news-date">Sat Apr 22 2006: </div> <p class="news-text"><a
+href="http://0pointer.de/lennart/projects/syrep/syrep-0.8.tar.gz">Version 0.8</a> released; Changes
+include: when resuming a canceled merge operation, try harder not to
+loose any files; when merging and a file already exists, and the user
+chooses not to replace it, don't treat this as an error; when updating
+an existing snapshot locally which originates from a different host,
+update the origin field</p>
 
 <div class="news-date">Mon Jul 1 2005: </div> <p class="news-text"><a
 href="http://0pointer.de/lennart/projects/syrep/syrep-0.7.tar.gz">Version 0.7</a> released; Changes
@@ -136,9 +144,9 @@ contents, <tt>syrep</tt> works on file hierarchies.</p>
 100GB of size, with only a very small overhead. (i.e. 4 MB of control
 data for half a year history for 100 GB of user data)</p>
 
-<h2><a name="status">Status</a></h2>
+<h2><a name="status">Current Status</a></h2>
 
-<p>Version 0.7 is more or less stable and fulfills its purpose.</p>
+<p>Version 0.8 is more or less stable and fulfills its purpose.</p>
   
 <h2><a name="documentation">Documentation</a></h2>
 
@@ -276,22 +284,21 @@ L. Peter Deutsch. Thanks to him for this.</p>
 
 <p>The newest release is always available from <a href="http://0pointer.de/lennart/projects/syrep/">http://0pointer.de/lennart/projects/syrep/</a></p>
 
-<p>The current release is <a href="http://0pointer.de/lennart/projects/syrep/syrep-0.7.tar.gz">0.7</a></p>
+<p>The current release is <a href="http://0pointer.de/lennart/projects/syrep/syrep-0.8.tar.gz">0.8</a></p>
 
-<p>Get <tt>syrep</tt>'s development sources from the <a href="http://subversion.tigris.org/">Subversion</a> <a href="svn://seth.intheinter.net/syrep">repository</a> (<a href="http://0pointer.de/cgi-bin/viewcvs.cgi/?root=syrep">viewcvs</a>): </p>
+<p>Get <tt>syrep</tt>'s development sources from the <a href="http://subversion.tigris.org/">Subversion</a> <a href="svn://svn.0pointer.net/syrep">repository</a> (<a href="http://0pointer.net/cgi-bin/viewcvs.cgi/?root=syrep">viewcvs</a>): </p>
 
-<pre>svn checkout svn://seth.intheinter.net/syrep/trunk syrep</pre>
+<pre>svn checkout svn://svn.0pointer.net/syrep/trunk syrep</pre>
 
 <p>You may find an up-to-date Debian package (i386) of <tt>syrep</tt> in my <a href="http://0pointer.de/debian/">local Debian package repository</a>.</p>
-
 
 <p>If you want to be notified whenever I release a new version of this software use the subscription feature of <a href="http://freshmeat.net/projects/syrep/">Freshmeat</a>.</p>
 
 <hr/>
 
-<address class="grey">Lennart Poettering &lt;mzflerc (at) 0pointer (dot) de&gt;, July 2005</address>
+<address class="grey">Lennart Poettering &lt;mzflerc (at) 0pointer (dot) de&gt;, April 2006</address>
 
-<div class="grey"><i>$Id: README.html.in 89 2005-07-01 22:40:39Z lennart $</i></div>
+<div class="grey"><i>$Id: README.html.in 101 2006-04-22 10:43:47Z lennart $</i></div>
 
 </body>
 </html>

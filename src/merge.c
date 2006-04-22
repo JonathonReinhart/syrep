@@ -1,4 +1,4 @@
-/* $Id: merge.c 76 2005-06-05 20:14:45Z lennart $ */
+/* $Id: merge.c 103 2006-04-22 10:57:59Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -37,6 +37,7 @@
 #include "dbutil.h"
 #include "package.h"
 #include "util.h"
+#include "merge.h"
 
 struct cb_info {
     struct syrep_db_context *c1; /* remote */
@@ -161,11 +162,13 @@ static int do_copy(const char *a, const char *b) {
         if (errno != EEXIST)
             return r;
 
-        if (!(q = question("Replace existing file?", "ny")))
+        if (!(q = question("Replace existing file?", "ny"))) {
+            errno = EINVAL;
             return -1;
+        }
 
-        if (q != 'y')
-            return -1;
+        if (q != 'y') /* Treat as success */
+             return 0;
     }
 
     return copy_proc(a, b, 1);

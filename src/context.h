@@ -1,7 +1,7 @@
 #ifndef foocontexthfoo
 #define foocontexthfoo
 
-/* $Id: context.h 30 2003-09-04 22:06:56Z lennart $ */
+/* $Id: context.h 95 2006-04-16 14:22:50Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -48,5 +48,7 @@ int db_context_save(struct syrep_db_context *c, const char *path);
 int db_context_free(struct syrep_db_context* c);
 
 int db_context_origin_warn(struct syrep_db_context *c);
+
+int db_context_fix_origin(struct syrep_db_context*c);
 
 #endif

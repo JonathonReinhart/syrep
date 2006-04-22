@@ -1,4 +1,4 @@
-/* $Id: list.c 82 2005-06-16 19:57:25Z lennart $ */
+/* $Id: list.c 103 2006-04-22 10:57:59Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -180,7 +180,6 @@ int list(struct syrep_db_context *c) {
 
                     if (!m_sort_array) {
                         DB_BTREE_STAT *statp;
-                        int ret;
                         
                         if ((ret = c->db_id_meta->stat(c->db_id_meta, NULL, &statp, 0)) != 0)
                             break;

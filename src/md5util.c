@@ -1,4 +1,4 @@
-/* $Id: md5util.c 76 2005-06-05 20:14:45Z lennart $ */
+/* $Id: md5util.c 103 2006-04-22 10:57:59Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -98,19 +98,19 @@ int fdmd5(int fd, off_t l, uint8_t md[]) {
         }
         
         while (l) {
-            ssize_t r;
+            ssize_t k;
             
-            if ((r = read(fd, p, BUFSIZE)) < 0) {
+            if ((k = read(fd, p, BUFSIZE)) < 0) {
                 fprintf(stderr, "read(): %s\n", strerror(errno));
                 goto finish;
             }
             
-            if (!r)
+            if (!k)
                 break;
             
-            md5_append(&s, p, r);
+            md5_append(&s, p, k);
 
-            l -= r;
+            l -= k;
         }
     }
 

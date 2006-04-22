@@ -1,4 +1,4 @@
-/* $Id: syrep.c 84 2005-07-01 21:19:38Z lennart $ */
+/* $Id: syrep.c 95 2006-04-16 14:22:50Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -363,6 +363,9 @@ static int do_update(void) {
             goto finish;
 
         if (db_context_origin_warn(c))
+            goto finish;
+
+        if (db_context_fix_origin(c) < 0)
             goto finish;
 
         if (!args.no_cache_flag) {

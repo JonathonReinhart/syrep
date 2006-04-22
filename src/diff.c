@@ -1,4 +1,4 @@
-/* $Id: diff.c 81 2005-06-06 13:59:32Z lennart $ */
+/* $Id: diff.c 103 2006-04-22 10:57:59Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -308,7 +308,8 @@ static int list_cb(DB *ddb, struct syrep_name *name, struct diff_entry *de, void
     switch (de->action) {
         case DIFF_COPY: {
             char d[33];
-            char sizet[100] = " ", *psizet = "";
+            char sizet[100] = " ";
+            const char *psizet = "";
             char dst;
             const char *root = NULL;
             int mf;

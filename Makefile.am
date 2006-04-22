@@ -1,4 +1,4 @@
-# $Id: Makefile.am 78 2005-06-05 21:37:21Z lennart $
+# $Id: Makefile.am 102 2006-04-22 10:46:20Z lennart $
 
 # This file is part of syrep.
 #
@@ -34,10 +34,7 @@ homepage: all dist
 	cp doc/README.html doc/style.css man/syrep.1.xml man/xmltoman.css man/xmltoman.xsl man/xmltoman.dtd $$HOME/homepage/private/projects/syrep
 	ln -sf README.html $$HOME/homepage/private/projects/syrep/index.html
 
-distcleancheck:
-	@:
-
 deb:
 	dpkg-buildpackage -rfakeroot
 
-.PHONY: homepage distcleancheck deb
+.PHONY: homepage deb

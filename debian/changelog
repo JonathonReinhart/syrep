@@ -1,3 +1,16 @@
+syrep (0.8-1) unstable; urgency=low
+
+  * Upstream: update origin field of snapshots on update
+
+ -- Lennart Poettering <mzflerc@0pointer.net>  Sun, 16 Apr 2006 20:24:59 +0200
+
+syrep (0.7-2) unstable; urgency=low
+
+  * Fix README link
+  * Fix dependency on libattr1
+
+ -- Lennart Poettering <mzflerc@0pointer.net>  Sun, 12 Feb 2006 11:49:48 +0100
+
 syrep (0.7-1) unstable; urgency=high
 
   * New upstream

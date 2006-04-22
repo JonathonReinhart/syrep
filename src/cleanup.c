@@ -1,4 +1,4 @@
-/* $Id: cleanup.c 76 2005-06-05 20:14:45Z lennart $ */
+/* $Id: cleanup.c 103 2006-04-22 10:57:59Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -29,6 +29,7 @@
 
 #include "syrep.h"
 #include "util.h"
+#include "cleanup.h"
 
 int cleanup(const char *root) {
     char p[PATH_MAX];
