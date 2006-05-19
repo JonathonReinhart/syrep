@@ -1,7 +1,7 @@
 # -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-# $Id: configure.ac 103 2006-04-22 10:57:59Z lennart $
+# $Id: configure.ac 110 2006-05-15 00:08:01Z lennart $
 
 # This file is part of syrep.
 #
@@ -20,7 +20,7 @@
 # Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 
 AC_PREREQ(2.59)
-AC_INIT([syrep],[0.8],[mzflerc (at) 0pointer (dot) de])
+AC_INIT([syrep],[0.9],[mzflerc (at) 0pointer (dot) de])
 AC_CONFIG_SRCDIR([src/syrep.c])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([foreign 1.9 -Wall])
@@ -71,7 +71,6 @@ AC_CHECK_HEADER([zlib.h],, [AC_MSG_ERROR([*** Sorry, you have to install the zli
 
 # Check for Berkeley DB (needs to be improved)
 AC_CHECK_HEADER([db.h],, [AC_MSG_ERROR([*** Sorry, you have to install the Berkeley Database Library (libdb) 4.3 or newer ***])])
-AC_CHECK_LIB([db], [__db_db_create_4003],, [AC_MSG_ERROR([*** Sorry, you have to install the Berkeley Database Library (libdb) 4.3 or newer ***])])
 LIBS="$LIBS -ldb"
 
 # Checking libdb version number
@@ -79,7 +78,7 @@ AC_MSG_CHECKING([for Berkeley libdb 4.3])
 AC_LANG_PUSH(C)
 AC_PREPROC_IFELSE([AC_LANG_SOURCE([[
 #include <db.h>
-#if (DB_VERSION_MAJOR != 4) || (DB_VERSION_MINOR != 3) 
+#if (DB_VERSION_MAJOR != 4) || (DB_VERSION_MINOR != 3 && DB_VERSION_MINOR != 4)
 #error "foo"
 #endif
 ]])],
@@ -136,7 +135,7 @@ AC_C_VOLATILE
 # Checks for library functions.
 AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_MMAP
-AC_CHECK_FUNCS([atexit ftruncate getcwd gethostname memset mkdir munmap rmdir setenv strchr strdup strerror strrchr strtol putenv])
+AC_CHECK_FUNCS([atexit ftruncate getcwd gethostname memset mkdir munmap rmdir setenv strchr strdup strerror strrchr strtol putenv madvise])
 #AC_FUNC_LSTAT
 #AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
 #AC_FUNC_MALLOC

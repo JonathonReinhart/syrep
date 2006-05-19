@@ -1,5 +1,5 @@
 
-                                   syrep 0.8
+                                   syrep 0.9
 
    Copyright 2003-2006 Lennart Poettering <mzflerc (at) 0pointer (dot)
    de>
@@ -31,9 +31,14 @@ License
 
 News
 
+   Fri May 19 2006:
+
+   [10]Version 0.9 released; Changes include: ported to Win32/Cygwin
+   (patches from Bohdan Futerko); compatibility with Berkeley DB 4.4
+
    Sat Apr 22 2006:
 
-   [10]Version 0.8 released; Changes include: when resuming a canceled
+   [11]Version 0.8 released; Changes include: when resuming a canceled
    merge operation, try harder not to loose any files; when merging and a
    file already exists, and the user chooses not to replace it, don't
    treat this as an error; when updating an existing snapshot locally
@@ -41,44 +46,44 @@ News
 
    Mon Jul 1 2005:
 
-   [11]Version 0.7 released; Changes include: fix trash cleanup; fix long
+   [12]Version 0.7 released; Changes include: fix trash cleanup; fix long
    standing file copying bug; don't save device info data in the MD cache
    any longer, use the new option --check-dev to reenable this feature;
    update to Berkeley DB 4.3
 
    Wed Sep 22 2004:
 
-   [12]Version 0.6 released; Changes include: fix an ugly bug which made
+   [13]Version 0.6 released; Changes include: fix an ugly bug which made
    snapshots where --forget was used unusable; add debian/ directory for
    easily making Debian packages
 
    Mon Jul 19 2004:
 
-   [13]Version 0.5 released; Changes include: optionally show sizes of
+   [14]Version 0.5 released; Changes include: optionally show sizes of
    file on --diff, implement new command --forget, check for extended
    attribute user.syrep on --update on file systems that support it.
 
    Mon Mar 22 2004:
 
-   [14]Version 0.4 released; Changes include: fix annonoying SIGBUS
+   [15]Version 0.4 released; Changes include: fix annonoying SIGBUS
    failure when working on files >= 100 MB, update to Berkeley DB 4.2,
    use madvise() to improve file copying throughput on newer kernels,
    minor other fixes
 
    Sun Nov 30 2003:
 
-   [15]Version 0.3 released; Changes include: new options --sort,
+   [16]Version 0.3 released; Changes include: new options --sort,
    --check-md, --always-copy; implemented direct bi-directory merges,
    documentation updates, build system updates, assorted fixes.
 
    Tue Sep 9 2003:
 
-   [16]Version 0.2 released; Fixes include: documentation update, --diff
+   [17]Version 0.2 released; Fixes include: documentation update, --diff
    output improved, --merge output fixed.
 
    Mon Sep 8 2003:
 
-   [17]Version 0.1 released.
+   [18]Version 0.1 released.
 
 Overview
 
@@ -139,11 +144,11 @@ Overview
 
 Current Status
 
-   Version 0.8 is more or less stable and fulfills its purpose.
+   Version 0.9 is more or less stable and fulfills its purpose.
 
 Documentation
 
-   Have a look on the man page [18]syrep(1). (A XSLT capable browser is
+   Have a look on the man page [19]syrep(1). (A XSLT capable browser is
    required)
 
   Method of operation
@@ -234,8 +239,8 @@ karl$ syrep -zp --update ~/mp3/
 
 Requirements
 
-   syrep requires installed development versions of [19]zlib and
-   [20]Berkeley DB 4.3. If you want build syrep with support for extended
+   syrep requires installed development versions of [20]zlib and
+   [21]Berkeley DB 4.3. If you want build syrep with support for extended
    attributes (currently supported on Linux only) you have to install
    libattr and a kernel that supports it.
 
@@ -247,7 +252,7 @@ Requirements
    Some support for for big endian architectures is included, however, it
    is incomplete. You're welcome to send me patches.
 
-   If the syrep build system detects Oliver Kurth's [21]xmltoman the man
+   If the syrep build system detects Oliver Kurth's [22]xmltoman the man
    page is rebuilt. Otherwise the pre-compiled versions shipped with
    syrep are used.
 
@@ -263,28 +268,32 @@ Acknowledgements
    This software includes an implementation of the MD5 algorithm by L.
    Peter Deutsch. Thanks to him for this.
 
+   Bohdan Futerko for porting syrep to Win32/Cygwin.
+
 Download
 
    The newest release is always available from
-   [22]http://0pointer.de/lennart/projects/syrep/
+   [23]http://0pointer.de/lennart/projects/syrep/
 
-   The current release is [23]0.8
+   The current release is [24]0.9.
 
-   Get syrep's development sources from the [24]Subversion [25]repository
-   ([26]viewcvs):
+   [25]Win32/x86 binaries courtesy of Bohdan Futerko
+
+   Get syrep's development sources from the [26]Subversion [27]repository
+   ([28]viewcvs):
 svn checkout svn://svn.0pointer.net/syrep/trunk syrep
 
    You may find an up-to-date Debian package (i386) of syrep in my
-   [27]local Debian package repository.
+   [29]local Debian package repository.
 
    If you want to be notified whenever I release a new version of this
-   software use the subscription feature of [28]Freshmeat.
+   software use the subscription feature of [30]Freshmeat.
      _________________________________________________________________
 
 
-    Lennart Poettering <mzflerc (at) 0pointer (dot) de>, April 2006
+    Lennart Poettering <mzflerc (at) 0pointer (dot) de>, May 2006
 
-   $Id: README.html.in 101 2006-04-22 10:43:47Z lennart $
+   $Id: README.html.in 113 2006-05-19 10:09:00Z lennart $
 
 References
 
@@ -297,22 +306,24 @@ References
    7. README#installation
    8. README#acks
    9. README#download
-  10. http://0pointer.de/lennart/projects/syrep/syrep-0.8.tar.gz
-  11. http://0pointer.de/lennart/projects/syrep/syrep-0.7.tar.gz
-  12. http://0pointer.de/lennart/projects/syrep/syrep-0.6.tar.gz
-  13. http://0pointer.de/lennart/projects/syrep/syrep-0.5.tar.gz
-  14. http://0pointer.de/lennart/projects/syrep/syrep-0.4.tar.gz
-  15. http://0pointer.de/lennart/projects/syrep/syrep-0.3.tar.gz
-  16. http://0pointer.de/lennart/projects/syrep/syrep-0.2.tar.gz
-  17. http://0pointer.de/lennart/projects/syrep/syrep-0.1.tar.gz
-  18. http://0pointer.de/lennart/projects/syrep/syrep.1.xml
-  19. http://www.gzip.org/zlib/
-  20. http://www.sleepycat.com/
-  21. http://masqmail.cx/xml2man/
-  22. http://0pointer.de/lennart/projects/syrep/
-  23. http://0pointer.de/lennart/projects/syrep/syrep-0.8.tar.gz
-  24. http://subversion.tigris.org/
-  25. svn://svn.0pointer.net/syrep
-  26. http://0pointer.net/cgi-bin/viewcvs.cgi/?root=syrep
-  27. http://0pointer.de/debian/
-  28. http://freshmeat.net/projects/syrep/
+  10. http://0pointer.de/lennart/projects/syrep/syrep-0.9.tar.gz
+  11. http://0pointer.de/lennart/projects/syrep/syrep-0.8.tar.gz
+  12. http://0pointer.de/lennart/projects/syrep/syrep-0.7.tar.gz
+  13. http://0pointer.de/lennart/projects/syrep/syrep-0.6.tar.gz
+  14. http://0pointer.de/lennart/projects/syrep/syrep-0.5.tar.gz
+  15. http://0pointer.de/lennart/projects/syrep/syrep-0.4.tar.gz
+  16. http://0pointer.de/lennart/projects/syrep/syrep-0.3.tar.gz
+  17. http://0pointer.de/lennart/projects/syrep/syrep-0.2.tar.gz
+  18. http://0pointer.de/lennart/projects/syrep/syrep-0.1.tar.gz
+  19. http://0pointer.de/lennart/projects/syrep/syrep.1.xml
+  20. http://www.gzip.org/zlib/
+  21. http://www.sleepycat.com/
+  22. http://masqmail.cx/xml2man/
+  23. http://0pointer.de/lennart/projects/syrep/
+  24. http://0pointer.de/lennart/projects/syrep/syrep-0.9.tar.gz
+  25. http://0pointer.de/lennart/projects/syrep/syrep-0.9.zip
+  26. http://subversion.tigris.org/
+  27. svn://svn.0pointer.net/syrep
+  28. http://0pointer.net/cgi-bin/viewcvs.cgi/?root=syrep
+  29. http://0pointer.de/debian/
+  30. http://freshmeat.net/projects/syrep/

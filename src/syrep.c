@@ -1,4 +1,4 @@
-/* $Id: syrep.c 95 2006-04-16 14:22:50Z lennart $ */
+/* $Id: syrep.c 108 2006-04-26 13:01:19Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -658,7 +658,6 @@ static int version(const char *argv0) {
 }
 
 int main(int argc, char *argv[]) {
-    struct sigaction sa;
     char *bn;
 
     if ((bn = strrchr(argv[0], '/')))
@@ -666,10 +665,8 @@ int main(int argc, char *argv[]) {
     else
         bn = argv[0];
 
-    memset(&sa, 0, sizeof(sa));
-    sa.sa_handler = sigint;
-    sigaction(SIGINT, &sa, NULL);
-
+    signal(SIGINT, sigint);
+    
     cmdline_parser(argc, argv, &args);
     atexit(free_args);
 

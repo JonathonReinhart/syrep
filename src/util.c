@@ -1,4 +1,4 @@
-/* $Id: util.c 103 2006-04-22 10:57:59Z lennart $ */
+/* $Id: util.c 107 2006-04-26 12:57:48Z lennart $ */
 
 /***
   This file is part of syrep.
@@ -271,8 +271,11 @@ int copy_fd(int sfd, int dfd, off_t l) {
 
             msfo = (off_t) (sfo/psize)*psize;
             sm = m+(sfo-msfo);
-            if ((sp = mmap(NULL, sm, PROT_READ, MAP_SHARED, sfd, msfo)) != MAP_FAILED)
+            if ((sp = mmap(NULL, sm, PROT_READ, MAP_SHARED, sfd, msfo)) != MAP_FAILED) {
+#ifdef HAVE_MADVISE
                 madvise(sp, sm, MADV_SEQUENTIAL);
+#endif
+            }
         }
         
         if ((dfo = lseek(dfd, 0, SEEK_CUR)) != (off_t) -1) {
@@ -281,8 +284,11 @@ int copy_fd(int sfd, int dfd, off_t l) {
 
             mdfo = (off_t) (dfo/psize)*psize;
             dm = m+(dfo-mdfo);
-            if ((dp = mmap(NULL, dm, PROT_READ|PROT_WRITE, MAP_SHARED, dfd, mdfo)) != MAP_FAILED)
+            if ((dp = mmap(NULL, dm, PROT_READ|PROT_WRITE, MAP_SHARED, dfd, mdfo)) != MAP_FAILED) {
+#ifdef HAVE_MADVISE
                 madvise(dp, dm, MADV_SEQUENTIAL);
+#endif
+            }
         }
     }
 
@@ -363,7 +369,10 @@ int copy_fd(int sfd, int dfd, off_t l) {
                 fprintf(stderr, "mmap(): %s\n", strerror(errno));
                 return -1;
             }
+
+#ifdef HAVE_MADVISE
             madvise(dp, dm, MADV_SEQUENTIAL);
+#endif
         }
 
     } else if (dp == MAP_FAILED) { /* copy mmap to fd */
@@ -402,7 +411,10 @@ int copy_fd(int sfd, int dfd, off_t l) {
                 fprintf(stderr, "mmap(): %s\n", strerror(errno));
                 return -1;
             }
+
+#ifdef HAVE_MADVISE
             madvise(sp, sm, MADV_SEQUENTIAL);
+#endif
         }
         
     } else {  /* copy mmap to mmap */
@@ -448,8 +460,10 @@ int copy_fd(int sfd, int dfd, off_t l) {
                 return -1;
             }
 
+#ifdef HAVE_MADVISE
             madvise(sp, sm, MADV_SEQUENTIAL);
             madvise(dp, dm, MADV_SEQUENTIAL);
+#endif
         }
     }
 }

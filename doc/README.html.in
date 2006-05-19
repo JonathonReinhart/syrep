@@ -42,6 +42,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.</p>
 
 <h2><a name="news">News</a></h2>
 
+<div class="news-date">Fri May 19 2006: </div> <p class="news-text"><a
+href="@PACKAGE_URL@syrep-0.9.tar.gz">Version 0.9</a> released; Changes
+include: ported to Win32/Cygwin (patches from Bohdan Futerko); compatibility with Berkeley DB 4.4</p>
+
 <div class="news-date">Sat Apr 22 2006: </div> <p class="news-text"><a
 href="@PACKAGE_URL@syrep-0.8.tar.gz">Version 0.8</a> released; Changes
 include: when resuming a canceled merge operation, try harder not to
@@ -280,11 +284,15 @@ compilation and <tt>make install</tt> (as root) for installation of
 <p>This software includes an implementation of the MD5 algorithm by
 L. Peter Deutsch. Thanks to him for this.</p>
 
+<p>Bohdan Futerko for porting <tt>syrep</tt> to Win32/Cygwin.</p>
+
 <h2><a name="download">Download</a></h2>
 
 <p>The newest release is always available from <a href="@PACKAGE_URL@">@PACKAGE_URL@</a></p>
 
-<p>The current release is <a href="@PACKAGE_URL@syrep-@PACKAGE_VERSION@.tar.gz">@PACKAGE_VERSION@</a></p>
+<p>The current release is <a href="@PACKAGE_URL@syrep-@PACKAGE_VERSION@.tar.gz">@PACKAGE_VERSION@</a>.</p>
+
+<p><a href="@PACKAGE_URL@syrep-@PACKAGE_VERSION@.zip">Win32/x86 binaries</a> courtesy of Bohdan Futerko</p>
 
 <p>Get <tt>syrep</tt>'s development sources from the <a href="http://subversion.tigris.org/">Subversion</a> <a href="svn://svn.0pointer.net/syrep">repository</a> (<a href="http://0pointer.net/cgi-bin/viewcvs.cgi/?root=syrep">viewcvs</a>): </p>
 
@@ -296,9 +304,9 @@ L. Peter Deutsch. Thanks to him for this.</p>
 
 <hr/>
 
-<address class="grey">Lennart Poettering &lt;@PACKAGE_BUGREPORT@&gt;, April 2006</address>
+<address class="grey">Lennart Poettering &lt;@PACKAGE_BUGREPORT@&gt;, May 2006</address>
 
-<div class="grey"><i>$Id: README.html.in 101 2006-04-22 10:43:47Z lennart $</i></div>
+<div class="grey"><i>$Id: README.html.in 113 2006-05-19 10:09:00Z lennart $</i></div>
 
 </body>
 </html>
