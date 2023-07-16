@@ -74,16 +74,16 @@ AC_CHECK_HEADER([db.h],, [AC_MSG_ERROR([*** Sorry, you have to install the Berke
 LIBS="$LIBS -ldb"
 
 # Checking libdb version number
-AC_MSG_CHECKING([for Berkeley libdb 4.3])
+AC_MSG_CHECKING([for Berkeley libdb >= 4.3])
 AC_LANG_PUSH(C)
 AC_PREPROC_IFELSE([AC_LANG_SOURCE([[
 #include <db.h>
-#if (DB_VERSION_MAJOR != 4) || (DB_VERSION_MINOR != 3 && DB_VERSION_MINOR != 4)
+#if !((DB_VERSION_MAJOR > 4) || ((DB_VERSION == 4) && (DB_VERSION_MINOR >= 3)))
 #error "foo"
 #endif
 ]])],
 [AC_MSG_RESULT([yes])],
-[AC_MSG_FAILURE([Berkeley libdb 4.3 required])])
+[AC_MSG_FAILURE([Berkeley libdb >= 4.3 required])])
 AC_LANG_POP(C)
 
 # Check for Linux sendfile()
