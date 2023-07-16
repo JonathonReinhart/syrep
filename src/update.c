@@ -31,7 +31,7 @@
 
 #ifdef USE_XATTR
 #include <sys/types.h>
-#include <attr/xattr.h>
+#include <sys/xattr.h>
 #endif
 
 #include "update.h"
@@ -187,8 +187,12 @@ static int iterate_dir(struct syrep_db_context *c, struct syrep_md_cache *cache,
         struct syrep_md md;
         struct stat st;
         
-        if (de->d_name[0] == '.')
-            continue;
+        if (de->d_name[0] == '.') {
+            if(!args.include_dotfiles_flag)
+                continue;
+            if(de->d_name[1] == '\0' || de->d_name[1] == '.' && de->d_name[2] == '\0')
+                continue;
+        }
 
         if (!strncmp(de->d_name, ".syrep", 6))
             continue;
