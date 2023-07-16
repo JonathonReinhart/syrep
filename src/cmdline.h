@@ -44,6 +44,7 @@ struct gengetopt_args_info
   int ro_cache_flag;	/* update: Use read only cache (default=off).  */
   int progress_flag;	/* update: Show progress (default=off).  */
   int check_dev_flag;	/* update: Honour stat() st_dev field (default=off).  */
+  int include_dotfiles_flag; /* update: Include dotfiles (default=off). */
   int diff_flag;	/* Show difference between two repositories or snapshots (default=off).  */
   int sizes_flag;	/* diff: show file sizes to copy (works online on repositories) (default=off).  */
   int human_readable_flag;	/* diff: show sizes human readable (default=off).  */
@@ -86,6 +87,7 @@ struct gengetopt_args_info
   int ro_cache_given ;	/* Whether ro-cache was given.  */
   int progress_given ;	/* Whether progress was given.  */
   int check_dev_given ;	/* Whether check-dev was given.  */
+  int include_dotfiles_given ; /* Whether include-dotfiles was given. */
   int diff_given ;	/* Whether diff was given.  */
   int sizes_given ;	/* Whether sizes was given.  */
   int human_readable_given ;	/* Whether human-readable was given.  */

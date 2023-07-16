@@ -42,6 +42,7 @@ option "update" - "Update a repository snapshot" flag off
  option "ro-cache" - "update: Use read only cache" flag off
  option "progress" p "update: Show progress" flag off
  option "check-dev" - "update: Honour stat() st_dev field" flag off
+ option "include-dotfiles" - "update: Include dotfiles" flag off
 
 option "diff" - "Show difference between two repositories or snapshots" flag off
  option "sizes" s "diff: show file sizes to copy (works online on repositories)" flag off

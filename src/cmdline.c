@@ -59,6 +59,7 @@ cmdline_parser_print_help (void)
   printf("              --ro-cache                 update: Use read only cache (default=off)\n");
   printf("   -p         --progress                 update: Show progress (default=off)\n");
   printf("              --check-dev                update: Honour stat() st_dev field (default=off)\n");
+  printf("              --include-dotfiles         update: Include dotfiles (default=off)\n");
   printf("              --diff                     Show difference between two repositories or snapshots (default=off)\n");
   printf("   -s         --sizes                    diff: show file sizes to copy (works online on repositories) (default=off)\n");
   printf("   -H         --human-readable           diff: show sizes human readable (default=off)\n");
@@ -123,6 +124,7 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
   args_info->ro_cache_given = 0 ;
   args_info->progress_given = 0 ;
   args_info->check_dev_given = 0 ;
+  args_info->include_dotfiles_given = 0 ;
   args_info->diff_given = 0 ;
   args_info->sizes_given = 0 ;
   args_info->human_readable_given = 0 ;
@@ -163,6 +165,7 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
   args_info->ro_cache_flag = 0;\
   args_info->progress_flag = 0;\
   args_info->check_dev_flag = 0;\
+  args_info->include_dotfiles_flag = 0;\
   args_info->diff_flag = 0;\
   args_info->sizes_flag = 0;\
   args_info->human_readable_flag = 0;\
@@ -622,6 +625,19 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
             args_info->check_dev_flag = !(args_info->check_dev_flag);
             break;
           }
+	  /* update: Include dotfiles. */
+	  else if (strcmp(long_options[option_index].name, "include-dotfiles") == 0)
+	  {
+	    if (args_info->include_dotfiles_given)
+	      {
+		fprintf (stderr, "%s: `--include-dotfiles' option given more than once\n", CMDLINE_PARSER_PACKAGE);
+		clear_args ();
+		exit (EXIT_FAILURE);
+	      }
+	    args_info->include_dotfiles_given = 1;
+	    args_info->include_dotfiles_flag = !(args_info->include_dotfiles_flag);
+	    break;
+	  }
           
           /* Show difference between two repositories or snapshots.  */
           else if (strcmp (long_options[option_index].name, "diff") == 0)

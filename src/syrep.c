@@ -580,7 +580,8 @@ static int help(FILE *f, const char *argv0) {
             "                                       after update run\n"
             "    --ro-cache                         Use read only cache\n"
             "    --check-dev                        Store information about the device where\n"
-            "                                       a file resides in the MD cache\n\n"
+            "                                       a file resides in the MD cache\n"
+            "    --include-dotfiles                 Don't ignore dotfiles\n"
             
             "  --diff SNAPSHOT SNAPSHOT             Show difference between two repositories\n"
             "                                       or snapshots\n"
