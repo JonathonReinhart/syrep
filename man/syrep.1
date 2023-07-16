@@ -29,7 +29,7 @@ syrep [options...\fB] --cleanup\fB \fIDIRECTORY\fB ...
 syrep [options...\fB] --forget\fB \fISNAPSHOT\fB ...
 \f1
 .SH DESCRIPTION
-Syrep is a generic file repository synchronization tool. It may be used to synchronize large file hierarchies bidirectionally by exchanging patch files. Syrep is truely peer-to-peer, no central servers are involved. Synchronizations between more than two repositories are supported. The patch files may be transferred via offline media, e.g. removable hard disks or compact discs.
+Syrep is a generic file repository synchronization tool. It may be used to synchronize large file hierarchies bidirectionally by exchanging patch files. Syrep is truly peer-to-peer, no central servers are involved. Synchronizations between more than two repositories are supported. The patch files may be transferred via offline media, e.g. removable hard disks or compact discs.
 
 Files are tracked by their message digests, currently MD5.
 
@@ -185,7 +185,7 @@ Keep in mind that patches contain the snapshot data of the originating host. Bec
 
 To extract the contents of a patch you may use \fB--extract\f1. This will write all files contained in the patch or snapshot to the local directory, including snapshot log data. Files are named by their message digests.
 .SH FILES
-\fI$(REPOSITORY)/.syrep/current.syrep\f1 is the current snapshot of the repository. It is created and updated by running \fB--update\f1 on the directory. Use this file to create patches on other repositories against this one. This file may be compressed by specifiying \fB--compress\f1 when running \fB--update\f1.
+\fI$(REPOSITORY)/.syrep/current.syrep\f1 is the current snapshot of the repository. It is created and updated by running \fB--update\f1 on the directory. Use this file to create patches on other repositories against this one. This file may be compressed by specifying \fB--compress\f1 when running \fB--update\f1.
 
 \fI$(REPOSITORY)/.syrep/md-cache\f1 is the message digest cache which may be used to accelerate the repeated operation of \fB---update\f1. It associates device numbers, inode numbers, file sizes and modification times with the message digest calculated for that file. The file is only valid on the host it was created on since it contains device numbers. 
 

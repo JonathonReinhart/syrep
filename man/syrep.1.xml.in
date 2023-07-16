@@ -44,7 +44,7 @@
 
     <p>Syrep is a generic file repository synchronization tool. It may
 	be used to synchronize large file hierarchies bidirectionally by
-	exchanging patch files. Syrep is truely peer-to-peer, no central
+	exchanging patch files. Syrep is truly peer-to-peer, no central
 	servers are involved. Synchronizations between more than two
 	repositories are supported. The patch files may be transferred via
 	offline media, e.g. removable hard disks or compact discs.</p>
@@ -345,7 +345,7 @@
    <p><file>$(REPOSITORY)/.syrep/current.syrep</file> is the current
    snapshot of the repository. It is created and updated by running
    <opt>--update</opt> on the directory. Use this file to create
-   patches on other repositories against this one. This file may be compressed by specifiying <opt>--compress</opt> when running <opt>--update</opt>.</p>
+   patches on other repositories against this one. This file may be compressed by specifying <opt>--compress</opt> when running <opt>--update</opt>.</p>
 
    <p><file>$(REPOSITORY)/.syrep/md-cache</file> is the message digest
    cache which may be used to accelerate the repeated operation of
