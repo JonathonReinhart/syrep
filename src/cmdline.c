@@ -78,7 +78,7 @@ cmdline_parser_print_help (void)
   printf("              --cleanup                  Remove syrep info from repository (default=off)\n");
   printf("   -lINT      --cleanup-level=INT        cleanup: 1 - just remove temporary data and trash (default); 2 - remove MD cache as well; 3 - remove all syrep data (default='1')\n");
   printf("              --forget                   Forget old snapshot entries (default=off)\n");
-  printf("   -RINT      --remember=INT             forget: information of how many days to remeber (default='180')\n");
+  printf("   -RINT      --remember=INT             forget: information of how many days to remember (default='180')\n");
 }
 
 
@@ -417,7 +417,7 @@ cmdline_parser (int argc, char * const *argv, struct gengetopt_args_info *args_i
           args_info->cleanup_level_arg = strtol (optarg,&stop_char,0);
           break;
 
-        case 'R':	/* forget: information of how many days to remeber.  */
+        case 'R':	/* forget: information of how many days to remember.  */
           if (args_info->remember_given)
             {
               fprintf (stderr, "%s: `--remember' (`-R') option given more than once\n", CMDLINE_PARSER_PACKAGE);

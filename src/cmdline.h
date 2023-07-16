@@ -63,7 +63,7 @@ struct gengetopt_args_info
   int cleanup_flag;	/* Remove syrep info from repository (default=off).  */
   int cleanup_level_arg;	/* cleanup: 1 - just remove temporary data and trash (default); 2 - remove MD cache as well; 3 - remove all syrep data (default='1').  */
   int forget_flag;	/* Forget old snapshot entries (default=off).  */
-  int remember_arg;	/* forget: information of how many days to remeber (default='180').  */
+  int remember_arg;	/* forget: information of how many days to remember (default='180').  */
 
   int help_given ;	/* Whether help was given.  */
   int version_given ;	/* Whether version was given.  */

@@ -67,4 +67,4 @@ option "cleanup" - "Remove syrep info from repository" flag off
  option "cleanup-level" l "cleanup: 1 - just remove temporary data and trash (default); 2 - remove MD cache as well; 3 - remove all syrep data" int default="1" no
 
 option "forget" - "Forget old snapshot entries" flag off
- option "remember" R "forget: information of how many days to remeber" int default="180" no
+ option "remember" R "forget: information of how many days to remember" int default="180" no
